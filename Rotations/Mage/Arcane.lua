@@ -3,21 +3,19 @@
 
 if select(3, UnitClass("player")) == 8 then
 
-	function ArcaneMage()
+	function Mage() 	-- Todo : we Should create one Class Main file for all speccs. The flow is the same more or less and its better to create small changes per module then seperate modules
+							-- For example the options and toggles files. They are the same but small changes, toggles should be exactly the same with rare difference.
 
-		if currentConfig ~= "Arcane ragnar" then
-			ArcaneMageConfig()
-			ArcaneMageToggles()
-			currentConfig = "Arcane ragnar"
+		if currentConfig ~= "Mage Gabbz" then
+			MageConfig()  	-- Class Specefic Options for now
+			--Toggles()		-- Toggles should be same on BadRobotlevel. We will use mages toggles as baseline and when we are done we move it to class generic
+			currentConfig = "Mage Gabbz"
 		end
 
 		-- Manual Input
 		if IsLeftShiftKeyDown() or IsLeftAltKeyDown() then -- Pause the script, keybind in wow shift+1 etc for manual cast
 			return true
-
 		end
-		
-		
 
 		------------
 		-- Checks --
@@ -28,49 +26,64 @@ if select(3, UnitClass("player")) == 8 then
 			return false
 		end
 
-		-- Do not Interrupt "player" while GCD (61304)k
-		--if getSpellCD(61304) > 0 then
-		--		return false
-	--	end
-			------------
-		-- COMBAT --
+		------------
+		-- OUT OF COMBAT, note that this should be internal functionality only or handled by a manual keypress such as leftctrl. Otherwise it is easy to get spotted as bott.
 		------------
 
-		-- AffectingCombat, Pause, Target, Dead/Ghost Check
+
+		------------
+		-- COMBAT -- , Affected by combat or manual override, cant be the same key as overriding out of combat. Manual overide for pulling, hotting etc before combat.
+		------------
 		if UnitAffectingCombat("player") or not UnitAffectingCombat("player") and IsLeftControlKeyDown() then
 
 			------------
-			-- Stats --
+			-- Stats -- , first we get all the necessary parameters we will be using in the rotation. make sure that the naming convention follows.
 			------------
 
-			isPlayerMoving 						= isMoving("player")
-			arcaneCharge 						= Charge()
-			isKnownPrismaticCrystal 			= isKnown(PrismaticCrystal)
-			isKnownOverPowered					= isKnown(Overpowered)
-			isKnownArcaneOrb					= isKnown(ArcaneOrb)
-			isKnownSupernova					= isKnown(Supernova)
-			
-			cdPristmaticCrystal 				= getSpellCD(PrismaticCrystal)
-			cdArcanePower						= getSpellCD(ArcanePower)
-			cdEvocation							= getSpellCD(Evocation)
-			
-			playerMana							= getMana("player")
-			playerBuffArcanePower				= UnitBuffID("player",ArcanePower)
-			playerBuffArcanePowerTimeLeft		= getBuffRemain("player",ArcanePower)
-			playerHaste							= GetHaste()
-			playerBuffArcaneMissile				= UnitBuffID("player",ArcaneMissilesP)
+			-- Todo : 	we could if need be set this timer based, ie every 0.5 seconds or something if we feel that FPS is dropping low.
+			--			Best way would to use events to get as many parameters as possible but that is a major rework. For now we do it like this
 
-			targetDebuffNetherTempest 			= UnitDebuffID("target",NetherTempest, "player")	
-			targetDebuffNetherTempestTimeLeft	= getDebuffRemain("target",NetherTempest, "player")
+				------------
+				-- Player 
+				------------
+				playerIsMoving 					= isMoving("player")
+				playerMana						= getMana("player")
+				playerHaste						= GetHaste()
+				
+				--Buffs
+				playerBuffArcanePower			= UnitBuffID("player",ArcanePower) 
+				playerBuffArcanePowerTimeLeft	= getBuffRemain("player",ArcanePower)
+				playerBuffArcaneMissile			= UnitBuffID("player",ArcaneMissilesP)
+				stacksArcaneMisslesP			= getBuffStacks("player",ArcaneMissilesP)
+				arcaneCharge 					= Charge()
+				
 
-			stacksArcaneMisslesP				= getBuffStacks("player",ArcaneMissilesP)
+				--playerSpells
+				playerSpellPrismaticCrystalIsKnown	= isKnown(PrismaticCrystal) 
+				playerSpellPrismaticCrystalCD 		= getSpellCD(PrismaticCrystal)	--Todo : Replace with this
+
+				isKnownOverPowered					= isKnown(Overpowered)
+				isKnownArcaneOrb					= isKnown(ArcaneOrb)
+				isKnownSupernova					= isKnown(Supernova)
+				
+				cdArcanePower						= getSpellCD(ArcanePower)
+				cdEvocation							= getSpellCD(Evocation)
+				
+				
+				------------------
+				-- Target
+				------------------
+				targetDebuffNetherTempest 			= UnitDebuffID("target",NetherTempest, "player")	
+				targetDebuffNetherTempestTimeLeft	= getDebuffRemain("target",NetherTempest, "player")
+
+				
 
 
-			
-			chargesSuperNova					= GetSpellCharges(Supernova)
-			reChargeSuperNova					= getRecharge(Supernova)
+				
+				chargesSuperNova					= GetSpellCharges(Supernova)
+				reChargeSuperNova					= getRecharge(Supernova)
 
-			castTimeArcaneBlast					 = select(4,GetSpellInfo(ArcaneBlast))/1000
+				castTimeArcaneBlast					 = select(4,GetSpellInfo(ArcaneBlast))/1000
 
 			if cancelEvocation() then
 				RunMacroText("/stopcasting")

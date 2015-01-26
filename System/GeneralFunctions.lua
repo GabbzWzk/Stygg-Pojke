@@ -267,7 +267,7 @@ end
 -- if canRun() then
 function canRun()
 	if getOptionCheck("Pause") ~= 1 then
-		if getOptionCheck("Start/Stop BadBoy") and isAlive("player") then
+		if getOptionCheck("Start/Stop BadRobot") and isAlive("player") then
 			if SpellIsTargeting()
 			  --or UnitInVehicle("Player")
 			  or (IsMounted() and getUnitID("target") ~= 56877 and not UnitBuffID("player",164222) and not UnitBuffID("player",165803))
@@ -282,7 +282,7 @@ function canRun()
 			end
 		end
 	else
-		ChatOverlay("|cffFF0000-BadBoy Paused-")
+		ChatOverlay("|cffFF0000-BadRobot Paused-")
 		return false
 	end
 end
@@ -552,7 +552,7 @@ function castSpell(Unit,SpellID,FacingCheck,MovementCheck,SpamAllowed,KnownSkip,
 	        				CastSpellByName(GetSpellInfo(SpellID),Unit)
                             lastSpellCast = SpellID
                             -- change main button icon
-							if getOptionCheck("Start/Stop BadBoy") then
+							if getOptionCheck("Start/Stop BadRobot") then
                                 mainButton:SetNormalTexture(select(3,GetSpellInfo(SpellID)))
                             end
 	        				return true
@@ -561,7 +561,7 @@ function castSpell(Unit,SpellID,FacingCheck,MovementCheck,SpamAllowed,KnownSkip,
 				elseif (FacingCheck == true or getFacing("player",Unit) == true) and (UnitIsUnit("player",Unit) or getLineOfSight("player",Unit) == true) then
 	  		   		currentTarget = UnitGUID(Unit)
 					CastSpellByName(GetSpellInfo(SpellID),Unit)
-					if getOptionCheck("Start/Stop BadBoy") then
+					if getOptionCheck("Start/Stop BadRobot") then
 						mainButton:SetNormalTexture(select(3,GetSpellInfo(SpellID)))
 					end
 					return true
@@ -675,8 +675,8 @@ end
 
 -- if getCombatTime() <= 5 then
 function getCombatTime()
-	local combatStarted = BadBoy_data["Combat Started"]
-	local combatTime = BadBoy_data["Combat Time"]
+	local combatStarted = BadRobot_data["Combat Started"]
+	local combatTime = BadRobot_data["Combat Time"]
 	if combatStarted == nil then
 		return 0
 	end
@@ -688,7 +688,7 @@ function getCombatTime()
 	else
 		combatTime = 0
 	end
-	BadBoy_data["Combat Time"] = combatTime
+	BadRobot_data["Combat Time"] = combatTime
 	return (math.floor(combatTime*1000)/1000)
 end
 
@@ -2069,27 +2069,27 @@ end
 
 -- if isChecked("Debug") then
 function isChecked(Value)
-	--print(BadBoy_data.options[GetSpecialization()]["profile"..Value.."Check"])
-	if BadBoy_data.options[GetSpecialization()] and BadBoy_data.options[GetSpecialization()][Value.."Check"] == 1 then
+	--print(BadRobot_data.options[GetSpecialization()]["profile"..Value.."Check"])
+	if BadRobot_data.options[GetSpecialization()] and BadRobot_data.options[GetSpecialization()][Value.."Check"] == 1 then
 		return true
 	end
 end
 
 -- if isSelected("Stormlash Totem") then
 function isSelected(Value)
-	if BadBoy_data["Cooldowns"] == 3 or (isChecked(Value)
-	  and (getValue(Value) == 3 or (getValue(Value) == 2 and BadBoy_data["Cooldowns"] == 2))) then
+	if BadRobot_data["Cooldowns"] == 3 or (isChecked(Value)
+	  and (getValue(Value) == 3 or (getValue(Value) == 2 and BadRobot_data["Cooldowns"] == 2))) then
 		return true
 	end
 end
 
 -- if getValue("player") <= getValue("Eternal Flame") then
 function getValue(Value)
-	if BadBoy_data.options[GetSpecialization()] then
-		if BadBoy_data.options[GetSpecialization()][Value.."Status"] ~= nil then
-			return BadBoy_data.options[GetSpecialization()][Value.."Status"]
-		elseif BadBoy_data.options[GetSpecialization()][Value.."Drop"] ~= nil then
-			return BadBoy_data.options[GetSpecialization()][Value.."Drop"]
+	if BadRobot_data.options[GetSpecialization()] then
+		if BadRobot_data.options[GetSpecialization()][Value.."Status"] ~= nil then
+			return BadRobot_data.options[GetSpecialization()][Value.."Status"]
+		elseif BadRobot_data.options[GetSpecialization()][Value.."Drop"] ~= nil then
+			return BadRobot_data.options[GetSpecialization()][Value.."Drop"]
 		else
 			return 0
 		end
@@ -2098,16 +2098,16 @@ end
 
 -- used to gather informations from the bot options frame
 function getOptionCheck(Value)
-	if BadBoy_data.options[GetSpecialization()] and BadBoy_data.options[GetSpecialization()][Value.."Check"] == 1 then
+	if BadRobot_data.options[GetSpecialization()] and BadRobot_data.options[GetSpecialization()][Value.."Check"] == 1 then
 		return true
 	end
 end
 
 function getOptionValue(Value)
-	if BadBoy_data.options[GetSpecialization()] and BadBoy_data.options[GetSpecialization()][Value.."Status"] then
-		return BadBoy_data.options[GetSpecialization()][Value.."Status"]
-	elseif BadBoy_data.options[GetSpecialization()] and BadBoy_data.options[GetSpecialization()][Value.."Drop"] then
-		return BadBoy_data.options[GetSpecialization()][Value.."Drop"]
+	if BadRobot_data.options[GetSpecialization()] and BadRobot_data.options[GetSpecialization()][Value.."Status"] then
+		return BadRobot_data.options[GetSpecialization()][Value.."Status"]
+	elseif BadRobot_data.options[GetSpecialization()] and BadRobot_data.options[GetSpecialization()][Value.."Drop"] then
+		return BadRobot_data.options[GetSpecialization()][Value.."Drop"]
 	else
 		return 0
 	end

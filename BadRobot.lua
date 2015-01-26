@@ -1,9 +1,9 @@
 -- define bb global that will hold the bot global background features
 bb = { }
 
--- developers debug, use /run BadBoy_data["Development Debug"] = true
+-- developers debug, use /run BadRobot_data["Development Debug"] = true
 function bb:debug(message)
-    if BadBoy_data["Development Debug"] == true then
+    if BadRobot_data["Development Debug"] == true then
         print(message)
     end
 end
@@ -14,8 +14,8 @@ function bb:Run()
 	minRange, maxRange = rc:GetRange('target')
 
     -- lets wipe and start up fresh.
-	if BadBoy_data == nil or BadBoy_data and BadBoy_data.wiped ~= true then
-		BadBoy_data = {
+	if BadRobot_data == nil or BadRobot_data and BadRobot_data.wiped ~= true then
+		BadRobot_data = {
 			buttonSize = 32,
             wiped = true
 		}
@@ -64,17 +64,17 @@ function bb:Run()
 
     -- load common used stuff on first load
     -- options table that will hold specs subtable
-    if BadBoy_data.options == nil then
-        BadBoy_data.options = {}
-        BadBoy_data.options[1] = {}
-        BadBoy_data.options[2] = {}
-        BadBoy_data.options[3] = {}
-        BadBoy_data.options[4] = {}
+    if BadRobot_data.options == nil then
+        BadRobot_data.options = {}
+        BadRobot_data.options[1] = {}
+        BadRobot_data.options[2] = {}
+        BadRobot_data.options[3] = {}
+        BadRobot_data.options[4] = {}
     end
 
     -- uncomment that when all ready
-    if BadBoy_data.BadBoyUI == nil then
-        BadBoy_data.BadBoyUI = {
+    if BadRobot_data.BadRobotUI == nil then
+        BadRobot_data.BadRobotUI = {
         	mainButton = {
         		pos = {
         			anchor = "CENTER",
@@ -173,8 +173,8 @@ function bb:Run()
 
 	---------------------------------
 	-- Macro Toggle ON/OFF
-	SLASH_BadBoy1 = "/BadBoy"
-	function SlashCmdList.BadBoy(msg, editbox, ...)
+	SLASH_BadRobot1 = "/BadRobot"
+	function SlashCmdList.BadRobot(msg, editbox, ...)
 		print(...)
 		mainButton:Click()
 	end
@@ -202,29 +202,29 @@ function bb:Run()
 
 	SLASH_BlackList1, SLASH_BlackList2 = "/blacklist", "/bbb"
 	function SlashCmdList.BlackList(msg, editbox)
-		if BadBoy_data.blackList == nil then BadBoy_data.blackList = { } end
+		if BadRobot_data.blackList == nil then BadRobot_data.blackList = { } end
 
 		if msg == "dump" then
-			print("|cffFF0000BadBoy Blacklist:")
-			if #BadBoy_data.blackList == (0 or nil) then print("|cffFFDD11Empty") end
-			if BadBoy_data.blackList then
-				for i = 1, #BadBoy_data.blackList do
-					print("|cffFFDD11- "..BadBoy_data.blackList[i].name)
+			print("|cffFF0000BadRobot Blacklist:")
+			if #BadRobot_data.blackList == (0 or nil) then print("|cffFFDD11Empty") end
+			if BadRobot_data.blackList then
+				for i = 1, #BadRobot_data.blackList do
+					print("|cffFFDD11- "..BadRobot_data.blackList[i].name)
 				end
 			end
 		elseif msg == "clear" then
-			BadBoy_data.blackList = { }
-			print("|cffFF0000BadBoy Blacklist Cleared")
+			BadRobot_data.blackList = { }
+			print("|cffFF0000BadRobot Blacklist Cleared")
 		else
 			if UnitExists("mouseover") then
 				local mouseoverName = UnitName("mouseover")
 				local mouseoverGUID = UnitGUID("mouseover")
 				-- Now we're trying to find that unit in the blackList table to remove
 				local found
-				for k,v in pairs(BadBoy_data.blackList) do
+				for k,v in pairs(BadRobot_data.blackList) do
 					-- Now we're trying to find that unit in the Cache table to remove
 					if UnitGUID("mouseover") == v.guid then
-						tremove(BadBoy_data.blackList, k)
+						tremove(BadRobot_data.blackList, k)
 						print("|cffFFDD11"..mouseoverName.."|cffFF0000 Removed from Blacklist")
 						found = true
 						--blackList[k] = nil
@@ -232,7 +232,7 @@ function bb:Run()
 				end
 				if not found then
 					print("|cffFFDD11"..mouseoverName.."|cffFF0000 Added to Blacklist")
-					tinsert(BadBoy_data.blackList, { guid = mouseoverGUID, name = mouseoverName})
+					tinsert(BadRobot_data.blackList, { guid = mouseoverGUID, name = mouseoverName})
 				end
 			end
 		end
@@ -240,23 +240,23 @@ function bb:Run()
 
 	SLASH_Pause1 = "/Pause"
 	function SlashCmdList.Pause(msg, editbox)
-		if BadBoy_data['Pause'] == 0 then
+		if BadRobot_data['Pause'] == 0 then
 	        ChatOverlay("\124cFFED0000 -- Paused -- ")
-			BadBoy_data['Pause'] = 1
+			BadRobot_data['Pause'] = 1
 		else
 	        ChatOverlay("\124cFF3BB0FF -- Pause Removed -- ")
-			BadBoy_data['Pause'] = 0
+			BadRobot_data['Pause'] = 0
 		end
 	end
 
 	SLASH_Power1 = "/Power"
 	function SlashCmdList.Power(msg, editbox)
-		if BadBoy_data['Power'] == 0 then
-	        ChatOverlay("\124cFF3BB0FF -- BadBoy Enabled -- ")
-			BadBoy_data['Power'] = 1
+		if BadRobot_data['Power'] == 0 then
+	        ChatOverlay("\124cFF3BB0FF -- BadRobot Enabled -- ")
+			BadRobot_data['Power'] = 1
 		else
-	        ChatOverlay("\124cFFED0000 -- BadBoy Disabled -- ")
-			BadBoy_data['Power'] = 0
+	        ChatOverlay("\124cFFED0000 -- BadRobot Disabled -- ")
+			BadRobot_data['Power'] = 0
 		end
 	end
 
@@ -271,7 +271,7 @@ function bb:Run()
 	enemiesEngineRange = 55
 	EnemiesEngine()
 
-	ChatOverlay("-= BadBoy Loaded =-")
+	ChatOverlay("-= BadRobot Loaded =-")
 end
 
 
@@ -280,9 +280,9 @@ function bb:StartUI()
 	-- trigger frame creation in ui.lua
 	ConstructUI()
     -- select the active option(refresh)
-    _G["options"..BadBoy_data.options.selected.."Button"]:Click()
+    _G["options"..BadRobot_data.options.selected.."Button"]:Click()
     -- Build up buttons frame (toggles)
-    BadBoyFrame()
+    BadRobotFrame()
 end
 
 --[[Updating UI]]
@@ -297,5 +297,5 @@ function bb:PulseUI()
 	nNova:Update()
 	-- Pulse other features
 	-- PokeEngine()
-	ProfessionHelper()
+	--ProfessionHelper()
 end

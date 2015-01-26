@@ -17,18 +17,18 @@ function EnemiesEngine()
 -- about if the target have a dot so it will die regardless or not. Should have a timetodie?
 
 
--- Stack: Interface\AddOns\BadBoy\System\EnemiesEngine.lua:224: in function `castInterrupt'
+-- Stack: Interface\AddOns\BadRobot\System\EnemiesEngine.lua:224: in function `castInterrupt'
 -- isBurnTarget(unit) - Bool - True if we should burn that target according to burnUnitCandidates
 -- isSafeToAttack(unit) - Bool - True if we can attack target according to doNotTouchUnitCandidates
 -- getEnemies(unit,Radius) - Number - Returns number of valid units within radius of unit
 -- castInterrupt(spell,percent) - Multi-Target Interupts - for facing/in movements spells of all ranges.
--- makeEnemiesTable(55) - Triggered in badboy.lua - generate the enemiesTable
+-- makeEnemiesTable(55) - Triggered in BadRobot.lua - generate the enemiesTable
 
 --[[------------------------------------------------------------------------------------------------------------------]]
 --[[------------------------------------------------------------------------------------------------------------------]]
 --[[------------------------------------------------------------------------------------------------------------------]]
 --[[------------------------------------------------------------------------------------------------------------------]]
-local varDir = BadBoy_data.options[GetSpecialization()]
+local varDir = BadRobot_data.options[GetSpecialization()]
 
 function makeEnemiesTable(maxDistance)
 	local  maxDistance = maxDistance or 50

@@ -187,9 +187,9 @@ if not metaTable1 then
 					break
 				end
 			end
-			if getOptionCheck("Blacklist") == true and BadBoy_data.blackList ~= nil then
-				for i = 1, #BadBoy_data.blackList do
-					if o.guid == BadBoy_data.blackList[i].guid then
+			if getOptionCheck("Blacklist") == true and BadRobot_data.blackList ~= nil then
+				for i = 1, #BadRobot_data.blackList do
+					if o.guid == BadRobot_data.blackList[i].guid then
 						PercentWithIncoming,ActualWithIncoming,nAbsorbs = PercentWithIncoming + getValue("Blacklist"),ActualWithIncoming + getValue("Blacklist"),nAbsorbs + getValue("Blacklist")
 						break
 					end

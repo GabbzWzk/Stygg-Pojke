@@ -584,7 +584,7 @@ if select(3, UnitClass("player")) == 8 then
 		end
 
 		-- actions.burn+=/presence_of_mind,if=mana.pct>96&(!talent.prismatic_crystal.enabled|!cooldown.prismatic_crystal.up)
-		if getMana("player") > 96 and (not isKnownPrismaticCrystal or cdPristmaticCrystal > 0)  then
+		if getMana("player") > 96 and (not playerSpellPrismaticCrystalIsKnown or playerSpellPristmaticCrystalCD > 0)  then
 			if castSpell("player",PresenceOfMind,true,false) then
 				return true
 			end
@@ -638,7 +638,7 @@ if select(3, UnitClass("player")) == 8 then
 		end
 		
 		-- actions.burn+=/presence_of_mind,if=!talent.prismatic_crystal.enabled|!cooldown.prismatic_crystal.up
-		if not isKnownPrismaticCrystal or cdPristmaticCrystal > 0 then
+		if not playerSpellPrismaticCrystalIsKnown or playerSpellPristmaticCrystalCD > 0 then
 			if castSpell("player",PresenceOfMind,true,false) then
 				return true
 			end
@@ -696,7 +696,7 @@ if select(3, UnitClass("player")) == 8 then
 		end
 
 		--	actions.conserve+=/presence_of_mind,if=mana.pct>96&(!talent.prismatic_crystal.enabled|!cooldown.prismatic_crystal.up)
-		if playerMana > 96 and (not isKnownPrismaticCrystal or cdPristmaticCrystal > 0) then
+		if playerMana > 96 and (not playerSpellPrismaticCrystalIsKnown or playerSpellPristmaticCrystalCD > 0) then
 			if castSpell("player",PresenceOfMind,true,false) then
 				return true
 			end
@@ -717,7 +717,7 @@ if select(3, UnitClass("player")) == 8 then
 		end
 		
 		--  actions.conserve+=/supernova,if=mana.pct<96&(buff.arcane_missiles.stack<2|buff.arcane_charge.stack=4)&(buff.arcane_power.up|(charges=1&cooldown.arcane_power.remains>recharge_time))&(!talent.prismatic_crystal.enabled|current_target=prismatic_crystal|(charges=1&cooldown.prismatic_crystal.remains>recharge_time+8))
-		if playerMana < 96 and (stacksArcaneMisslesP < 2 or arcaneCharge > 3) and (playerBuffArcanePower or (chargesSuperNova == 1 and cdArcanePower > reChargeSuperNova)) and (isKnownPrismaticCrystal or UnitName("target") == "Prismatic Crystal" or (chargesSuperNova == 1 and cdPristmaticCrystal > (reChargeSuperNova+8))) then
+		if playerMana < 96 and (stacksArcaneMisslesP < 2 or arcaneCharge > 3) and (playerBuffArcanePower or (chargesSuperNova == 1 and cdArcanePower > reChargeSuperNova)) and (playerSpellPrismaticCrystalIsKnown or UnitName("target") == "Prismatic Crystal" or (chargesSuperNova == 1 and playerSpellPristmaticCrystalCD > (reChargeSuperNova+8))) then
 			if castSpell("target",Supernova,true,false) then
 				return true
 			end
@@ -736,7 +736,7 @@ if select(3, UnitClass("player")) == 8 then
 		end
 
 		--	actions.conserve+=/presence_of_mind,if=buff.arcane_charge.stack<2&(!talent.prismatic_crystal.enabled|!cooldown.prismatic_crystal.up)
-		if arcaneCharge < 2 and (not isKnownPrismaticCrystal or cdPristmaticCrystal > 0) then
+		if arcaneCharge < 2 and (not playerSpellPrismaticCrystalIsKnown or playerSpellPristmaticCrystalCD > 0) then
 			if castSpell("player",PresenceOfMind,true,false) then
 				return true
 			end
@@ -885,7 +885,7 @@ if select(3, UnitClass("player")) == 8 then
 		end
 
 		--  actions.conserve+=/arcane_barrage,moving=1
-		if isPlayerMoving then
+		if playerIsMoving then
 			if castArcaneBarrage(target, 0) then
 				return true
 			end

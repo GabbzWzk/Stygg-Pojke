@@ -92,7 +92,7 @@ local function EnteringCombat(self,event,...)
 		-- here we should manage stats snapshots
 		AgiSnap = getAgility()
 
-		BadBoy_data["Combat Started"] = GetTime()
+		BadRobot_data["Combat Started"] = GetTime()
 		ChatOverlay("|cffFF0000Entering Combat")
 	end
 end
@@ -118,9 +118,9 @@ local function LeavingCombat(self,event,...)
 		AgiSnap = 0
 		usePot = true
 		leftCombat = GetTime()
-		BadBoy_data.successCasts = 0
-		BadBoy_data.failCasts = 0
-		BadBoy_data["Combat Started"] = 0
+		BadRobot_data.successCasts = 0
+		BadRobot_data.failCasts = 0
+		BadRobot_data["Combat Started"] = 0
 		ChatOverlay("|cff00FF00Leaving Combat")
 		-- clean up out of combat
         Rip_sDamage = {}
@@ -139,27 +139,27 @@ local function UiErrorMessages(self,event,...)
 	lastError = ...; lastErrorTime = GetTime()
   	local param = (...)
   	if param == ERR_PET_SPELL_DEAD  then
-		BadBoy_data["Pet Dead"] = true
-		BadBoy_data["Pet Whistle"] = false
+		BadRobot_data["Pet Dead"] = true
+		BadRobot_data["Pet Whistle"] = false
 	end
 	if param == PETTAME_NOTDEAD.. "." then
-		BadBoy_data["Pet Dead"] = false
-		BadBoy_data["Pet Whistle"] = true
+		BadRobot_data["Pet Dead"] = false
+		BadRobot_data["Pet Whistle"] = true
 	end
 	if param == SPELL_FAILED_ALREADY_HAVE_PET then
-		BadBoy_data["Pet Dead"] = true
-		BadBoy_data["Pet Whistle"] = false
+		BadRobot_data["Pet Dead"] = true
+		BadRobot_data["Pet Whistle"] = false
 	end
 	if param == PETTAME_CANTCONTROLEXOTIC.. "." then
-		if BadBoy_data["Box PetManager"] < 5 then
-			BadBoy_data["Box PetManager"] = BadBoy_data["Box PetManager"] + 1
+		if BadRobot_data["Box PetManager"] < 5 then
+			BadRobot_data["Box PetManager"] = BadRobot_data["Box PetManager"] + 1
 		else
-			BadBoy_data["Box PetManager"] = 1
+			BadRobot_data["Box PetManager"] = 1
 		end
 	end
 	if param == PETTAME_NOPETAVAILABLE.. "." then
-		BadBoy_data["Pet Dead"] = false
-		BadBoy_data["Pet Whistle"] = true
+		BadRobot_data["Pet Dead"] = false
+		BadRobot_data["Pet Whistle"] = true
 	end
 	if param == SPELL_FAILED_TARGET_NO_WEAPONS then
 		isDisarmed = true

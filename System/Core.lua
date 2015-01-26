@@ -2,7 +2,7 @@ function bb:Engine()
     -- Hidden Frame
     if Pulse_Engine == nil then
         Pulse_Engine = CreateFrame("Frame", nil, UIParent)
-        Pulse_Engine:SetScript("OnUpdate", BadBoyUpdate)
+        Pulse_Engine:SetScript("OnUpdate", BadRobotUpdate)
         Pulse_Engine:Show()
     end
 end
@@ -50,7 +50,7 @@ function bb:MinimapButton()
         self:SetPoint("CENTER", centerX, centerY)
     end
 
-    local button = CreateFrame("Button", "BadBoyButton", Minimap)
+    local button = CreateFrame("Button", "BadRobotButton", Minimap)
     button:SetHeight(25)
     button:SetWidth(25)
     button:SetFrameStrata("MEDIUM")
@@ -63,20 +63,20 @@ function bb:MinimapButton()
 
     button:SetScript("OnMouseDown",function(self, button)
         if button == "RightButton" then
-            if BadBoy_data.options[GetSpecialization()] then
+            if BadRobot_data.options[GetSpecialization()] then
                 if currentProfileName == nil then
                     if FireHack == true then
-                        print("|cffFF1100BadBoy |cffFFFFFFStart/Stop is |cffFF1100Stopped |cffFFFFFFin General Options. Use left click to see the Options panel.")
+                        print("|cffFF1100BadRobot |cffFFFFFFStart/Stop is |cffFF1100Stopped |cffFFFFFFin General Options. Use left click to see the Options panel.")
                     else
-                        print("|cffFF1100BadBoy |cffFFFFFFCannot Start... |cffFF1100Firehack |cffFFFFFFis not loaded. Please attach Firehack.")
+                        print("|cffFF1100BadRobot |cffFFFFFFCannot Start... |cffFF1100Firehack |cffFFFFFFis not loaded. Please attach Firehack.")
                     end
                 else
-                    if BadBoy_data.options[GetSpecialization()][currentProfileName.."Frame"] ~= true then
+                    if BadRobot_data.options[GetSpecialization()][currentProfileName.."Frame"] ~= true then
                         _G[currentProfileName.."Frame"]:Show()
-                        BadBoy_data.options[GetSpecialization()][currentProfileName.."Frame"] = true
+                        BadRobot_data.options[GetSpecialization()][currentProfileName.."Frame"] = true
                     else
                         _G[currentProfileName.."Frame"]:Hide()
-                        BadBoy_data.options[GetSpecialization()][currentProfileName.."Frame"] = false
+                        BadRobot_data.options[GetSpecialization()][currentProfileName.."Frame"] = false
                     end
                 end
             end
@@ -91,21 +91,21 @@ function bb:MinimapButton()
     button:SetScript("OnClick",function(self, button)
         if button == "LeftButton" then
             if IsShiftKeyDown() and not IsAltKeyDown() then
-                if BadBoy_data["Main"] == 1 then
-                    BadBoy_data["Main"] = 0
+                if BadRobot_data["Main"] == 1 then
+                    BadRobot_data["Main"] = 0
                     mainButton:Hide()
                 else
-                    BadBoy_data["Main"] = 1
+                    BadRobot_data["Main"] = 1
                     mainButton:Show()
                 end
             elseif not IsShiftKeyDown() and not IsAltKeyDown() then
-                if BadBoy_data.options[GetSpecialization()] then
-                    if BadBoy_data.options[GetSpecialization()]["optionsFrame"] ~= true then
+                if BadRobot_data.options[GetSpecialization()] then
+                    if BadRobot_data.options[GetSpecialization()]["optionsFrame"] ~= true then
                         optionsFrame:Show()
-                        BadBoy_data.options[GetSpecialization()]["optionsFrame"] = true
+                        BadRobot_data.options[GetSpecialization()]["optionsFrame"] = true
                     else
                         optionsFrame:Hide()
-                        BadBoy_data.options[GetSpecialization()]["optionsFrame"] = false
+                        BadRobot_data.options[GetSpecialization()]["optionsFrame"] = false
                     end
                 end
             end
@@ -113,7 +113,7 @@ function bb:MinimapButton()
     end)
     button:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(Minimap, "ANCHOR_CURSOR", 50 , 50)
-        GameTooltip:SetText("BadBoy The Ultimate Raider", 214/255, 25/255, 25/255)
+        GameTooltip:SetText("BadRobot The Ultimate Raider", 214/255, 25/255, 25/255)
         GameTooltip:AddLine("CodeMyLife - CuteOne - Masoud")
         GameTooltip:AddLine("Gabbz - Chumii - AveryKey")
         GameTooltip:AddLine("Ragnar - Cpoworks - Tocsin")
@@ -146,7 +146,7 @@ frame:RegisterEvent("ADDON_LOADED")
 frame:RegisterEvent("PLAYER_LOGOUT")
 
 function frame:OnEvent(event, arg1)
- 	if event == "ADDON_LOADED" and arg1 == "BadBoy" then
+ 	if event == "ADDON_LOADED" and arg1 == "BadRobot" then
  		bb:Run()
 	end
 end
@@ -160,10 +160,10 @@ frame:SetScript("OnEvent", frame.OnEvent)
 --[[-------------------------------------------------------------------------------------------------------------------------------------------------------]]
 
     --[[This function is refired everytime wow ticks. This frame is located in Core.lua]]
-    function BadBoyUpdate(self)
+    function BadRobotUpdate(self)
         -- prevent ticking when firechack isnt loaded
         -- if user click power button, stop everything from pulsing.
-        if not getOptionCheck("Start/Stop BadBoy") or BadBoy_data["Power"] ~= 1 then
+        if not getOptionCheck("Start/Stop BadRobot") or BadRobot_data["Power"] ~= 1 then
             optionsFrame:Hide()
             _G["debugFrame"]:Hide()
             return false
@@ -172,7 +172,7 @@ frame:SetScript("OnEvent", frame.OnEvent)
         if FireHack == nil then
             optionsFrame:Hide()
             _G["debugFrame"]:Hide()
-            if getOptionCheck("Start/Stop BadBoy") then
+            if getOptionCheck("Start/Stop BadRobot") then
                 ChatOverlay("FireHack not Loaded.")
             end
             return
@@ -249,15 +249,7 @@ frame:SetScript("OnEvent", frame.OnEvent)
                 ShamanRestoration()
             end
         elseif playerClass == 8 then -- Mage
-            if playerSpec == 1 then
-                ArcaneMage()
-            end
-            if playerSpec == 2 then
-                FireMage()
-            end
-            if playerSpec == 3 then
-                FrostMage()
-            end
+            Mage()
         elseif playerClass == 9 then -- Warlock
             if playerSpec == 2 then
                 WarlockDemonology()
