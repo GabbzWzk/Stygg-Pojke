@@ -41,6 +41,7 @@ if select(3, UnitClass("player")) == 8 then
 				textOp("Arcane Brilliance")
 
 			-- Wrapper -----------------------------------------
+			textOp(" ") -- To get some space in config
 			wrapOp("--- DPS Cooldowns ---")
 
 				-- Todo : Under what options could we code in offensive CDs? On CD, Start and BL, Smart

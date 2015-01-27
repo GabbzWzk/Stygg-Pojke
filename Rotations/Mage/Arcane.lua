@@ -8,7 +8,7 @@ if select(3, UnitClass("player")) == 8 then
 
 		if currentConfig ~= "Mage Gabbz" then
 			MageConfig()  	-- Class Specefic Options for now
-			--Toggles()		-- Toggles should be same on BadRobotlevel. We will use mages toggles as baseline and when we are done we move it to class generic
+			Toggles()		-- Toggles should be same on BadRobotlevel. We will use mages toggles as baseline and when we are done we move it to class generic
 			currentConfig = "Mage Gabbz"
 		end
 
@@ -46,6 +46,10 @@ if select(3, UnitClass("player")) == 8 then
 				------------
 				-- Player 
 				------------
+				-- Todo : We should create a seperate Unit Class which we then call with parameters such as "player", "target", "focus" so we get objects here that we can localise
+				-- Todo : See prot pala as an example altough its not correctly designed.
+				-- 			core:update() should be player:update(), so functions should be player:init() which sets up the tables and parameters, and player:update() is updating values etc where it is needed
+				--			This is then not all these valeues here but rather player:update() will populate this values for use. So we can then use player.Haste, player.Buff.ArcanePower, player.Buff.ArcanePowerTimeLeft, etc
 				playerIsMoving 					= isMoving("player")
 				playerMana						= getMana("player")
 				playerHaste						= GetHaste()
@@ -99,19 +103,19 @@ if select(3, UnitClass("player")) == 8 then
 
 
 			
-			if BadBoy_data['Defensive'] == 2 then
+			if BadRobot_data['Defensive'] == 2 then
 				ArcaneMageDefensives()
 			end
 
 
-			if BadBoy_data['Cooldowns'] == 2 then
+			if BadRobot_data['Cooldowns'] == 2 then
 				ArcaneMageCooldowns()
 			end
 
 
 			-- actions+=/call_action_list,name=aoe,if=active_enemies>=5
 			-- AoE
-	--		if BadBoy_data['AoE'] == 2 then
+	--		if BadRobot_data['AoE'] == 2 then
 	--			ArcaneMageAoESimcraft()
 	--		end
 			-- AutoAoE
@@ -131,7 +135,7 @@ if select(3, UnitClass("player")) == 8 then
 			--runeOfPower()
 
 			if getNumEnemies("player",10) > 5 then -- This is only checking for melee
-				if BadBoy_data['AoE'] == 2 or BadBoy_data['AoE'] == 3 then -- We need to sort out the auto aoe, ie == 3 
+				if BadRobot_data['AoE'] == 2 or BadRobot_data['AoE'] == 3 then -- We need to sort out the auto aoe, ie == 3 
 					ArcaneMageAoESimcraft()
 				end
 			end

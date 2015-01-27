@@ -391,6 +391,4 @@ function BadRobotFrame()
             mainButton:Hide()
         end
 	end
-
-
 end
