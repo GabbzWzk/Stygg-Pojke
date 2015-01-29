@@ -1,5 +1,94 @@
 if select(3, UnitClass("player")) == 8 then
 
+	-- Defensives
+	function Defensive()
+
+		---------------
+		-- Healthstone
+		---------------
+		if isChecked("Healthstone") == true then
+			if getHP("player") <= getValue("Healthstone") then
+				if canUse(5512) then
+					UseItemByName(tostring(select(1,GetItemInfo(5512))))
+				end
+			end
+		end
+
+		---------------
+		-- Pots
+		---------------
+
+		---------------
+		-- Defensive Trinkets
+		---------------
+
+		---------------
+		-- Racials?
+		---------------
+
+		---------------
+		-- Class 
+		---------------
+
+		---------------
+		-- Mages
+		---------------
+		if select(3, UnitClass("player")) == 8 then
+			-- Evanesce
+			if isKnown(Evanesce) then
+				if isChecked("Evanesce") then
+					if getHP("player") < getValue("Evanesce") then
+						if castSpell("player",Evanesce,true,false) then
+							return true
+						end
+					end
+				end
+			end
+
+			if isKnown(IceBlock) then
+				if isChecked("IceBlock") then
+					if getHP("player") < getValue("IceBlock") then
+						if castSpell("player",IceBlock,true,false) then
+							return true
+						end
+					end
+				end
+			end
+
+			if isKnown(IceBarrier) then
+				if isChecked("IceBlock") then
+					if getHP("player") < getValue("IceBlock") then
+						if castSpell("player",IceBarrier,true,false) then
+							return true
+						end
+					end
+				end
+			end
+		end
+	end	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----------------------------------------
+-- OLD STUFF BELOW
+-----------------------------------------
+
 	--# Defensive
 	function FrostMageDefensives()
 
@@ -465,17 +554,17 @@ if select(3, UnitClass("player")) == 8 then
 		-- actions.aoe=call_action_list,name=cooldowns
 		-- actions.aoe+=/nether_tempest,cycle_targets=1,if=buff.arcane_charge.stack=4&(active_dot.nether_tempest=0|(ticking&remains<3.6))
 		if Charge()==4 and (not UnitDebuffID("target",NetherTempest) or (UnitDebuffID("target",NetherTempest) and getDebuffRemain("target",NetherTempest)<3.6)) then
-			return
+			return true
 		end
 
 		-- actions.aoe+=/supernova
 		if castSpell("target",Supernova,false,false) then
-			return;
+			return true
 		end
 
 		-- actions.aoe+=/arcane_barrage,if=buff.arcane_charge.stack=4
 		if castArcaneBarrage("target", 4) then
-			return true
+			return true 
 		end
 
 		-- actions.aoe+=/arcane_orb,if=buff.arcane_charge.stack<4
@@ -486,14 +575,14 @@ if select(3, UnitClass("player")) == 8 then
 		-- actions.aoe+=/cone_of_cold,if=glyph.cone_of_cold.enabled
 		if hasGlyph(323) then
 			if castSpell("target",ConeOfCold,false,true) then
-				return;
+				return true
 			end
 		end
 
 		-- actions.aoe+=/arcane_explosion
 		if getNumEnemies("player",10) then
 			if castSpell("target",ArcaneExplosion,true,false) then
-				return;
+				return true
 			end
 		end
 
@@ -534,7 +623,7 @@ if select(3, UnitClass("player")) == 8 then
 		--# High mana usage, "Burn" sequence
 		-- actions.burn=call_action_list,name=cooldowns
 		-- actions.burn+=/arcane_blast,if=buff.arcane_charge.stack=4&mana.pct>93
-		if BadRobot_data['Cooldowns'] == 2 then
+		if BadRobot_data['Cooldowns'] == 2 and arcaneCharge > 3 then
 			ArcaneMageCooldowns()
 		end
 		-- actions.burn+=/arcane_missiles,if=buff.arcane_missiles.react=3
@@ -546,20 +635,20 @@ if select(3, UnitClass("player")) == 8 then
 		end
 		
 		-- actions.burn+=/arcane_missiles,if=set_bonus.tier17_4pc&buff.arcane_instability.react&buff.arcane_instability.remains<action.arcane_blast.execute_time
-		if UnitBuffID("player",T17_4P_Arcane) and getBuffRemain("player",T17_4P_Arcane) < castTimeArcaneBlast then
-			if castSpell("target",ArcaneMissiles,false,false) then
-				return true
-			end
-		end
+		--if UnitBuffID("player",T17_4P_Arcane) and getBuffRemain("player",T17_4P_Arcane) < castTimeArcaneBlast then
+		--	if castSpell("target",ArcaneMissiles,false,false) then
+		--		return true
+		--	end
+		--end
 
 		-- actions.burn+=/supernova,if=time_to_die<8|charges=2
-		if isKnown(Supernova) then
-			if getTimeToDie("target") < 8 or arcaneCharge > 1 then
-				if castSpell("target",Supernova,false,false) then
-					return true
-				end
-			end
-		end
+		--if isKnown(Supernova) then
+		--	if getTimeToDie("target") < 8 or arcaneCharge > 1 then
+		--		if castSpell("target",Supernova,false,false) then
+		--			return true
+		--		end
+		--	end
+		--end
 
 		-- actions.burn+=/nether_tempest,cycle_targets=1,if=target!=prismatic_crystal&buff.arcane_charge.stack=4&(active_dot.nether_tempest=0|(ticking&remains<3.6))
 		-- Todo :  Is this correct? Why should we not cast on crystal?
@@ -575,13 +664,13 @@ if select(3, UnitClass("player")) == 8 then
 		end
 	
 		-- Todo : Still valid?
-		if isKnown(Supernova) then
-			if UnitName("target") == "Prismatic Crystal" then
-				if castSpell("target",Supernova,false,false) then
-					return true
-				end
-			end
-		end
+		--if isKnown(Supernova) then
+		--	if UnitName("target") == "Prismatic Crystal" then
+		--		if castSpell("target",Supernova,false,false) then
+		--			return true
+		--		end
+		--	end
+		--end
 
 		-- actions.burn+=/presence_of_mind,if=mana.pct>96&(!talent.prismatic_crystal.enabled|!cooldown.prismatic_crystal.up)
 		if getMana("player") > 96 and (not playerSpellPrismaticCrystalIsKnown or playerSpellPristmaticCrystalCD > 0)  then
@@ -592,7 +681,7 @@ if select(3, UnitClass("player")) == 8 then
 
 
 		-- actions.burn+=/arcane_blast,if=buff.arcane_charge.stack=4&mana.pct>93
-		if arcaneCharge > 3 and getMana("player")>getValue("ArcaneBlast (x4)") then
+		if arcaneCharge > 3 and getMana("player") > getValue("ArcaneBlast (x4)") then
 			if castSpell("target",ArcaneBlast,false,true) then
 				return true
 			end
@@ -600,35 +689,35 @@ if select(3, UnitClass("player")) == 8 then
 		
 
 		-- actions.burn+=/arcane_missiles,if=buff.arcane_charge.stack=4&(mana.pct>70|!cooldown.evocation.up)
-		if arcaneCharge > 3 and (playerMana > 70 or cdEvocation > 0) and playerBuffArcaneMissile then
+		if arcaneCharge > 3 and (playerMana > 70 or playerSpellEvocationCD > 0) and playerBuffArcaneMissile then
 			if castSpell("target",ArcaneMissiles,false,false) then
 				return true
 			end
 		end
 
 		-- actions.burn+=/supernova,if=mana.pct>70&mana.pct<96
-		if isKnownSupernova then
-			if (playerMana < 96) and (playerMana > 70) then
-				if castSpell("target",Supernova,false,false) then
-					return true
-				end
-			end
-		end
+		--if isKnownSupernova then
+		--	if (playerMana < 96) and (playerMana > 70) then
+		--		if castSpell("target",Supernova,false,false) then
+		--			return true
+		--		end
+		--	end
+		--end
 		
 		-- Todo: WTF is this? we will always go true since the 90 - 90 will always be < 5 until we are channeled 5 sec?
 		-- # APL hack for evocation interrupt
 		--actions.burn+=/call_action_list,name=conserve,if=cooldown.evocation.duration-cooldown.evocation.remains<5
-		if isKnown(EvocationImp) then
-			if (90 - cdEvocation) < 5 then
-				ArcaneMageSingleTargetSimcraftConserve()
-			end
-		end
+		--if isKnown(EvocationImp) then
+		--	if (90 - playerSpellEvocationCD) < 5 then
+		--		ArcaneMageSingleTargetSimcraftConserve()
+		--	end
+		--end
 		-- without perk:
-		if not isKnown(EvocationImp) then
-			if (120 - cdEvocation) < 5 then
-				ArcaneMageSingleTargetSimcraftConserve()
-			end
-		end
+		--if not isKnown(EvocationImp) then
+		--	if (120 - playerSpellEvocationCD) < 5 then
+		--		ArcaneMageSingleTargetSimcraftConserve()
+		--	end
+		--end
 		
 		--Todo: actions.burn+=/evocation,interrupt_if=mana.pct>92,if=time_to_die>10&mana.pct<50
 		if playerMana < 50 then
@@ -643,8 +732,6 @@ if select(3, UnitClass("player")) == 8 then
 				return true
 			end
 		end
-
-
 		--actions.burn+=/arcane_blast
 		if castArcaneBlast("target") then
 			return true
@@ -795,14 +882,14 @@ if select(3, UnitClass("player")) == 8 then
 		
 
 		-- actions.burn+=/arcane_missiles,if=buff.arcane_charge.stack=4&(mana.pct>70|!cooldown.evocation.up)
-		if arcaneCharge > 3 and (playerMana > 70 or cdEvocation > 0) and playerBuffArcaneMissile then
+		if arcaneCharge > 3 and (playerMana > 70 or playerSpellEvocationCD > 0) and playerBuffArcaneMissile then
 			if castSpell("target",ArcaneMissiles,false,false) then
 				return true
 			end
 		end
 
 		if isKnown(EvocationImp) then
-			if (90 - cdEvocation) < 5 then
+			if (90 - playerSpellEvocationCD) < 5 then
 				ArcaneMageSingleTargetSimcraftConserve()
 			end
 		end

@@ -14,6 +14,11 @@ if select(3, UnitClass("player")) == 8 then
 
 		-- Manual Input
 		if IsLeftShiftKeyDown() or IsLeftAltKeyDown() then -- Pause the script, keybind in wow shift+1 etc for manual cast
+			if UnitGetIncomingHeals("player","player") ~= nil then
+				print(" What is this ? " ..UnitGetIncomingHeals("player","player"))
+			else
+				print(" Its nil")
+			end
 			return true
 		end
 
@@ -62,16 +67,16 @@ if select(3, UnitClass("player")) == 8 then
 				arcaneCharge 					= Charge()
 				
 
-				--playerSpells
+				--player Spells
 				playerSpellPrismaticCrystalIsKnown	= isKnown(PrismaticCrystal) 
 				playerSpellPrismaticCrystalCD 		= getSpellCD(PrismaticCrystal)	--Todo : Replace with this
+				playerSpellEvocationCD				= getSpellCD(Evocation)
 
 				isKnownOverPowered					= isKnown(Overpowered)
 				isKnownArcaneOrb					= isKnown(ArcaneOrb)
 				isKnownSupernova					= isKnown(Supernova)
 				
 				cdArcanePower						= getSpellCD(ArcanePower)
-				cdEvocation							= getSpellCD(Evocation)
 				
 				
 				------------------
@@ -81,12 +86,12 @@ if select(3, UnitClass("player")) == 8 then
 				targetDebuffNetherTempestTimeLeft	= getDebuffRemain("target",NetherTempest, "player")
 
 				
-
-
-				
 				chargesSuperNova					= GetSpellCharges(Supernova)
 				reChargeSuperNova					= getRecharge(Supernova)
 
+				--------------------
+				-- Spellbook		-- handles the players Spells, such as CD, casttime, etc
+				--------------------	
 				castTimeArcaneBlast					 = select(4,GetSpellInfo(ArcaneBlast))/1000
 
 			if cancelEvocation() then
@@ -97,29 +102,25 @@ if select(3, UnitClass("player")) == 8 then
 				return true
 			end
 
+			-----------------------------
+			-- Rotation Here
+			--	Should include : 	Defensive() 		-- Used for checking if we need to use defensive abilities on ourself or allies
+			--						TargetHandling()	-- Used to get the best target(s) to attack
+			--						Interrupt()			-- Used to determine if we need to interrupt something
+			--						Dispell()			-- Used to determine and act if we need to dispell offensive or defensive de-buffs
+			--						Rotation Selection	-- Determine what is the best rotation at the moment, AoE or singel ? Or should we just use one?
+			--						Burst()				-- Determine if we should use DPS CDs
+			--						Standard			-- Use standard filler rotation
+			--						Opener()			-- Used before pull
+			-----------------------------
+
 			if isPlayerMoving and not UnitBuffID("player", IceFloes) then
 				castIceFloes()
 			end	
 
-
-			
 			if BadRobot_data['Defensive'] == 2 then
-				ArcaneMageDefensives()
+				Defensive()
 			end
-
-
-			if BadRobot_data['Cooldowns'] == 2 then
-				ArcaneMageCooldowns()
-			end
-
-
-			-- actions+=/call_action_list,name=aoe,if=active_enemies>=5
-			-- AoE
-	--		if BadRobot_data['AoE'] == 2 then
-	--			ArcaneMageAoESimcraft()
-	--		end
-			-- AutoAoE
-			
 
 			--# Executed every time the actor is available.
 			-- Todo : Add InterruptHandler actions=counterspell,if=target.debuff.casting.react, lockjaw as well
@@ -132,30 +133,25 @@ if select(3, UnitClass("player")) == 8 then
 			-- Todo : actions+=/call_action_list,name=crystal_sequence,if=talent.prismatic_crystal.enabled&pet.prismatic_crystal.active
 			--actions+=/call_action_list,name=aoe,if=active_enemies>=4
 
-			--runeOfPower()
-
-			if getNumEnemies("player",10) > 5 then -- This is only checking for melee
-				if BadRobot_data['AoE'] == 2 or BadRobot_data['AoE'] == 3 then -- We need to sort out the auto aoe, ie == 3 
-					ArcaneMageAoESimcraft()
-				end
-			end
+			-- Todod : fix this since its not really doing anything usefull. 
+			--if getNumEnemies("player",10) > 5 then -- This is only checking for melee
+			--	if BadRobot_data['AoE'] == 2 or BadRobot_data['AoE'] == 3 then -- We need to sort out the auto aoe, ie == 3 
+			--		ArcaneMageAoESimcraft()
+			--	end
+			--end
 			
 			--actions+=/call_action_list,name=conserve
-			--print("CD Evo "  ..cdEvocation)
-			--print("First : " ..(playerMana-30)*0.3*(10/playerHaste))
-
 			if isChecked("Burn Phase") then
-				-- actions+=/call_action_list,name=burn,if=time_to_die<mana.pct*0.35*spell_haste|cooldown.evocation.remains<=(mana.pct-30)*0.3*spell_haste|(buff.arcane_power.up&cooldown.evocation.remains<=(mana.pct-30)*0.4*spell_haste)
-				--if (getTimeToDie("target") < playerMana*0.35*(1/playerHaste)) or (cdEvocation <= (playerMana-30)*0.3*(1/playerHaste)) or (playerBuffArcanePower and cdEvocation <= (playerMana-30)*0.4*(1/playerHaste)) then -- 
-				if cdEvocation < 20 then
+				-- Todo : Fix the Simcraft logic for when to start burn, atm it is hardcoded to 20 seconds before CD on Evo is up, 
+										-- actions+=/call_action_list,name=burn,if=time_to_die<mana.pct*0.35*spell_haste|cooldown.evocation.remains<=(mana.pct-30)*0.3*spell_haste|(buff.arcane_power.up&cooldown.evocation.remains<=(mana.pct-30)*0.4*spell_haste)
+										--if (getTimeToDie("target") < playerMana*0.35*(1/playerHaste)) or (cdEvocation <= (playerMana-30)*0.3*(1/playerHaste)) or (playerBuffArcanePower and cdEvocation <= (playerMana-30)*0.4*(1/playerHaste)) then -- 
+				if playerSpellEvocationCD < 20 then
 					if ArcaneMageSingleTargetSimcraftBurn() then
-			--		if GabbzBurn() then
 						return true
 					end
 				end
 			end
 			if ArcaneMageSingleTargetSimcraftConserve() then
-			--if GabbzConserve() then
 				return true
 			end
 		end

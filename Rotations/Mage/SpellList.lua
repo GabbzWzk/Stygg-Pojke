@@ -11,7 +11,9 @@ if select(3, UnitClass("player")) == 8 then
 	FrozenOrb		= 84714;
 	FrozenOrbDebuff = 84721;
 	IceLance		= 30455;
-	IcyVeins		= 12472;
+	IceBlock		= 45438
+	IcyVeins		= 12472
+	IceBarrier		= 11426
 -- Pet
 	SummonPet		= 31687;
 	WaterJet		= 135029;
@@ -212,7 +214,7 @@ if select(3, UnitClass("player")) == 8 then
 	end
 
 	function castArcaneOrb(target, maxArcaneCharges)
-		if target and (maxArcaneCharges <= arcaneCharge) then
+		if target and (arcaneCharge <= maxArcaneCharges) then
 			if castSpell(target,ArcaneOrb,false,true) then
 				return true
 			end
