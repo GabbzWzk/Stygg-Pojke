@@ -177,7 +177,7 @@ if select(3, UnitClass("player")) == 8 then
 	function cancelEvocation() 
 		local  name, _, _, _, _, endTime = UnitChannelInfo("player")
 		if name and name == "Evocation" then
-			if playerMana > 92 then
+			if player.mana > 92 then
 				return true
 			end
 		end
