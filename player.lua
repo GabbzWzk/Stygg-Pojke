@@ -1,5 +1,14 @@
-function playerinit() -- Init Player Object
+-----------------------------------
+-- Player Class : 
+-----------------------------------
+print("Player")
+player = {}
 
+
+-----------------------------------
+-- Player Imit : 
+-----------------------------------
+function player:init() -- Init Player Object
 	local getHP,hasGlyph,UnitPower,getBuffRemain,getBuffStacks = getHP,hasGlyph,UnitPower,getBuffRemain,getBuffStacks
     --local UnitBuffID,isInMelee,getSpellCD,getEnemies = UnitBuffID,isInMelee,getSpellCD,getEnemies
     --local player,BadBoy_data,GetShapeshiftForm,dynamicTarget = "player",BadBoy_data,GetShapeshiftForm,dynamicTarget
@@ -10,33 +19,23 @@ function playerinit() -- Init Player Object
     --local getDistance,getDebuffRemain,GetTime,getFacing = getDistance,getDebuffRemain,GetTime,getFacing
     --local spellCastersTable,enhancedLayOnHands,getOptionCheck = bb.im.casters,enhancedLayOnHands,getOptionCheck
     --local useItem,shouldCleanseDebuff,castBlessing = useItem,shouldCleanseDebuff,castBlessing
-
-
-	if player then
-		print("Already Created Player Once")
-		return false
-	end
 	
-	local playerinit = {
-	    health 			= getHealth("player"),
-	    hp 				= getHP("player"),
-	    mana  			= getMana("player")
-	    inCombat = false,
-	    combatStarted = 0,
-	    globalCooldown = 0,
-	    buff = { },
-	    spell = { },
-	    glyph = { },
-	    talent = { },
-	    }
-	    -- Set it to global variable
-        player = playerinit
-        -- localise commonly used functions
-       
-
-        -- no external access after here
-        setfenv(1, player)
-
+	--player.healthMax       = UnitMaxHealth("player")
+    player.health 			= UnitHealth("player")
+	player.hp 				= getHP("player")
+    player.mana             = getMana("player")             -- Mana Percentage
+    player.inCombat         = false
+    player.combatStarted    = 0
+    player.globalCooldown   = 0
+    player.isMoving         = isMoving("player")
+	player.buff             = { }
+	player.spell            = spellbook:getPlayerSpells()
+	player.glyph            = { }
+	player.talent           = { }
+    player.isCasting        = 0
+    player.currentCast      = 0
+    player.lastCast         = 0
+	 
         -----------------
         -- spell 			-- table of spells the player has, inserted using spellid and holds meta data around the spells such as cd, buff(defined so we know that when we cast we get a buff), debuff(similiar to buff), spammable, movable, facing, etc
        	-----------------			we should move alot of the parameters from castSpell to be added here so castSpell does the look up for checks and not in the rotation
@@ -77,25 +76,15 @@ function playerinit() -- Init Player Object
         ----------------------
         -- Player functions 	-- functions for the player class, player.calcualteHP(), player.hasBuff() etc
         ----------------------
-        -----------------------------------
-    	-- Player Update : Should only be done from time to time, alot of the information should be updated by events, not scanning all of the variables. Some Information is not perhaps easy to get tough.
-    	-----------------------------------
-    	function player:update()
-			-- player stats
-			--self.health = getHP(player)
-			        
-			-- Buffs
-			--self.buff.ardentDefender = getBuffRemain(player,self.spell.ardentDefender)
-			    
-			-- Cooldowns
-			--self.cd.avengingWrath = getSpellCD(self.spell.avengingWrath)
-
-			--self.globalCooldown = getSpellCD(61304)
-			    
-			--self.inCombat = true
-	    end
-	    
-	    --function player:...
-	    --end
-    end
+        
+    	
+end
+-----------------------------------
+-- Player Update : Should only be done from time to time, alot of the information should be updated by events, not scanning all of the variables. Some Information is not perhaps easy to get tough.
+-----------------------------------
+function player:update()
+    player.isMoving         = isMoving("player")
+    player.health           = UnitHealth("player")
+    player.hp               = getHP("player")
+    player.mana             = getMana("player")  
 end

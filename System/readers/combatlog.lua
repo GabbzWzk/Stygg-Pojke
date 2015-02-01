@@ -88,53 +88,60 @@ function cl:common(...)
     local timeStamp, param, hideCaster, source, sourceName, sourceFlags, sourceRaidFlags, destination,
             destName, destFlags, destRaidFlags, spell, spellName, _, spellType = ...
 
-    ----------------
-    --[[Item locks]]
     if source == bb.guid then
-		local DPSPotionsSet = {
-			[1] = {Buff = 105702, Item = 76093}, -- Intel
-			[2] = {Buff = 105697, Item = 76089}, -- Agi
-			[3] = {Buff = 105706, Item = 76095}, -- Str
-		}
-		-- Synapse Springs
-		if spell == 126734 then
-			synapseUsed = GetTime()
-		end
-		-- Lifeblood
-		if spell == 121279 or spell == 74497 then
-			lifeBloodUsed = GetTime()
-		end
-		-- DPS potions
-		for i = 1, #DPSPotionsSet do
-			if spell == DPSPotionsSet[i].Buff then
-				potionUsed = GetTime()
-				if UnitAffectingCombat("player") then
-					ChatOverlay("Potion Used, can reuse in 60 secs.")
-					potionReuse = false
-				else
-					ChatOverlay("Potion Used, cannot reuse.")
-					potionReuse = true
-				end
-			end
-			-- Lifeblood
-			if spell == 121279 or spell == 74497 then
-				lifeBloodUsed = GetTime()
-			end
-			-- DPS potions
-			for i = 1, #DPSPotionsSet do
-				if spell == DPSPotionsSet[i].Buff then
-					potionUsed = GetTime()
-					if UnitAffectingCombat("player") then
-						ChatOverlay("Potion Used, cannot reuse.")
-						potionReuse = false
-					else
-						ChatOverlay("Potion Used, can reuse in 60 secs.")
-						potionReuse = true
-					end
-				end
-			end
-		end
 	end
+
+    ---------------------
+    -- Bad Robot New Stuff
+    ---------------------
+    --
+    if source == bb.guid then
+        -- Params 
+        -- SPELL
+        -- SPEL_PERIODIC
+        -- SPELL_CAST_SUCCESS, 
+        -- SPELL_DAMAGE, 
+        -- SPELL_MISSED, 
+        -- SPELL_AURA_REFRESH, 
+        -- SPELL_AURA_APPLIED, 
+        -- SPELL_AURA_APPLIED_DOSE, 
+        -- SPELL_AURA_APPLIED_REMOVED,
+        if param == "SPELL" then
+            --print("Spell " .. spellName .." " ..GetTime())
+        end
+        if param == "SPEL_PERIODIC" then
+           -- print("Spell Periodic "  .. spellName .." " ..GetTime())
+        end
+        if param == "SPELL_CAST_SUCCESS"  then
+            --print("Spell Cast Success "  .. spellName .." " ..GetTime())    -- 
+        end
+        if param == "SPELL_CAST_FAILED"  then
+            --print("Spell Cast Failed "  .. spellName .." " ..GetTime())    -- 
+            
+        end
+        if param == "SPELL_DAMAGE"  then
+            --print("Spell Damage "  .. spellName .." " ..GetTime())
+        end
+        if param == "SPELL_MISSED" then
+            --print("Spell Missed "  .. spellName .." " ..GetTime())
+        end
+        if param == "SPELL_AURA_REFRESH" then
+            --print("Spell Aura Refresh "  .. spellName .." " ..GetTime()) --Fired when getting Buff
+        end
+        if param == "SPELL_AURA_APPLIED" then
+            --print("Spell Aura Applied "  .. spellName .." " ..GetTime())
+        end
+        if param == "SPELL_AURA_APPLIED_DOSE"  then
+            --print("Spell Aura Applied Dose "  .. spellName .." " ..GetTime())
+        end
+        if param == "SPELL_AURA_REMOVED" then
+            --print("Spell Aura Removed "  .. spellName .." " ..GetTime())
+        end
+    end
+    
+    ---------------------
+    -- Bad Robot New Stuff Ends here
+    ---------------------
 
 	-----------------------------------
 	--[[ Item Use Success Recorder ]]
@@ -177,52 +184,6 @@ function cl:common(...)
 			end
 		end
 	end
-
-    ---------------
-    --[[ Debug --]]
-    if getOptionCheck("Debug Frame") == true and source == bb.guid and (param == "SPELL_CAST_SUCCESS" or (param == "SPELL_CAST_FAILED" and getOptionCheck("Display Failcasts"))) then
-        -- available locals
-        -- timeStamp, param, hideCaster, source, sourceName, sourceFlags, sourceRaidFlags, destination,
-        -- destName, destFlags, destRaidFlags, spell, spellName, _, spellType
-
-	   if SpellID ~= 75 and SpellID ~= 88263 and SpellID ~= 172 and SpellID ~= 8690 then -- Add spells we dont want to appear here.
-			local color = "|cff12C8FF"
-            local white = "|cffFFFFFF"
-            local red = "|cffFF001E"
-            -- add counters
-            if param == "SPELL_CAST_SUCCESS" then
-                if BadRobot_data.successCasts == nil then
-                    BadRobot_data.successCasts = 0
-                end
-                color = "|cff12C8FF"
-                BadRobot_data.successCasts = BadRobot_data.successCasts + 1
-			elseif param == "SPELL_CAST_FAILED" then
-                if BadRobot_data.failCasts == nil then
-                    BadRobot_data.failCasts = 0
-                end
-                color = red
-                BadRobot_data.failCasts = BadRobot_data.failCasts + 1
-            end
-            -- set destination
-			if destination == nil or destName == nil then
-				debugdest = "\nTarget hidden by log."
-			else
-				debugdest = "\n"..destName.." "..destination
-			end
-            -- set spell
-			if spell == nil then
-				debugSpell = ""
-			else
-				debugSpell = "\nSpell :"..spellName.." "..spell
-			end
-			local Power = "\nPower : "..UnitPower("player")
-            -- create display row
-			local textString = color..BadRobot_data.successCasts..red.."/"..white..getCombatTime()..red.."/"..color..spellName
-                    ..red..debugdest..color..debugSpell.."|cffFFDD11"..Power
-			-- pulse display
-            bb.read:display(textString)
-		end
-    end
 end
 
 function cl:Druid(...)

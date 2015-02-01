@@ -12,21 +12,33 @@ if select(3, UnitClass("player")) == 8 then
 			currentConfig = "Mage Gabbz"
 		end
 
-		-- Manual Input
-		if IsLeftShiftKeyDown() or IsLeftAltKeyDown() then -- Pause the script, keybind in wow shift+1 etc for manual cast
-			if UnitGetIncomingHeals("player","player") ~= nil then
-				print(" What is this ? " ..UnitGetIncomingHeals("player","player"))
-			else
-				print(" Its nil")
-			end
+		if not MageInit then
+			spellbook:init()
+			player:init()
+			MageInit = true
+		end
+
+		------------------------------
+		-- Manual Command: We prioritise the users input, we should use modifiers to pause the bot or somehow change the rotation, we should add / slash commands such as badrobot castspell [spellid]
+		------------------------------
+		if IsLeftShiftKeyDown() then -- Pause the script, keybind in wow shift+1 etc for manual cast
+			--print("Player Test " ..player.health)
+			--print("Spellbook :" ..player.spell[ArcaneOrb].cd)
+			--print("Spellbook :" ..player.spell[ArcaneBlast].playerdebuff) 
 			return true
 		end
 
+		-------------------------------
+		-- Manuel Pause
+		-------------------------------
+		if IsLeftAltKeyDown() then
+			return true
+		end
+		
 		------------
 		-- Checks --
 		------------
 
-		-- Food/Invis Check
 		if canRun() ~= true then
 			return false
 		end
@@ -34,7 +46,13 @@ if select(3, UnitClass("player")) == 8 then
 		------------
 		-- OUT OF COMBAT, note that this should be internal functionality only or handled by a manual keypress such as leftctrl. Otherwise it is easy to get spotted as bott.
 		------------
-
+		if not UnitAffectingCombat("player") and IsLeftControlKeyDown() then
+			-------------------
+			-- Pre Pull Logic
+			-------------------
+			-- Todo : We need to create logic that we can force using manual input
+			--	Prepot, Cast Arcane Blast, Arcane Orb
+		end
 
 		------------
 		-- COMBAT -- , Affected by combat or manual override, cant be the same key as overriding out of combat. Manual overide for pulling, hotting etc before combat.
@@ -48,6 +66,7 @@ if select(3, UnitClass("player")) == 8 then
 			-- Todo : 	we could if need be set this timer based, ie every 0.5 seconds or something if we feel that FPS is dropping low.
 			--			Best way would to use events to get as many parameters as possible but that is a major rework. For now we do it like this
 
+
 				------------
 				-- Player 
 				------------
@@ -55,8 +74,8 @@ if select(3, UnitClass("player")) == 8 then
 				-- Todo : See prot pala as an example altough its not correctly designed.
 				-- 			core:update() should be player:update(), so functions should be player:init() which sets up the tables and parameters, and player:update() is updating values etc where it is needed
 				--			This is then not all these valeues here but rather player:update() will populate this values for use. So we can then use player.Haste, player.Buff.ArcanePower, player.Buff.ArcanePowerTimeLeft, etc
-				playerIsMoving 					= isMoving("player")
-				playerMana						= getMana("player")
+				player:update()
+
 				playerHaste						= GetHaste()
 				
 				--Buffs
@@ -114,7 +133,8 @@ if select(3, UnitClass("player")) == 8 then
 			--						Opener()			-- Used before pull
 			-----------------------------
 
-			if isPlayerMoving and not UnitBuffID("player", IceFloes) then
+			if player.isMoving  and not UnitBuffID("player", IceFloes) then
+				print("Casting ICEFLOES")
 				castIceFloes()
 			end	
 

@@ -103,29 +103,6 @@ if select(3, UnitClass("player")) == 8 then
 -- Racial
 	Berserkering 	= 26297;	-- Troll Racial
 
-	ArcaneSpellBook = {
-	    [ArcaneBlast] = { isKnown = isKnown(ArcaneBlast), cd = 0, lastStart = 0, lastSent = 0, lastSucceeded = 0, lastStop = 0, lastFailed = 0 }, 
-	}
-
-
-	function insertSpellCastStart(spellID, time)
-		ArcaneSpellBook[spellID].LastStart = time
-	end
-	function insertSpellCastSent(spellID, time)
-		ArcaneSpellBook[spellID].LastSent = time
-	end
-	function insertSpellCastSucceeded(spellID, time)
-		ArcaneSpellBook[spellID].lastSucceeded = time
-	end
-	function insertSpellCastStop(spellID, time)
-		ArcaneSpellBook[spellID].LastStop = time
-	end
-	function insertSpellCastInterrupted(spellID, time)
-		ArcaneSpellBook[spellID].Interrupted = time
-	end
-	function insertSpellCastFailed(spellID, time)
-		ArcaneSpellBook[spellID].LastFailed = time
-	end
 
 	-- Todo : Here we should look into what the best value for clipping, 50 atm, why 50? Is it related to latency or custom lag tolerance?
 	-- Further testing is needed.

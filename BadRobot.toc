@@ -7,6 +7,10 @@
 
 BadRobot.lua
 
+Player.lua
+SpellCast.lua
+Spellbook.lua
+
 ## System
 System\Beautycase.lua
 System\Core.lua
