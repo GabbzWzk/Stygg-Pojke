@@ -9,53 +9,53 @@ spellcast = {}
 ------------------
 function spellcast:insertSpellCastSent(spellID, time, target)
 	--print("Event Cast Sent : "..GetTime() .." On Target : "  ..target)
-	player.currentCast = SpellID
-	spellbook.update(SpellID, "SpellCastSent")
+	player.currentCast = spellID
+	spellbook.update(spellID, "SpellCastSent")
 	--spellcast.queue[spellID].LastSent = time
 end
 
 function spellcast:insertSpellCastStart(spellID, time)
 	--print("Event Cast Start : " ..GetTime())
-	player.isCasting = SpellID
+	player.isCasting = spellID
 	--queue[spellID].LastStart = time
 end
 
 function spellcast:insertSpellCastSucceeded(spellID, time)
 	--print("Event Cast Success : " ..GetTime())
-	player.lastCast = SpellID
-	spellbook.update(SpellID, "SpellCastSucceeded")
+	player.lastCast = spellID
+	spellbook.update(spellID, "SpellCastSucceeded")
 	--spellcast.queue[spellID].lastSucceeded = time
 end
 function spellcast:insertSpellCastStop(spellID, time)
 	--print("Event Cast Stop : " ..GetTime())
 	player.isCasting = 0
-	spellbook.update(SpellID, "SpellCastStop")
+	spellbook.update(spellID, "SpellCastStop")
 	--spellcast.queue[spellID].LastStop = time
 end
 function spellcast:insertSpellCastInterrupted(spellID, time)
 	--print("Event Cast Interrupt : " ..GetTime())
 	player.currentCast = 0
-	spellbook.update(SpellID, "SpellCastInterrupted")
+	spellbook.update(spellID, "SpellCastInterrupted")
 	--spellcast.queue[spellID].Interrupted = time
 end
 function spellcast:insertSpellCastFailed(spellID, time)
 	--print("Event Cast Failed: " ..GetTime())
 	player.currentCast = 0
-	spellbook.update(SpellID, "SpellCastFailed")
+	spellbook.update(spellID, "SpellCastFailed")
 	--spellcast.queue[spellID].LastFailed = time
 end
 
 function spellcast:insertSpellChannelStart(spellID, time)
 	--print("Event Channel Start : " ..GetTime())
-	player.isCasting = SpellID
-	spellbook.update(SpellID, "SpellChannelStart")
+	player.isCasting = spellID
+	spellbook.update(spellID, "SpellChannelStart")
 	--spellcast.queue[spellID].LastFailed = time
 end
 
 function spellcast:insertSpellChannelStopp(spellID, time)
 	--print("Event Channel Stopp : " ..GetTime())
 	player.isCasting = 0
-	spellbook.update(SpellID, "SpellChannelStop")
+	spellbook.update(spellID, "SpellChannelStop")
 	--spellcast.queue[spellID].LastFailed = time
 end
 

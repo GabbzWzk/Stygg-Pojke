@@ -793,10 +793,6 @@ if select(3, UnitClass("player")) == 8 then
 
 	end
 
-	
-
-	
-
 	function CalculateHP(unit)
 	  incomingheals = UnitGetIncomingHeals(unit) or 0
 	  return 100 * ( UnitHealth(unit) + incomingheals ) / UnitHealthMax(unit)
@@ -830,7 +826,11 @@ if select(3, UnitClass("player")) == 8 then
 			if player.isCasting ~= ArcaneBlast then
 				return select(4,UnitDebuffID("player",ArcaneCharge))
 			else
-				return (select(4,UnitDebuffID("player",ArcaneCharge)) + 1)
+				if (select(4,UnitDebuffID("player",ArcaneCharge)) + 1) > 4 then
+					return 4
+				else
+					return (select(4,UnitDebuffID("player",ArcaneCharge)) + 1)
+				end
 			end
 		else
 			if player.isCasting ~= ArcaneBlast then

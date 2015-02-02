@@ -85,7 +85,6 @@ if select(3, UnitClass("player")) == 8 then
 				stacksArcaneMisslesP			= getBuffStacks("player",ArcaneMissilesP)
 				arcaneCharge 					= Charge()
 				
-
 				--player Spells
 				playerSpellPrismaticCrystalIsKnown	= isKnown(PrismaticCrystal) 
 				playerSpellPrismaticCrystalCD 		= getSpellCD(PrismaticCrystal)	--Todo : Replace with this
