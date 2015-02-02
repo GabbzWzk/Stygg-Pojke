@@ -22,7 +22,6 @@ if select(3, UnitClass("player")) == 8 then
 		-- Manual Command: We prioritise the users input, we should use modifiers to pause the bot or somehow change the rotation, we should add / slash commands such as badrobot castspell [spellid]
 		------------------------------
 		if IsLeftShiftKeyDown() then -- Pause the script, keybind in wow shift+1 etc for manual cast
-			--print("Player Test " ..player.health)
 			--print("Spellbook :" ..player.spell[ArcaneOrb].cd)
 			--print("Spellbook :" ..player.spell[ArcaneBlast].playerdebuff) 
 			return true
@@ -88,6 +87,7 @@ if select(3, UnitClass("player")) == 8 then
 				--player Spells
 				playerSpellPrismaticCrystalIsKnown	= isKnown(PrismaticCrystal) 
 				playerSpellPrismaticCrystalCD 		= getSpellCD(PrismaticCrystal)	--Todo : Replace with this
+
 				playerSpellEvocationCD				= getSpellCD(Evocation)
 
 				isKnownOverPowered					= isKnown(Overpowered)
@@ -133,7 +133,6 @@ if select(3, UnitClass("player")) == 8 then
 			-----------------------------
 
 			if player.isMoving  and not UnitBuffID("player", IceFloes) then
-				print("Casting ICEFLOES")
 				castIceFloes()
 			end	
 
