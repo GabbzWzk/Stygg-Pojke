@@ -1,22 +1,6 @@
 -- Function to create and populate table of enemies within a distance from player.
 function EnemiesEngine()
 
--- Todo: So i think the prioritisation should be large by determined by threat or burn prio and then hp.
--- So design should be,
--- Check if the unit is on doNotTouchUnitCandidates list which means we should not attack them at all
-
--- Check towards doNotTouchUnitCandidatesBuffs (buffs/debuff), ie target we are not allowed to attack due to them having
--- a (de)buff that hurts us or not. Example http://www.wowhead.com/spell=163689
-
--- Is the unit on burn list, set high prio, burn list is a list of mobs that we specify for burn, is highest dps and prio.
-
--- We should then look at the threat situation, for tanks the this is of high prio if we are below 3 but all below 3
--- should have the same prio coefficent. For dps its not that important
-
--- Then we should check HP of the targets and set highest prio on low targets, this is also something we need to think
--- about if the target have a dot so it will die regardless or not. Should have a timetodie?
-
-
 -- Stack: Interface\AddOns\BadRobot\System\EnemiesEngine.lua:224: in function `castInterrupt'
 -- isBurnTarget(unit) - Bool - True if we should burn that target according to burnUnitCandidates
 -- isSafeToAttack(unit) - Bool - True if we can attack target according to doNotTouchUnitCandidates
@@ -31,8 +15,10 @@ function EnemiesEngine()
 local varDir = BadRobot_data.options[GetSpecialization()]
 
 function makeEnemiesTable(maxDistance)
-	local  maxDistance = maxDistance or 50
-	if enemiesTable then cleanupEngine() end
+	local maxDistance = maxDistance or 50
+	if enemiesTable then 
+		cleanupEngine() 
+	end
 	if enemiesTable == nil or enemiesTableTimer == nil or enemiesTableTimer <= GetTime() - 1 then
 		enemiesTableTimer = GetTime()
 		-- create/empty table
@@ -139,19 +125,6 @@ function dynamicTarget(range,facing)
 	return "target"
 end
 
---[[------------------------------------------------------------------------------------------------------------------]]
---[[------------------------------------------------------------------------------------------------------------------]]
---[[------------------------------------------------------------------------------------------------------------------]]
---[[------------------------------------------------------------------------------------------------------------------]]
-
---[[           ]]   --[[           ]]    --[[           ]]
---[[           ]]   --[[           ]]    --[[           ]]
---[[]]              --[[]]        		       --[[ ]]
---[[]]   --[[  ]]	--[[           ]]          --[[ ]]
---[[]]     --[[]]	--[[]]        		       --[[ ]]
---[[           ]]   --[[           ]]          --[[ ]]
---[[           ]]   --[[           ]]          --[[ ]]
-
 -- get the best aoe interupt unit for a given range
 function getBestAoEInterupt(Range)
 	-- pulse our function that add casters around to castersTable
@@ -223,7 +196,7 @@ end
 
 -- returns true if Unit is a valid enemy
 function getSanity(unit)
-	if ObjectExists(unit) and bit.band(ObjectType(unit), ObjectTypes.Unit) == 8
+	if unit ~=nil and ObjectExists(unit) and bit.band(ObjectType(unit), ObjectTypes.Unit) == 8
 	  and UnitIsVisible(unit) == true and getCreatureType(unit) == true
 	  and UnitCanAttack(unit, "player") == true and UnitIsDeadOrGhost(unit) == false
 	  and (UnitAffectingCombat(unit) or isDummy(unit)) then

@@ -90,4 +90,14 @@ function player:update()
     player.hp               = getHP("player")
     player.mana             = getMana("player")
     player.haste            = GetHaste()  
+    player.inCombat         = true
+    --player.seal = GetShapeshiftForm()
+   
+    -- Buffs ToDo :  we should move this into event trigger population.
+    --player.buff.ardentDefender = getBuffRemain(player,self.spell.ardentDefender)
+    --player.buff.righteousFury = UnitBuffID(player,self.spell.righteousFury)
+   
+    -- Spell Cooldowns
+    --player.spell.arcanepower = getSpellCD(self.spell.avengingWrath)
+    --player.spell.globalCooldown = getSpellCD(61304)
 end

@@ -22,11 +22,8 @@ if select(3, UnitClass("player")) == 8 then
 		-- Manual Command: We prioritise the users input, we should use modifiers to pause the bot or somehow change the rotation, we should add / slash commands such as badrobot castspell [spellid]
 		------------------------------
 		if IsLeftShiftKeyDown() then -- Pause the script, keybind in wow shift+1 etc for manual cast
-			--print("Spellbook :" ..player.spell[ArcaneOrb].cd)
-			--print("Spellbook :" ..player.spell[ArcaneBlast].playerdebuff)
-			--if getTalent(5,3) then
-			--	print("Yes")
-			--end
+			targets:update()
+			print("Targets Melee " ..targets.nrTargetsMelee)
 			return true
 		end
 
@@ -65,10 +62,6 @@ if select(3, UnitClass("player")) == 8 then
 			-- Stats -- , first we get all the necessary parameters we will be using in the rotation. make sure that the naming convention follows.
 			------------
 
-			-- Todo : 	we could if need be set this timer based, ie every 0.5 seconds or something if we feel that FPS is dropping low.
-			--			Best way would to use events to get as many parameters as possible but that is a major rework. For now we do it like this
-
-
 				------------
 				-- Player 
 				------------
@@ -78,6 +71,7 @@ if select(3, UnitClass("player")) == 8 then
 				--			This is then not all these valeues here but rather player:update() will populate this values for use. So we can then use player.Haste, player.Buff.ArcanePower, player.Buff.ArcanePowerTimeLeft, etc
 				
 				player:update()
+				
 
 				
 				
@@ -146,29 +140,35 @@ if select(3, UnitClass("player")) == 8 then
 				Defensive()
 			end
 
-			--# Executed every time the actor is available.
-			-- Todo : Add InterruptHandler actions=counterspell,if=target.debuff.casting.react, lockjaw as well
-			-- Todo : Defensive CDs actions+=/cold_snap,if=health.pct<30
-			-- Todo : Implement icefloes for movement actions+=/ice_floes,if=buff.ice_floes.down&(raid_event.movement.distance>0|raid_event.movement.in<action.arcane_missiles.cast_time)
-			-- Todo : Rune of Power actions+=/rune_of_power,if=buff.rune_of_power.remains<cast_time
-			-- Todo : actions+=/mirror_image
-			-- Todo : actions+=/cold_snap,if=buff.presence_of_mind.down&cooldown.presence_of_mind.remains>75
-			-- Todo : actions+=/call_action_list,name=init_crystal,if=talent.prismatic_crystal.enabled&cooldown.prismatic_crystal.up
-			-- Todo : actions+=/call_action_list,name=crystal_sequence,if=talent.prismatic_crystal.enabled&pet.prismatic_crystal.active
-			--actions+=/call_action_list,name=aoe,if=active_enemies>=4
+			if BadRobot_data['Interrupt'] == 2 then
+				Interrupt()
+			end
 
-			-- Todod : fix this since its not really doing anything usefull. 
-			--if getNumEnemies("player",10) > 5 then -- This is only checking for melee
-			--	if BadRobot_data['AoE'] == 2 or BadRobot_data['AoE'] == 3 then -- We need to sort out the auto aoe, ie == 3 
-			--		ArcaneMageAoESimcraft()
+			-------------------------------------
+			-- Rotation Selector,	should be configurable in gui
+			-------------------------------------
+			-- Modes
+            --self.mode.aoe = BadBoy_data["AoE"]
+            --self.mode.cooldowns = BadBoy_data["Cooldowns"]
+            --self.mode.defensive = BadBoy_data["Defensive"]
+            --self.mode.healing = BadBoy_data["Healing"]
+            --self.mode.rotation = BadBoy_data["Rota"]
+			--if mode.rotation == 4 then
+			--	if core.health > getValue("Max DPS HP") then
+			--		rotationMode = 2
+			--	elseif core.health < getValue("Max Survival HP") then
+			--		rotationMode = 3
+			--	else
+			--		rotationMode = 1
 			--	end
+			--else
+			--	rotationMode = mode.rotation
 			--end
 			
-			--actions+=/call_action_list,name=conserve
+               
+			-- AoE Handler, single, AoE or auto
+			
 			if isChecked("Burn Phase") then
-				-- Todo : Fix the Simcraft logic for when to start burn, atm it is hardcoded to 20 seconds before CD on Evo is up, 
-										-- actions+=/call_action_list,name=burn,if=time_to_die<mana.pct*0.35*spell_haste|cooldown.evocation.remains<=(mana.pct-30)*0.3*spell_haste|(buff.arcane_power.up&cooldown.evocation.remains<=(mana.pct-30)*0.4*spell_haste)
-										--if (getTimeToDie("target") < playerMana*0.35*(1/player.haste)) or (cdEvocation <= (playerMana-30)*0.3*(1/player.haste)) or (playerBuffArcanePower and cdEvocation <= (playerMana-30)*0.4*(1/player.haste)) then -- 
 				if playerSpellEvocationCD < 20 then
 					if ArcaneMageSingleTargetSimcraftBurn() then
 						return true

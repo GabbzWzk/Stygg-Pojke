@@ -4,21 +4,10 @@
 print("Target")
 targets = {}
 
-
 -----------------------------------
--- target Imit : 
+-- target Init : 
 -----------------------------------
 function targets:init() -- Init Target Object
-	--local getHP,hasGlyph,UnitPower,getBuffRemain,getBuffStacks = getHP,hasGlyph,UnitPower,getBuffRemain,getBuffStacks
-    --local UnitBuffID,isInMelee,getSpellCD,getEnemies = UnitBuffID,isInMelee,getSpellCD,getEnemies
-    --local target,BadBoy_data,GetShapeshiftForm,dynamicTarget = "target",BadBoy_data,GetShapeshiftForm,dynamicTarget
-    --local GetSpellCooldown,select,getValue,isChecked,castInterrupt = GetSpellCooldown,select,getValue,isChecked,castInterrupt
-    --local isSelected,UnitExists,isDummy,isMoving,castSpell,castGround = isSelected,UnitExists,isDummy,isMoving,castSpell,castGround
-    --local getGround,canCast,isKnown,enemiesTable,sp = getGround,canCast,isKnown,enemiesTable,core.spells
-    --local UnitHealth,previousJudgmentTarget,print,UnitHealthMax = UnitHealth,previousJudgmentTarget,print,UnitHealthMax
-    --local getDistance,getDebuffRemain,GetTime,getFacing = getDistance,getDebuffRemain,GetTime,getFacing
-    --local spellCastersTable,enhancedLayOnHands,getOptionCheck = bb.im.casters,enhancedLayOnHands,getOptionCheck
-    --local useItem,shouldCleanseDebuff,castBlessing = useItem,shouldCleanseDebuff,castBlessing
 	
 	targets.healthMax        = UnitMaxHealth("target")
     targets.health 			= UnitHealth("target")
@@ -41,10 +30,51 @@ end
 -- target Update : Should only be done from time to time, alot of the information should be updated by events, not scanning all of the variables. Some Information is not perhaps easy to get tough.
 -----------------------------------
 function targets:update()
-    target.isMoving         = isMoving("target")
-    target.health           = UnitHealth("target")
-    target.hp               = getHP("target")
-    target.mana             = getMana("target")
-    target.haste            = GetHaste()  
-    target.ttd              =
+--    target.isMoving         = isMoving("target")
+--    target.health           = UnitHealth("target")
+--    target.hp               = getHP("target")
+--    target.mana             = getMana("target")
+--    target.ttd              = 0                     --Need to handle this but it need to be persistent on unit level
+
+    -- For now we start with enemiesengine and see if it works, we should later remove the objectexisting population of the enemiestable and use event based population.
+    --enemiesTable
+    targets.unitsdyn30 = dynamicTarget(30,true) --CC and stun/interrupt. frostjaw and polymorph
+    targets.unitsdyn40 = dynamicTarget(40,true)
+    targets.unitsdyn30NotFacing = dynamicTarget(30,false) --CC and stun/interrupt. frostjaw and polymorph
+    targets.unitsdyn40NotFacing = dynamicTarget(40,false)
+    -- Range on Cone Of Cold, dragons breath
+    -- FrostJaw, interrupt and stung 30 yards
+    -- Polymorph, CC 30 yards
+
+    -- PBAOE
+    targets.nrTargetsMelee = #getEnemies("player",5) -- Used for checking if i need to blink or root people
+    targets.nrTargetsArcaneExplosion = #getEnemies("player",15) -- Arcane Explosion, this is glyphed so we should check if we have the glyph or range from spellbook
+    -- Frost Nova 12 yards
+
+    
+    ----------------------
+    -- Conal Spells
+    ----------------------
+    -- Arcane Orb, very narrow cone, range 40 yards
+    -- Cone of Cold
+    -- Dragon Breath
+
+    ---------------------------
+    -- PBAOE Target on Enemies
+    ----------------------------
+    -- SuperNova 40 yard and 8 yards PBAOE
+    -- Prismatic Crystal 40 yard and PBAOE 8 yards, no more damage based on nr its shared between them
+    -- Nether Tempest, 40 yards dot and PBAOE 10 yards, only one dot can be active. Need to store on what target, then checking if that target is alone or not.
+    -- Living Bomb, 40 yards and when expire aoe on 10 yards
+    -- Blast Wave, 40 yards, on enemy or ally, 8 yards PBAOE
+    -- Inferno Blast, 40 yard, spreads dots 10 yards.
+    
+    ----------------------------
+    -- Ground Target AoE
+    ----------------------------
+    -- Meteor, 40 yards aoe 8 yards
+    -- FlameStrike, 40 yards, yard?
+
+    --targets.nrTargetsAroundTarget7Yards = #getEnemies(self.units.dyn5,7)
+                
 end

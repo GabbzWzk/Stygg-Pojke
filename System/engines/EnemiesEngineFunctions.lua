@@ -8,14 +8,6 @@ function bb.matchUnit(unit,table)
 	end
 end
 
---[[           ]]		  --[[]]		--[[           ]]	--[[           ]]
---[[           ]]		 --[[  ]]		--[[           ]]	--[[           ]]
---[[]]				    --[[    ]] 		--[[ ]]					 --[[ ]]
---[[]]				   --[[      ]] 	--[[           ]]		 --[[ ]]
---[[]]				  --[[        ]]			  --[[ ]]		 --[[ ]]
---[[           ]]	 --[[]]    --[[]]	--[[           ]]		 --[[ ]]
---[[           ]]	--[[]]      --[[]]	--[[           ]]		 --[[ ]]
-
 -- function to compare spells to casting units
 -- /run bb.castOffensiveDispel(19801)
 function bb.castOffensiveDispel(spell)

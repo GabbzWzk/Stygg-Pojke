@@ -11,6 +11,7 @@ Player.lua
 SpellCast.lua
 Spellbook.lua
 Target.lua
+RotationMage.lua
 
 ## System
 System\Beautycase.lua

@@ -268,7 +268,7 @@ function bb:Run()
 	bb:StartUI()
 
 	-- start up enemies Engine
-	enemiesEngineRange = 55
+	enemiesEngineRange = 40
 	EnemiesEngine()
 
 	ChatOverlay("-= BadRobot Loaded =-")
