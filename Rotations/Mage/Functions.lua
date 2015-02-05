@@ -83,7 +83,7 @@ if select(3, UnitClass("player")) == 8 then
 
 				--	# Low mana usage, "Conserve" sequence
 				--	Todo : actions.conserve=call_action_list,name=cooldowns,if=time_to_die<30|(buff.arcane_charge.stack=4&(!talent.prismatic_crystal.enabled|cooldown.prismatic_crystal.remains>15))
-				RunMacroText("/tar Prismatic")
+				--RZRunMacroText("/tar Prismatic")
 				--	actions.conserve+=/arcane_missiles,if=buff.arcane_missiles.react=3|(talent.overpowered.enabled&buff.arcane_power.up&buff.arcane_power.remains<action.arcane_blast.execute_time)
 				if stacksArcaneMisslesP == 3 or (isKnownOverPowered and (playerBuffArcanePower and playerBuffArcanePowerTimeLeft < (select(4,GetSpellInfo(ArcaneBlast))/1000))) then
 					if castSpell("target",ArcaneMissiles,false,true) then
@@ -107,7 +107,7 @@ if select(3, UnitClass("player")) == 8 then
 
 
 				--  actions.conserve+=/supernova,if=time_to_die<8|(charges=2&(buff.arcane_power.up|!cooldown.arcane_power.up)&(!talent.prismatic_crystal.enabled|cooldown.prismatic_crystal.remains>8))
-				if getTimeToDie("target") < 8 or (arcaneCharge > 1 and (playerBuffArcanePower or cdArcanePower > 0)) then 
+				if chargesSuperNova == 2 and (playerBuffArcanePower or cdArcanePower > 0) then 
 					if castSpell("target",Supernova,false,false) then
 						return true
 					end
@@ -134,16 +134,20 @@ if select(3, UnitClass("player")) == 8 then
 				end
 				
 				-- actions.conserve+=/arcane_missiles,if=buff.arcane_charge.stack=4&(!talent.overpowered.enabled|cooldown.arcane_power.remains>10*spell_haste)
-				if arcaneCharge > 3 and (not isKnownOverPowered or (cdArcanePower > 10 * playerHaste)) then
+				if arcaneCharge > 3 and (not isKnownOverPowered or (cdArcanePower > 10 * player.haste)) then
 					if castSpell("target",ArcaneMissiles,false,true) then
 						return true
 					end
 				end
-				
+
 				--  actions.conserve+=/supernova,if=mana.pct<96&(buff.arcane_missiles.stack<2|buff.arcane_charge.stack=4)&(buff.arcane_power.up|(charges=1&cooldown.arcane_power.remains>recharge_time))&(!talent.prismatic_crystal.enabled|current_target=prismatic_crystal|(charges=1&cooldown.prismatic_crystal.remains>recharge_time+8))
-				if player.mana < 96 and (stacksArcaneMisslesP < 2 or arcaneCharge > 3) and (playerBuffArcanePower or (chargesSuperNova == 1 and cdArcanePower > reChargeSuperNova)) and (playerSpellPrismaticCrystalIsKnown or UnitName("target") == "Prismatic Crystal" or (chargesSuperNova == 1 and playerSpellPrismmaticCrystalCD > (reChargeSuperNova+8))) then
-					if castSpell("target",Supernova,true,false) then
-						return true
+				if player.mana < 96 and (stacksArcaneMisslesP < 2 or arcaneCharge > 3) then
+					if (playerBuffArcanePower or (chargesSuperNova == 1 and cdArcanePower > reChargeSuperNova)) then
+						if (playerSpellPrismaticCrystalIsKnown or UnitName("target") == "Prismatic Crystal" or (chargesSuperNova == 1 and playerSpellPrismaticCrystalCD > (reChargeSuperNova+8))) then
+							if castSpell("target",Supernova,false,false) then
+								return true
+							end
+						end
 					end
 				end
 
@@ -183,7 +187,7 @@ if select(3, UnitClass("player")) == 8 then
 			-- Arcane Mage Burn Phase Rotation
 			------------------------------
 			function ArcaneMageSingleTargetSimcraftBurn()
-				RunMacroText("/tar Prismatic")
+				--("/tar Prismatic")
 
 				--# High mana usage, "Burn" sequence
 				-- actions.burn=call_action_list,name=cooldowns
@@ -207,13 +211,13 @@ if select(3, UnitClass("player")) == 8 then
 				--end
 
 				-- actions.burn+=/supernova,if=time_to_die<8|charges=2
-				--if isKnown(Supernova) then
-				--	if getTimeToDie("target") < 8 or arcaneCharge > 1 then
-				--		if castSpell("target",Supernova,false,false) then
-				--			return true
-				--		end
-				--	end
-				--end
+				if isKnownSupernova then					
+					if chargesSuperNova> 1 then
+						if castSpell("target",Supernova,false,false) then
+							return true
+						end
+					end
+				end
 
 				-- actions.burn+=/nether_tempest,cycle_targets=1,if=target!=prismatic_crystal&buff.arcane_charge.stack=4&(active_dot.nether_tempest=0|(ticking&remains<3.6))
 				-- Todo :  Is this correct? Why should we not cast on crystal?
@@ -229,13 +233,13 @@ if select(3, UnitClass("player")) == 8 then
 				end
 			
 				-- Todo : Still valid?
-				--if isKnown(Supernova) then
-				--	if UnitName("target") == "Prismatic Crystal" then
-				--		if castSpell("target",Supernova,false,false) then
-				--			return true
-				--		end
-				--	end
-				--end
+				if isKnownSupernova and chargesSuperNova > 0 then
+					if UnitName("target") == "Prismatic Crystal" then
+						if castSpell("target",Supernova,false,false) then
+							return true
+						end
+					end
+				end
 
 				-- actions.burn+=/presence_of_mind,if=mana.pct>96&(!talent.prismatic_crystal.enabled|!cooldown.prismatic_crystal.up)
 				if player.mana > 96 and (not playerSpellPrismaticCrystalIsKnown or playerSpellPrismaticCrystalCD > 0)  then
@@ -261,13 +265,13 @@ if select(3, UnitClass("player")) == 8 then
 				end
 
 				-- actions.burn+=/supernova,if=mana.pct>70&mana.pct<96
-				--if isKnownSupernova then
-				--	if (player.mana < 96) and (player.mana > 70) then
-				--		if castSpell("target",Supernova,false,false) then
-				--			return true
-				--		end
-				--	end
-				--end
+				if isKnownSupernova and chargesSuperNova > 0 then
+					if (player.mana < 96) and (player.mana > 70) then
+						if castSpell("target",Supernova,false,false) then
+							return true
+						end
+					end
+				end
 				
 				-- Todo: WTF is this? we will always go true since the 90 - 90 will always be < 5 until we are channeled 5 sec?
 				-- # APL hack for evocation interrupt
@@ -415,7 +419,7 @@ if select(3, UnitClass("player")) == 8 then
 		-- actions.crystal_sequence+=/call_action_list,name=cooldowns
 
 		-- take crystal in focus
-		RunMacroText("/focus Prismatic Crystal")
+		--RunMacroText("/focus Prismatic Crystal")
 
 		-- actions.crystal_sequence+=/prismatic_crystal
 		if isKnown(PrismaticCrystal) and getSpellCD(PrismaticCrystal) <= 0 then
@@ -734,8 +738,10 @@ if select(3, UnitClass("player")) == 8 then
 		end
 
 		-- actions.aoe+=/supernova
-		if castSpell("target",Supernova,false,false) then
-			return true
+		if chargesSuperNova > 0 then
+			if castSpell("target",Supernova,false,false) then
+				return true
+			end
 		end
 
 		-- actions.aoe+=/arcane_barrage,if=buff.arcane_charge.stack=4

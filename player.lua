@@ -24,6 +24,7 @@ function player:init() -- Init Player Object
     player.health 			= UnitHealth("player")
 	player.hp 				= getHP("player")
     player.mana             = getMana("player")             -- Mana Percentage
+    player.haste            = GetHaste()
     player.inCombat         = false
     player.combatStarted    = 0
     player.globalCooldown   = 0
@@ -35,6 +36,7 @@ function player:init() -- Init Player Object
     player.isCasting        = 0
     player.currentCast      = 0
     player.lastCast         = 0
+
 	 
         -----------------
         -- spell 			-- table of spells the player has, inserted using spellid and holds meta data around the spells such as cd, buff(defined so we know that when we cast we get a buff), debuff(similiar to buff), spammable, movable, facing, etc
@@ -86,5 +88,6 @@ function player:update()
     player.isMoving         = isMoving("player")
     player.health           = UnitHealth("player")
     player.hp               = getHP("player")
-    player.mana             = getMana("player")  
+    player.mana             = getMana("player")
+    player.haste            = GetHaste()  
 end

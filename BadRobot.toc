@@ -10,6 +10,7 @@ BadRobot.lua
 Player.lua
 SpellCast.lua
 Spellbook.lua
+Target.lua
 
 ## System
 System\Beautycase.lua

@@ -30,6 +30,7 @@ function spellbook:init()
 	---------------------
 	-- Mage
 	---------------------
+	AlterTime		= 108978
 	ArcaneBrilliance= 1459
 	ArcaneAffinity	= 166871
 	ArcaneCharge	= 36032
@@ -41,8 +42,10 @@ function spellbook:init()
 	ArcaneExplosion	= 1449
 	ArcaneMissiles	= 5143
 	ArcaneMissilesP	= 79683
+	BlazingSpeed	= 108843
 	BrainFreeze		= 57761
 	BlastWave		= 157981
+	Cauterize		= 86949
 	Combustion		= 11129
 	CometStorm		= 153595
 	ColdSnap		= 11958
@@ -52,19 +55,23 @@ function spellbook:init()
 	Evanesce		= 157913
 	EnhancedFB		= 157646
 	EnhancedPyro	= 157644
+	Flameglow		= 140468
 	FrostBomb 		= 112948
 	Fireball		= 133
 	Frostbolt		= 116
 	FrostfireBolt	= 44614
+	Frostjaw		= 102051
 	FrozenOrb		= 84714
 	FrozenOrbDebuff = 84721
 	FingersOfFrost	= 44544
+	GreaterInvisibility = 110959
 	HeatingUp		= 48107
 	IceShard		= 166869
 	IceFloes		= 108839
 	IceLance		= 30455
 	IceBlock		= 45438
 	IcyVeins		= 12472
+	IceWard			= 111264
 	IceBarrier		= 11426
 	IceNova			= 157997
 	Ignite			= 12654 --12846 (mastery: ignite)
@@ -81,11 +88,13 @@ function spellbook:init()
 	PyroblastBuff	= 48108
 	Pyromaniac		= 166868
 	RuneOfPower		= 116011
+	RingOfFrost		= 113724
 	SummonPet		= 31687
 	Scorch          = 2948
-	Supernova 		= 175980
+	Supernova 		= 157980
 	ThermalVoid		= 155149
 	UnstableExplo	= 157976
+	UnstableMagic	= 157976
 	WaterJet		= 135029
 	T17_4P_Frost	= 165469
 	T17_4P_Arcane	= 166872  -- Arcane Instability
@@ -106,12 +115,36 @@ function spellbook:mageSpells()
 	--							-- This list should be init at the start and then updated via events and also castSpell. This is for example if we are cast frostbolt, then BadRobot should update the target of the cast with a debuff which is then confirmed by wow client via events
 	--							--	No more timers or double cast
 	----------------------------
+
+				
 	local MageSpells = {
-		[ArcaneBlast] = 	{ cd = 0, playerdebuff = 36032 },  -- Todo : We need to configure spells correctly, Arcane Blast is giving a debuff on player max stacks 4
-		[ArcaneOrb] = 		{ cd = 15 },
-		[ArcaneMissiles] = 	{ cd = 15 },
-		[ArcaneBarrage] = 	{ cd = 15 },
-		[Evocation] = 		{ cd = 90 },
+		[ArcaneBlast] 			= 	{ cd = 0, playerdebuff = 36032 },  -- Todo : We need to configure spells correctly, Arcane Blast is giving a debuff on player max stacks 4
+		
+		[ArcaneMissiles] 		= 	{ cd = 0 },
+		[ArcaneBarrage] 		= 	{ cd = 0 },		--Removes playerdebuff 36032
+		[Evocation] 			=	{ cd = 90 },	-- Channel that ticks?
+		--- Talents so this is perhaps not know
+		[Evanesce]				=	{ cd = 45, isKnown = getTalent(1,1) },
+		[BlazingSpeed]			=	{ cd = 25, isKnown = getTalent(1,2) },
+		[IceFloes]				=	{ cd = 0, isKnown = getTalent(1,3)	}, -- 3 Charges, so we set to 0 since it is a special case that need to be handled
+		[AlterTime]				=	{ cd = 0, isKnown = getTalent(2,1) },
+		[Flameglow]				=	{ cd = 0, isKnown = getTalent(2,2) },
+		[IceBarrier]			=	{ cd = 0, isKnown = getTalent(2,3) },
+		[RingOfFrost]			=	{ cd = 0, isKnown = getTalent(3,1) },
+		[IceWard]				=	{ cd = 0, isKnown = getTalent(3,2) },
+		[Frostjaw]				=	{ cd = 0, isKnown = getTalent(3,3) },
+		[GreaterInvisibility]	=	{ cd = 0, isKnown = getTalent(4,1) },
+		[Cauterize]				=	{ cd = 0, isKnown = getTalent(4,2) },
+		[ColdSnap]				=	{ cd = 0, isKnown = getTalent(4,3) },
+		[NetherTempest]			=	{ cd = 0, isKnown = getTalent(5,1) },
+		[UnstableMagic]			=	{ cd = 0, isKnown = getTalent(5,2) },
+		[Supernova]				=	{ cd = 0, isKnown = getTalent(5,3) },
+		[MirrorImage]			=	{ cd = 0, isKnown = getTalent(6,1) },
+		[RuneOfPower]			=	{ cd = 0, isKnown = getTalent(6,2) },
+		[IncantersFlow]			=	{ cd = 0, isKnown = getTalent(6,3) },
+		[Overpowered]			=	{ cd = 0, isKnown = getTalent(7,1) },
+		[PrismaticCrystal]		=	{ cd = 90, isKnown = getTalent(7,2) },
+		[ArcaneOrb] 			=	{ cd = 15, isKnown = getTalent(7,3) },
 	}
 
 	return MageSpells

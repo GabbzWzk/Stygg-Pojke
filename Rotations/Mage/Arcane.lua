@@ -23,7 +23,10 @@ if select(3, UnitClass("player")) == 8 then
 		------------------------------
 		if IsLeftShiftKeyDown() then -- Pause the script, keybind in wow shift+1 etc for manual cast
 			--print("Spellbook :" ..player.spell[ArcaneOrb].cd)
-			--print("Spellbook :" ..player.spell[ArcaneBlast].playerdebuff) 
+			--print("Spellbook :" ..player.spell[ArcaneBlast].playerdebuff)
+			--if getTalent(5,3) then
+			--	print("Yes")
+			--end
 			return true
 		end
 
@@ -73,9 +76,10 @@ if select(3, UnitClass("player")) == 8 then
 				-- Todo : See prot pala as an example altough its not correctly designed.
 				-- 			core:update() should be player:update(), so functions should be player:init() which sets up the tables and parameters, and player:update() is updating values etc where it is needed
 				--			This is then not all these valeues here but rather player:update() will populate this values for use. So we can then use player.Haste, player.Buff.ArcanePower, player.Buff.ArcanePowerTimeLeft, etc
+				
 				player:update()
 
-				playerHaste						= GetHaste()
+				
 				
 				--Buffs
 				playerBuffArcanePower			= UnitBuffID("player",ArcanePower) 
@@ -87,15 +91,16 @@ if select(3, UnitClass("player")) == 8 then
 				--player Spells
 				playerSpellPrismaticCrystalIsKnown	= isKnown(PrismaticCrystal) 
 				playerSpellPrismaticCrystalCD 		= getSpellCD(PrismaticCrystal)	--Todo : Replace with this
+				
 
 				playerSpellEvocationCD				= getSpellCD(Evocation)
 
 				isKnownOverPowered					= isKnown(Overpowered)
 				isKnownArcaneOrb					= isKnown(ArcaneOrb)
-				isKnownSupernova					= isKnown(Supernova)
+				isKnownSupernova					= getTalent(5,3) --isKnown(Supernova)
+
 				
 				cdArcanePower						= getSpellCD(ArcanePower)
-				
 				
 				------------------
 				-- Target
@@ -104,9 +109,10 @@ if select(3, UnitClass("player")) == 8 then
 				targetDebuffNetherTempestTimeLeft	= getDebuffRemain("target",NetherTempest, "player")
 
 				
-				chargesSuperNova					= GetSpellCharges(Supernova)
-				reChargeSuperNova					= getRecharge(Supernova)
+				chargesSuperNova					= GetSpellCharges(Supernova) or 0
+				reChargeSuperNova					= getRecharge(Supernova) or 0
 
+	
 				--------------------
 				-- Spellbook		-- handles the players Spells, such as CD, casttime, etc
 				--------------------	
@@ -162,7 +168,7 @@ if select(3, UnitClass("player")) == 8 then
 			if isChecked("Burn Phase") then
 				-- Todo : Fix the Simcraft logic for when to start burn, atm it is hardcoded to 20 seconds before CD on Evo is up, 
 										-- actions+=/call_action_list,name=burn,if=time_to_die<mana.pct*0.35*spell_haste|cooldown.evocation.remains<=(mana.pct-30)*0.3*spell_haste|(buff.arcane_power.up&cooldown.evocation.remains<=(mana.pct-30)*0.4*spell_haste)
-										--if (getTimeToDie("target") < playerMana*0.35*(1/playerHaste)) or (cdEvocation <= (playerMana-30)*0.3*(1/playerHaste)) or (playerBuffArcanePower and cdEvocation <= (playerMana-30)*0.4*(1/playerHaste)) then -- 
+										--if (getTimeToDie("target") < playerMana*0.35*(1/player.haste)) or (cdEvocation <= (playerMana-30)*0.3*(1/player.haste)) or (playerBuffArcanePower and cdEvocation <= (playerMana-30)*0.4*(1/player.haste)) then -- 
 				if playerSpellEvocationCD < 20 then
 					if ArcaneMageSingleTargetSimcraftBurn() then
 						return true
