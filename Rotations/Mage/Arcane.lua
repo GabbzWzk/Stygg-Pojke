@@ -23,7 +23,6 @@ if select(3, UnitClass("player")) == 8 then
 		------------------------------
 		if IsLeftShiftKeyDown() then -- Pause the script, keybind in wow shift+1 etc for manual cast
 			targets:update()
-			print("Targets Melee " ..targets.nrTargetsMelee)
 			return true
 		end
 
@@ -71,6 +70,7 @@ if select(3, UnitClass("player")) == 8 then
 				--			This is then not all these valeues here but rather player:update() will populate this values for use. So we can then use player.Haste, player.Buff.ArcanePower, player.Buff.ArcanePowerTimeLeft, etc
 				
 				player:update()
+				targets:update()
 				
 
 				

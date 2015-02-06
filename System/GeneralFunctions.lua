@@ -1,5 +1,49 @@
+function GetObjectExists(Unit)
+	if select(2,pcall(ObjectExists,Unit)) == 1 then
+    	return true
+  	else
+    	return false
+  	end
+end
+
+function GetObjectFacing(Unit)
+	if GetObjectExists(Unit) then
+    	return select(2,pcall(ObjectFacing,Unit))
+  	else
+    	return false
+  	end
+end
+
+function GetObjectPosition(Unit)
+	if GetObjectExists(Unit) then
+    	return select(2,pcall(ObjectPosition,Unit))
+  	else
+    	return false
+  	end
+end
+
+function GetObjectType(Unit)
+  	if GetObjectExists(Unit) then
+    	return select(2,pcall(ObjectType,Unit))
+  	else
+    	return false
+  	end
+end
+
+function GetObjectIndex(Index)
+  	if GetObjectExists(select(2,pcall(ObjectWithIndex,Index))) then
+    	return select(2,pcall(ObjectWithIndex,Index))
+  	else
+    	return false
+  	end
+end
+
+function GetObjectCount()
+	return select(2,pcall(ObjectCount))
+end
+
 function IGetLocation(Unit)
-	return ObjectPosition(Unit)
+	return GetGetObjectPosition(Unit)
 end
 
 function UnitBuffID(unit,spellID,filter)
@@ -388,7 +432,7 @@ function castGround(Unit,SpellID,maxDistance)
  		CastSpellByName(GetSpellInfo(SpellID),"player")
 		if IsAoEPending() then
 		--local distanceToGround = getGroundDistance(Unit) or 0
-		local X,Y,Z = ObjectPosition(Unit)
+		local X,Y,Z = GetObjectPosition(Unit)
 			CastAtPosition(X,Y,Z) --distanceToGround
 			return true
 		end
@@ -401,7 +445,7 @@ function castGroundBetween(Unit,SpellID,maxDistance)
 	if UnitExists(Unit) and getSpellCD(SpellID) <= 0.4 and getLineOfSight("player",Unit) and getDistance("player",Unit) <= maxDistance then
  		CastSpellByName(GetSpellInfo(SpellID),"player")
 		if IsAoEPending() then
-		local X,Y,Z = ObjectPosition(Unit)
+		local X,Y,Z = GetObjectPosition(Unit)
 			CastAtPosition(X,Y,Z)
 			return true
 		end
@@ -449,8 +493,8 @@ function castHealGround(SpellID,Radius,Health,NumberOfPlayers)
 		local lowHPTargets,foundTargets = { },{ }
 		for i = 1,#nNova do
 			if nNova[i].hp <= Health then
-				if UnitIsVisible(nNova[i].unit) and ObjectPosition(nNova[i].unit) ~= nil then
-					local X,Y,Z = ObjectPosition(nNova[i].unit)
+				if UnitIsVisible(nNova[i].unit) and GetObjectPosition(nNova[i].unit) ~= nil then
+					local X,Y,Z = GetObjectPosition(nNova[i].unit)
 					tinsert(lowHPTargets,{ unit = nNova[i].unit,x = X,y = Y,z = Z })
 		end end end
 		if #lowHPTargets >= NumberOfPlayers then
@@ -473,7 +517,7 @@ function castHealGround(SpellID,Radius,Health,NumberOfPlayers)
 					medZ = medZ + foundTargets[i].z
 				end
 				medX,medY,medZ = medX/3,medY/3,medZ/3
-				local myX,myY = ObjectPosition("player")
+				local myX,myY = GetObjectPosition("player")
 				if math.sqrt(((medX-myX)^2)+((medY-myY)^2)) < 40 then
 			 		CastSpellByName(GetSpellInfo(SpellID),"player")
 					if IsAoEPending() then
@@ -508,7 +552,7 @@ end
 -- castSpell("target",12345,true)
 --                ( 1  ,    2  ,     3     ,     4       ,      5    ,   6     ,   7     ,    8       ,   9    )
 function castSpell(Unit,SpellID,FacingCheck,MovementCheck,SpamAllowed,KnownSkip,DeadCheck,DistanceSkip,usableSkip)
-	if ObjectExists(Unit) and betterStopCasting(SpellID) ~= true
+	if GetObjectExists(Unit) and betterStopCasting(SpellID) ~= true
       and (not UnitIsDeadOrGhost(Unit) or DeadCheck) then
 		-- we create an usableSkip for some specific spells like hammer of wrath aoe mode
         if usableSkip == nil then
@@ -740,7 +784,7 @@ end
 -- if getDistance("player","target") <= 40 then
 function getDistance(Unit1,Unit2)
 	-- If both units are visible
-	if ObjectExists(Unit1) and UnitIsVisible(Unit1) == true and (Unit2 == nil or (ObjectExists(Unit2) and UnitIsVisible(Unit2) == true)) then
+	if GetObjectExists(Unit1) and UnitIsVisible(Unit1) == true and (Unit2 == nil or (GetObjectExists(Unit2) and UnitIsVisible(Unit2) == true)) then
 		-- If Unit2 is nil we compare player to Unit1
 		if Unit2 == nil then
             Unit2 = Unit1
@@ -751,8 +795,8 @@ function getDistance(Unit1,Unit2)
 			return rc:GetRange(Unit2) or 1000
         -- else, we use FH positions
 		else
-            local X1,Y1,Z1 = ObjectPosition(Unit1)
-            local X2,Y2,Z2 = ObjectPosition(Unit2)
+            local X1,Y1,Z1 = GetObjectPosition(Unit1)
+            local X2,Y2,Z2 = GetObjectPosition(Unit2)
             return math.sqrt(((X2-X1)^2) + ((Y2-Y1)^2) + ((Z2-Z1)^2)) - ((UnitCombatReach(Unit1)) + (UnitCombatReach(Unit2)))
 		end
 	else
@@ -761,10 +805,10 @@ function getDistance(Unit1,Unit2)
 end
 
 function getRealDistance(Unit1,Unit2)
-	if ObjectExists(Unit1) and UnitIsVisible(Unit1) == true
-      and ObjectExists(Unit2) and UnitIsVisible(Unit2) == true then
-		local X1,Y1,Z1 = ObjectPosition(Unit1)
-		local X2,Y2,Z2 = ObjectPosition(Unit2)
+	if GetObjectExists(Unit1) and UnitIsVisible(Unit1) == true
+      and GetObjectExists(Unit2) and UnitIsVisible(Unit2) == true then
+		local X1,Y1,Z1 = GetObjectPosition(Unit1)
+		local X2,Y2,Z2 = GetObjectPosition(Unit2)
         return math.sqrt(((X2-X1)^2) + ((Y2-Y1)^2) + ((Z2-Z1)^2)) - (UnitCombatReach(Unit1) + UnitCombatReach(Unit2))
 	else
 		return 100
@@ -776,7 +820,7 @@ function getDistanceToObject(Unit1,X2,Y2,Z2)
 		Unit1 = "player"
 	end
 	if ObjectExists(Unit1) and UnitIsVisible(Unit1) then
-		local X1,Y1 = ObjectPosition(Unit1)
+		local X1,Y1 = GetObjectPosition(Unit1)
 		return math.sqrt(((X2-X1)^2) + ((Y2-Y1)^2) + ((Z2-Z1)^2))
 	else
 		return 100
@@ -828,12 +872,12 @@ function getFacing(Unit1,Unit2,Degrees)
 	if Unit2 == nil then
 		Unit2 = "player"
 	end
-	if ObjectExists(Unit1) and UnitIsVisible(Unit1) and ObjectExists(Unit2) and UnitIsVisible(Unit2) then
+	if GetObjectExists(Unit1) and UnitIsVisible(Unit1) and GetObjectExists(Unit2) and UnitIsVisible(Unit2) then
 		local Angle1,Angle2,Angle3
-		local Angle1 = ObjectFacing(Unit1)
-		local Angle2 = ObjectFacing(Unit2)
-		local Y1,X1,Z1 = ObjectPosition(Unit1)
-        local Y2,X2,Z2 = ObjectPosition(Unit2)
+		local Angle1 = GetObjectFacing(Unit1)
+		local Angle2 = GetObjectFacing(Unit2)
+		local Y1,X1,Z1 = GetObjectPosition(Unit1)
+        local Y2,X2,Z2 = GetObjectPosition(Unit2)
 	    if Y1 and X1 and Z1 and Angle1 and Y2 and X2 and Z2 and Angle2 then
 	        local deltaY = Y2 - Y1
 	        local deltaX = X2 - X1
@@ -873,7 +917,7 @@ end
 
 -- if getHP("player") then
 function getHP(Unit)
-    if ObjectExists(Unit) then
+    if GetObjectExists(Unit) then
     	if not UnitIsDeadOrGhost(Unit) and UnitIsVisible(Unit) then
         	for i = 1,#nNova do
         		if nNova[i].guidsh == string.sub(UnitGUID(Unit),-5) then
@@ -955,10 +999,10 @@ function getTotemDistance(Unit1)
 		for i = 1,ObjectCount() do
             --print(UnitGUID(ObjectWithIndex(i)))
             if activeTotem == UnitGUID(ObjectWithIndex(i)) then
-                X2,Y2,Z2 = ObjectPosition(ObjectWithIndex(i))
+                X2,Y2,Z2 = GetObjectPosition(ObjectWithIndex(i))
             end
 		end
-		local X1,Y1,Z1 = ObjectPosition(Unit1)
+		local X1,Y1,Z1 = GetObjectPosition(Unit1)
 
 		TotemDistance = math.sqrt(((X2-X1)^2)+((Y2-Y1)^2)+((Z2-Z1)^2))
 
@@ -975,7 +1019,7 @@ function getBossID(BossUnitID)
 end
 
 function getUnitID(Unit)
-    if ObjectExists(Unit) and UnitIsVisible(Unit) then
+    if GetObjectExists(Unit) and UnitIsVisible(Unit) then
         local id = select(6,strsplit("-", UnitGUID(Unit) or ""))
         return tonumber(id)
     end
@@ -1004,9 +1048,9 @@ function getLineOfSight(Unit1,Unit2)
 			return true
 		end
 	end
-	if ObjectExists(Unit1) and UnitIsVisible(Unit1) and ObjectExists(Unit2) and UnitIsVisible(Unit2) then
-		local X1,Y1,Z1 = ObjectPosition(Unit1)
-		local X2,Y2,Z2 = ObjectPosition(Unit2)
+	if GetObjectExists(Unit1) and UnitIsVisible(Unit1) and GetObjectExists(Unit2) and UnitIsVisible(Unit2) then
+		local X1,Y1,Z1 = GetObjectPosition(Unit1)
+		local X2,Y2,Z2 = GetObjectPosition(Unit2)
 		if TraceLine(X1,Y1,Z1 + 2,X2,Y2,Z2 + 2, 0x10) == nil then
 			return true
 		else
@@ -1019,8 +1063,8 @@ end
 
 -- if getGround("target"[,"target"]) then
 function getGround(Unit)
-	if ObjectExists(Unit) and UnitIsVisible(Unit) then
-		local X1,Y1,Z1 = ObjectPosition(Unit)
+	if GetObjectExists(Unit) and UnitIsVisible(Unit) then
+		local X1,Y1,Z1 = GetObjectPosition(Unit)
 		if TraceLine(X1,Y1,Z1,X1,Y1,Z1-2, 0x10) == nil and TraceLine(X1,Y1,Z1,X1,Y1,Z1-2, 0x100) == nil then
 			return nil
 		else
@@ -1030,8 +1074,8 @@ function getGround(Unit)
 end
 
 function getGroundDistance(Unit)
-	if ObjectExists(Unit) and UnitIsVisible(Unit) then
-		local X1,Y1,Z1 = ObjectPosition(Unit)
+	if GetObjectExists(Unit) and UnitIsVisible(Unit) then
+		local X1,Y1,Z1 = GetObjectPosition(Unit)
 		for i = 1,100 do
 			if TraceLine(X1,Y1,Z1,X1,Y1,Z1-i/10, 0x10) ~= nil or TraceLine(X1,Y1,Z1,X1,Y1,Z1-i/10, 0x100) ~= nil then
 				return i/10
@@ -1042,9 +1086,9 @@ end
 
 -- if getPetLineOfSight("target"[,"target"]) then
 function getPetLineOfSight(Unit)
-	if ObjectExists(Unit) and UnitIsVisible("pet") and UnitIsVisible(Unit) then
-		local X1,Y1,Z1 = ObjectPosition("pet")
-		local X2,Y2,Z2 = ObjectPosition(Unit)
+	if GetObjectExists(Unit) and UnitIsVisible("pet") and UnitIsVisible(Unit) then
+		local X1,Y1,Z1 = GetObjectPosition("pet")
+		local X2,Y2,Z2 = GetObjectPosition(Unit)
 		if TraceLine(X1,Y1,Z1 + 2,X2,Y2,Z2 + 2, 0x10) == nil then
 			return true
 		else
@@ -1092,7 +1136,7 @@ function getTimeToDie(unit)
 	if timestart == nil then
 		timestart = 0
 	end
-	if ObjectExists(unit) and UnitIsVisible(unit) and not UnitIsDeadOrGhost(unit) then
+	if GetObjectExists(unit) and UnitIsVisible(unit) and not UnitIsDeadOrGhost(unit) then
 		if currtar ~= UnitGUID(unit) then
 			priortar = currtar
 			currtar = UnitGUID(unit)
@@ -1114,7 +1158,7 @@ function getTimeToDie(unit)
 				end
 			end
 		end
-	elseif not ObjectExists(Unit) or not UnitIsVisible(unit) or currtar ~= UnitGUID(unit) then
+	elseif not GetObjectExists(Unit) or not UnitIsVisible(unit) or currtar ~= UnitGUID(unit) then
 		currtar = 0
 		priortar = 0
 		thpstart = 0
@@ -1141,7 +1185,7 @@ function getTimeTo(unit,percent)
   if ttptimestart == nil then
     ttptimestart = 0
   end
-  if ObjectExists(unit) and UnitIsVisible(unit) and not UnitIsDeadOrGhost(unit) then
+  if GetObjectExists(unit) and UnitIsVisible(unit) and not UnitIsDeadOrGhost(unit) then
     if ttpcurrtar ~= UnitGUID(unit) then
       ttppriortar = currtar
       ttpcurrtar = UnitGUID(unit)
@@ -1165,7 +1209,7 @@ function getTimeTo(unit,percent)
         end
       end
     end
-  elseif not ObjectExists(Unit) or not UnitIsVisible(unit) or ttpcurrtar ~= UnitGUID(unit) then
+  elseif not GetObjectExists(Unit) or not UnitIsVisible(unit) or ttpcurrtar ~= UnitGUID(unit) then
     ttpcurrtar = 0
     ttppriortar = 0
     ttpthpstart = 0
@@ -1817,7 +1861,7 @@ function getLoot2()
     if looted == nil then looted = 0 end
     if lM:emptySlots() then
         for i=1,ObjectCount() do
-            if bit.band(ObjectType(ObjectWithIndex(i)), ObjectTypes.Unit) == 8 then
+            if bit.band(GetObjectType(ObjectWithIndex(i)), ObjectTypes.Unit) == 8 then
                 local thisUnit = ObjectWithIndex(i)
                 local hasLoot,canLoot = CanLootUnit(UnitGUID(thisUnit))
                 local inRange = getRealDistance("player",thisUnit) < 2
@@ -1939,7 +1983,7 @@ end
 
 -- if isCasting(12345,"target") then
 function isCasting(SpellID,Unit)
-	if ObjectExists(Unit) and UnitIsVisible(Unit) then
+	if GetObjectExists(Unit) and UnitIsVisible(Unit) then
 		if isCasting(tostring(GetSpellInfo(SpellID)),Unit) == 1 then
 			return true
 		end
@@ -1997,7 +2041,7 @@ function pause()
         pausekey = SpecificToggle("Pause Mode")
     end
     if isChecked("DPS Testing")~=nil then
-        if ObjectExists("target") and isInCombat("player") then
+        if GetObjectExists("target") and isInCombat("player") then
             if getCombatTime() >= (tonumber(getOptionValue("DPS Testing"))*60) and isDummy() then
                 StopAttack()
                 ClearTarget()
@@ -2007,7 +2051,7 @@ function pause()
                 profileStop = false
             end
         elseif not isInCombat("player") and profileStop==true then
-            if ObjectExists("target") then
+            if GetObjectExists("target") then
                 StopAttack()
                 ClearTarget()
                 profileStop=false

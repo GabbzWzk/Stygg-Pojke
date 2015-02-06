@@ -76,5 +76,9 @@ function targets:update()
     -- FlameStrike, 40 yards, yard?
 
     --targets.nrTargetsAroundTarget7Yards = #getEnemies(self.units.dyn5,7)
+
+    if not UnitExists("target") or UnitIsDead("target") or UnitIsFriend("player","target") then
+        TargetUnit(targets.unitsdyn40)
+    end
                 
 end

@@ -97,7 +97,7 @@ function lootManager:getLoot()
         if UnitCastingInfo("player") == nil and UnitChannelInfo("player") == nil and DontMoveStartTime and GetTime() - DontMoveStartTime > 0 then
             -- if we have a unit to loot, check if its time to
             if lM.canLootUnit and lM.canLootTimer and lM.canLootTimer <= GetTime() - getOptionValue("Auto Loot") then
-                if ObjectExists(lM.canLootUnit) and looted == 0 then
+                if GetObjectExists(lM.canLootUnit) and looted == 0 then
                     -- make sure the user have the auto loot selected, if its not ,we will enable it when we need it
                     if GetCVar("autoLootDefault") == "0" then
                         SetCVar("autoLootDefault", "1")
@@ -120,8 +120,8 @@ function lootManager:getLoot()
             -- find an unit to loot
             elseif lM.canLootUnit == nil and (not lM.canLootTimer or lM.canLootTimer < GetTime()) then
                 lM:debug("Find Unit")
-                for i = 1,ObjectCount() do
-                    if bit.band(ObjectType(ObjectWithIndex(i)), ObjectTypes.Unit) == 8 then
+                for i = 1,GetObjectCount() do
+                    if bit.band(GetObjectType(ObjectWithIndex(i)), ObjectTypes.Unit) == 8 then
                         local thisUnit = ObjectWithIndex(i)
                         local hasLoot,canLoot = CanLootUnit(UnitGUID(thisUnit))
                         local inRange = getRealDistance("player",thisUnit) < 2

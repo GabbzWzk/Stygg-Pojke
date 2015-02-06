@@ -96,7 +96,6 @@ print("Mage Rotations")
 -- ArcaneMageSingleTargetSimcraftConserve() 
 --------------------------
 function ArcaneMageSingleTargetSimcraftConserve()
-	print("TESt")
 	--actions.conserve=call_action_list,name=cooldowns,if=time_to_die<30|(buff.arcane_charge.stack=4&(!talent.prismatic_crystal.enabled|cooldown.prismatic_crystal.remains>15))
 	-- Todo: we should here use CDs if target is about to die
 
@@ -167,7 +166,6 @@ function ArcaneMageSingleTargetSimcraftConserve()
 		end
 	end
 	
-
 	--actions.conserve+=/nether_tempest,cycle_targets=1,if=target!=prismatic_crystal&buff.arcane_charge.stack=4&(active_dot.nether_tempest=0|(ticking&remains<(10-3*talent.arcane_orb.enabled)*spell_haste))
 	-- Todo : Here we need to check if TTD on target is more then 10 seconds, we should also compare the current Nether Tempest target and see if
 	-- 			there is a better target in 40 yards that have a more enemies around him.

@@ -391,7 +391,7 @@ function cl:Shaman(...) -- 7
     --[[ Fire Totem ]]
     if source == bb.guid and  param == "SPELL_SUMMON" and (spell == _SearingTotem or spell == _MagmaTotem) then
     	activeTotem = destination
-    	activeTotemPosition = ObjectPosition("player")
+    	activeTotemPosition = GetObjectPosition("player")
     end
     if param == "UNIT_DESTROYED" and activeTotem == destination then
     	activeTotem = nil

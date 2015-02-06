@@ -28,7 +28,7 @@ function makeEnemiesTable(maxDistance)
 			table.wipe(enemiesTable)
 		end
 		-- use objectmanager to build up table
-	 	for i = 1, ObjectCount() do
+	 	for i = 1, GetObjectCount() do
 	 		-- define our unit
 		  	local thisUnit = ObjectWithIndex(i)
 	 		-- sanity checks
@@ -46,7 +46,7 @@ function makeEnemiesTable(maxDistance)
 		  			local shouldCC = isCrowdControlCandidates(thisUnit)
 	  				local unitThreat = UnitThreatSituation("player",thisUnit) or -1
 	  				local shieldValue = isShieldedTarget(thisUnit) or 0
-	  				local X1,Y1,Z1 = ObjectPosition(thisUnit)
+	  				local X1,Y1,Z1 = GetObjectPosition(thisUnit)
 					local unitCoeficient = getUnitCoeficient(thisUnit,unitDistance,unitThreat,burnValue,shieldValue) or 0
   					local unitHP = getHP(thisUnit)
   					local inCombat = UnitAffectingCombat(thisUnit)
@@ -94,7 +94,7 @@ end
 function cleanupEngine()
 	for i = #enemiesTable, 1, -1 do
 		-- here i want to scan the enemies table and find any occurances of invalid units
-		if not ObjectExists(enemiesTable[i].unit) then
+		if not GetObjectExists(enemiesTable[i].unit) then
 			-- i will remove such units from table
 			tremove(enemiesTable,i)
 		end
@@ -109,7 +109,7 @@ function dynamicTarget(range,facing)
 		local bestUnit = "target"
 		for i = 1, #enemiesTable do
 			local thisUnit = enemiesTable[i]
-			if ObjectExists(thisUnit.unit) then
+			if GetObjectExists(thisUnit.unit) then
 				if (not safeCheck or thisUnit.safe) and thisUnit.isCC == false and thisUnit.distance < range and (facing == false or thisUnit.facing == true) then
 					if thisUnit.coeficient >= 0 and thisUnit.coeficient >= bestUnitCoef then
 						bestUnitCoef = thisUnit.coeficient
@@ -159,7 +159,7 @@ end
 
 -- to enlight redundant checks in getDistance within getEnemies
 function getDistanceXYZ(unit1,unit2)
-	local x1, y1, z1 = ObjectPosition(unit1)
+	local x1, y1, z1 = GetObjectPosition(unit1)
 	local x2, y2, z2 = enemiesTable[unit2].x, enemiesTable[unit2].y, enemiesTable[unit2].z
 	return math.sqrt(((x2-x1)^2)+((y2-y1)^2)+((z2-z1)^2));
 end
@@ -167,7 +167,7 @@ end
 -- /dump UnitGUID("target")
 -- /dump getEnemies("target",10)
 function getEnemies(unit,Radius)
-	if ObjectExists(unit) and UnitIsVisible(unit) then
+	if GetObjectExists(unit) and UnitIsVisible(unit) then
 		local getEnemiesTable = { }
 	 	for i = 1, #enemiesTable do
 	 		thisUnit = enemiesTable[i].unit
@@ -183,7 +183,7 @@ end
 
 -- returns true if unit have an Offensive Buff that we should dispel
 function getOffensiveBuffs(unit,guid)
-	if ObjectExists(unit) then
+	if GetObjectExists(unit) then
 		local targets = bb.read.enraged
 		for i = 1,#targets do
 			if guid == targets[i].guid then
@@ -196,7 +196,7 @@ end
 
 -- returns true if Unit is a valid enemy
 function getSanity(unit)
-	if unit ~=nil and ObjectExists(unit) and bit.band(ObjectType(unit), ObjectTypes.Unit) == 8
+	if unit ~=nil and GetObjectExists(unit) and bit.band(GetObjectType(unit), ObjectTypes.Unit) == 8
 	  and UnitIsVisible(unit) == true and getCreatureType(unit) == true
 	  and UnitCanAttack(unit, "player") == true and UnitIsDeadOrGhost(unit) == false
 	  and (UnitAffectingCombat(unit) or isDummy(unit)) then

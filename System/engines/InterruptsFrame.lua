@@ -104,7 +104,7 @@ function castAoEInterrupt(spell,targets,radius)
 		-- iterate casters and find best occurance to cast on
 		local bestAoEInterruptTarget,bestAoEInterruptUnits = casters[1].unit,0
 		for i = 1, #casters do
-			if ObjectExists(casters[i].unit) then
+			if GetObjectExists(casters[i].unit) then
 				local thisCaster = casters[i]
 				if selectedMode == 4 or isSelectedTarget(thisCaster.guid) then
 					-- make sure unit is in a cluster > targets
@@ -120,7 +120,7 @@ function castAoEInterrupt(spell,targets,radius)
 				end
 			end
 		end
-		if bestAoEInterruptUnits > targets and ObjectExists(bestAoEInterruptTarget) then
+		if bestAoEInterruptUnits > targets and GetObjectExists(bestAoEInterruptTarget) then
 			if castSpell(bestAoEInterruptTarget,spell,false,false) then
 				im:debug("Cast AoE Interrupt on "..bestAoEInterruptTarget.."("..bestAoEInterruptUnits..") with "..spell..".",true)
 				return true
@@ -152,7 +152,7 @@ function castInterrupt(spell,percent,keepInfo)
 		end
 
 		for i = 1, #casters do
-			if ObjectExists(casters[i].unit) then
+			if GetObjectExists(casters[i].unit) then
 				local thisCaster = casters[i]
 				if selectedMode == 4 or isSelectedTarget(thisCaster.guid) then
 					-- make sure we can interupt this spell
@@ -209,7 +209,7 @@ function im:manageCast(...)
 	-- Prepare GUID to be reused via UnitID
 	if enemiesTable and #enemiesTable > 0 then
 		for i = #enemiesTable,1,-1 do
-			if enemiesTable[i] and enemiesTable[i].unit and sourceGUID == enemiesTable[i].guid and ObjectExists(enemiesTable[i].unit) then
+			if enemiesTable[i] and enemiesTable[i].unit and sourceGUID == enemiesTable[i].guid and GetObjectExistsExists(enemiesTable[i].unit) then
 				local thisUnit = enemiesTable[i]
 				-- gather our infos
 				if getOptionCheck("Only Known Units") and not isInteruptCandidate(thisUnit.unit, spellID) then
@@ -224,7 +224,7 @@ function im:manageCast(...)
 					end
 					-- Send to table
 		  			local unitCasting,unitCastLenght,unitCastTime,unitCantBeInterrupt,unitCastType = getCastingInfo(thisUnit.unit)
-		  			local X1,Y1,Z1 = ObjectPosition(thisUnit.unit)
+		  			local X1,Y1,Z1 = GetObjectPosition(thisUnit.unit)
 					tinsert(casters,
 	        			{
 	        				cast = spellID,
@@ -310,8 +310,8 @@ end
 -- function that return frange from thisCaster to thatCaster using their stored positions
 function getRealDistance(thatCaster,thisCaster)
 	local thatCaster,thisCaster = thatCaster,thisCaster
-	if ObjectExists(thatCaster.unit) and UnitIsVisible(thatCaster.unit) == true
-      and ObjectExists(thisCaster.unit) and UnitIsVisible(thisCaster.unit) == true then
+	if GetObjectExists(thatCaster.unit) and UnitIsVisible(thatCaster.unit) == true
+      and GetObjectExists(thisCaster.unit) and UnitIsVisible(thisCaster.unit) == true then
 		local X1,Y1,Z1 = thatCaster.pos
 		local X2,Y2,Z2 = thisCaster.pos
         return math.sqrt(((X2-X1)^2) + ((Y2-Y1)^2) + ((Z2-Z1)^2))
