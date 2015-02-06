@@ -16,8 +16,8 @@ print("Mage Rotations")
 		-- Conserve Rotation
 		-- There is a function check that cancels the Evocation, but we only check if we are over 93%
 
+function ArcaneMagePrepull()
 --# Executed before combat begins. Accepts non-harmful actions only.
-
 --actions.precombat=flask,type=greater_draenic_intellect_flask
 --actions.precombat+=/food,type=sleeper_surprise
 --actions.precombat+=/arcane_brilliance
@@ -26,6 +26,7 @@ print("Mage Rotations")
 --actions.precombat+=/mirror_image
 --actions.precombat+=/potion,name=draenic_intellect
 --actions.precombat+=/arcane_blast
+end
 
 --# Executed every time the actor is available.
 
@@ -44,11 +45,14 @@ print("Mage Rotations")
 --actions+=/call_action_list,name=burn,if=time_to_die<mana.pct*0.35*spell_haste|cooldown.evocation.remains<=(mana.pct-30)*0.3*spell_haste|(buff.arcane_power.up&cooldown.evocation.remains<=(mana.pct-30)*0.4*spell_haste)
 --actions+=/call_action_list,name=conserve
 
+function ArcaneMageInitPrismaticCrystal()
 --# Conditions for initiating Prismatic Crystal
 --actions.init_crystal=call_action_list,name=conserve,if=buff.arcane_charge.stack<4
 --actions.init_crystal+=/prismatic_crystal,if=buff.arcane_charge.stack=4&cooldown.arcane_power.remains<0.5
 --actions.init_crystal+=/prismatic_crystal,if=glyph.arcane_power.enabled&buff.arcane_charge.stack=4&cooldown.arcane_power.remains>75
+end
 
+function ArcaneMageExecutePrismaticCrystalRotation()
 --# Actions while Prismatic Crystal is active
 --actions.crystal_sequence=call_action_list,name=cooldowns
 --actions.crystal_sequence+=/nether_tempest,if=buff.arcane_charge.stack=4&!ticking&pet.prismatic_crystal.remains>8
@@ -59,6 +63,7 @@ print("Mage Rotations")
 --actions.crystal_sequence+=/supernova,if=pet.prismatic_crystal.remains<action.arcane_blast.cast_time
 --actions.crystal_sequence+=/choose_target,if=pet.prismatic_crystal.remains<action.arcane_blast.cast_time&buff.presence_of_mind.down
 --actions.crystal_sequence+=/arcane_blast
+end
 
 --# Consolidated damage cooldown abilities
 --actions.cooldowns=arcane_power
@@ -77,20 +82,112 @@ print("Mage Rotations")
 --actions.aoe+=/cone_of_cold,if=glyph.cone_of_cold.enabled
 --actions.aoe+=/arcane_explosion
 
---# High mana usage, "Burn" sequence
---actions.burn=call_action_list,name=cooldowns
---actions.burn+=/arcane_missiles,if=buff.arcane_missiles.react=3
---actions.burn+=/arcane_missiles,if=set_bonus.tier17_4pc&buff.arcane_instability.react&buff.arcane_instability.remains<action.arcane_blast.execute_time
---actions.burn+=/supernova,if=time_to_die<8|charges=2
---actions.burn+=/nether_tempest,cycle_targets=1,if=target!=prismatic_crystal&buff.arcane_charge.stack=4&(active_dot.nether_tempest=0|(ticking&remains<3.6))
---actions.burn+=/arcane_orb,if=buff.arcane_charge.stack<4
---actions.burn+=/presence_of_mind,if=mana.pct>96&(!talent.prismatic_crystal.enabled|!cooldown.prismatic_crystal.up)
---actions.burn+=/arcane_blast,if=buff.arcane_charge.stack=4&mana.pct>93
---actions.burn+=/arcane_missiles,if=buff.arcane_charge.stack=4&(mana.pct>70|!cooldown.evocation.up)
---actions.burn+=/supernova,if=mana.pct>70&mana.pct<96
 
 
+------------------------------
+-- Arcane Mage Burn Phase Rotation
+----------------------------
 
+function ArcaneMageSingleTargetSimcraftBurn()
+	
+	--# High mana usage, "Burn" sequence
+	-- actions.burn=call_action_list,name=cooldowns
+	if BadRobot_data['Cooldowns'] == 2 and arcaneCharge > 3 then
+		ArcaneMageCooldowns()
+	end
+	
+	--actions.burn+=/arcane_missiles,if=buff.arcane_missiles.react=3
+	if stacksArcaneMisslesP == 3 then
+		if castSpell("target",ArcaneMissiles,false,true) then
+			return true
+		end
+	end
+
+	--actions.burn+=/arcane_missiles,if=set_bonus.tier17_4pc&buff.arcane_instability.react&buff.arcane_instability.remains<action.arcane_blast.execute_time
+	--if UnitBuffID("player",T17_4P_Arcane) and getBuffRemain("player",T17_4P_Arcane) < castTimeArcaneBlast then
+	--	if castSpell("target",ArcaneMissiles,false,false) then
+	--		return true
+	--	end
+	--end
+	
+	-- actions.burn+=/supernova,if=time_to_die<8|charges=2
+	if isKnownSupernova then					
+		if chargesSuperNova > 1 then
+			if castSpell("target",Supernova,false,false) then
+				return true
+			end
+		end
+	end	
+	
+	--actions.burn+=/nether_tempest,cycle_targets=1,if=target!=prismatic_crystal&buff.arcane_charge.stack=4&(active_dot.nether_tempest=0|(ticking&remains<3.6))
+	if UnitName("target") == "Prismatic Crystal" and arcaneCharge > 3 and (not UnitDebuffID("target",NetherTempest) or ((UnitDebuffID("target",NetherTempest) and getDebuffRemain("target",NetherTempest)<3.6))) then
+		if castSpell("target",NetherTempest,true,false) then
+			return true
+		end
+	end
+	
+	--actions.burn+=/arcane_orb,if=buff.arcane_charge.stack<4
+	if castArcaneOrb("target", 3) then
+		return true
+	end
+
+	-- Todo : Still valid? Should not be here in burn if PRismatic Crystal is up
+	if isKnownSupernova and chargesSuperNova > 0 then
+		if UnitName("target") == "Prismatic Crystal" then
+			if castSpell("target",Supernova,false,false) then
+				return true
+			end
+		end
+	end
+
+	--actions.burn+=/presence_of_mind,if=mana.pct>96&(!talent.prismatic_crystal.enabled|!cooldown.prismatic_crystal.up)
+	if player.mana > 96 and (not playerSpellPrismaticCrystalIsKnown or playerSpellPrismaticCrystalCD > 0)  then
+		if castSpell("player",PresenceOfMind,true,false) then
+			return true
+		end
+	end
+	
+	--actions.burn+=/arcane_blast,if=buff.arcane_charge.stack=4&mana.pct>93
+	if arcaneCharge > 3 and player.mana > getValue("ArcaneBlast (x4)") then
+		if castSpell("target",ArcaneBlast,false,true) then
+			return true
+		end
+	end	
+
+	--Todod : actions.burn+=/arcane_missiles,if=buff.arcane_charge.stack=4&(mana.pct>70|!cooldown.evocation.up)
+	
+	--actions.burn+=/supernova,if=mana.pct>70&mana.pct<96
+	if isKnownSupernova and chargesSuperNova > 0 then
+		if (player.mana < 96) and (player.mana > 70) then
+			if castSpell("target",Supernova,false,false) then
+				return true
+			end
+		end
+	end
+	
+	--# APL hack for evocation interrupt
+	--actions.burn+=/call_action_list,name=conserve,if=cooldown.evocation.duration-cooldown.evocation.remains<5
+
+	--actions.burn+=/evocation,interrupt_if=mana.pct>92,if=time_to_die>10&mana.pct<50
+	if player.mana < 50 then
+		if castSpell("player",Evocation,true,false) then
+			return true
+		end
+	end
+	
+	--actions.burn+=/presence_of_mind,if=!talent.prismatic_crystal.enabled|!cooldown.prismatic_crystal.up
+	if not playerSpellPrismaticCrystalIsKnown or playerSpellPrismaticCrystalCD > 0 then
+		if castSpell("player",PresenceOfMind,true,false) then
+			return true
+		end
+	end
+	--actions.burn+=/arcane_blast
+	if castArcaneBlast("target") then
+		return true
+	end
+
+	return false
+end
 
 --------------------------
 -- ArcaneMageSingleTargetSimcraftConserve() 
