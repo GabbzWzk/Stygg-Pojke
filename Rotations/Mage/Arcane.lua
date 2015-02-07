@@ -81,6 +81,8 @@ if select(3, UnitClass("player")) == 8 then
 				playerBuffArcaneMissile			= UnitBuffID("player",ArcaneMissilesP)
 				stacksArcaneMisslesP			= getBuffStacks("player",ArcaneMissilesP)
 				arcaneCharge 					= Charge()
+				playerBuffPyroBlast				= UnitBuffID("player",PyroblastBuff)
+				playerBuffHeatingUp				= UnitBuffID("player",HeatingUp)
 				
 				--player Spells
 				playerSpellPrismaticCrystalIsKnown	= isKnown(PrismaticCrystal) 

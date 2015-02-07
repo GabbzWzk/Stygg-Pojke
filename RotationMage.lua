@@ -297,3 +297,61 @@ function ArcaneMageSingleTargetSimcraftConserve()
 		end
 	end
 end
+--------------------------
+-- FIRESINGLETARGET() 
+--------------------------
+function FireSingleTarget()
+
+--# Single target sequence
+--actions.single_target=inferno_blast,if=
+--(dot.combustion.ticking&active_dot.combustion<active_enemies)|(dot.living_bomb.ticking&active_dot.living_bomb<active_enemies)
+    if (targetDebuffCombustion and targetNumberOfEnemiesinCombustionRange > 0) or (targetDebuffLivingBombRemain > 0 and targetNumberOfEnemiesinLBRange > 0) then
+        if castSpell(target, InfernoBlast, false, false) then
+          return true
+        end
+    end
+--# Use Pyro procs before they run out
+--actions.single_target+=/pyroblast,if=buff.pyroblast.up&buff.pyroblast.remains<action.fireball.execute_time
+    if playerBuffPyroBlast and playerBuffPyroBlastTimeLeft < 2  then 
+        CastSpellByName("Pyroblast", target)
+        return true
+    end
+--actions
+--actions.single_target+=/pyroblast,if=set_bonus.tier16_2pc_caster&buff.pyroblast.up&buff.potent_flames.up&buff.potent_flames.remains<gcd.max
+--actions.single_target+=/pyroblast,if=set_bonus.tier17_4pc&buff.pyromaniac.react
+
+--# Pyro camp during regular sequence; Do not use Pyro procs without HU and first using fireball
+--actions.single_target+=/pyroblast,if=buff.pyroblast.up&buff.heating_up.up&action.fireball.in_flight
+    if playerBuffPyroBlast and playerBuffHeatingUp then -- Todo :action.fireball.in_flight FIREBALL SKALL VARA I FLIGHT!
+        CastSpellByName("Pyroblast", target)
+        return true
+    end
+--actions.single_target+=/inferno_blast,if=buff.pyroblast.down&buff.heating_up.up
+    if not playerBuffPyroBlast and playerBuffHeatingUp then -- Todo :!action.fireball.in_flight
+        if castInfernoBlast(target) then
+          return true
+      	end
+    end
+--actions.single_target+=/call_action_list,name=active_talents
+    if castLivingBomb(target) then
+        return true
+    end
+--actions.single_target+=/inferno_blast,if=buff.pyroblast.up&buff.heating_up.down&!action.fireball.in_flight
+    if playerBuffPyroBlast and not playerBuffHeatingUp then -- Todo :!action.fireball.in_flight
+        if castInfernoBlast(target) then
+          return true
+      end
+    end
+--actions.single_target+=/fireball
+	if not player.isMoving then
+		if castFireball("target") then
+			return true
+		end
+	end
+--actions.single_target+=/scorch,moving=1
+	if player.isMoving  then
+		if castScorch("target") then
+			return true
+		end
+	end
+end
