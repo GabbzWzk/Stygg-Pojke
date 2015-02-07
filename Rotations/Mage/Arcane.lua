@@ -82,7 +82,8 @@ if select(3, UnitClass("player")) == 8 then
 				arcaneCharge 					= Charge()
 				playerBuffPyroBlast				= UnitBuffID("player",PyroblastBuff)
 				playerBuffHeatingUp				= UnitBuffID("player",HeatingUp)
-				
+				playerBuffPyroBlastTimeLeft		= getBuffRemain("player",PyroBlast)
+
 				--player Spells
 				playerSpellPrismaticCrystalIsKnown	= isKnown(PrismaticCrystal) 
 				playerSpellPrismaticCrystalCD 		= getSpellCD(PrismaticCrystal)	--Todo : Replace with this
@@ -106,6 +107,7 @@ if select(3, UnitClass("player")) == 8 then
 				
 				chargesSuperNova					= GetSpellCharges(Supernova) or 0
 				reChargeSuperNova					= getRecharge(Supernova) or 0
+				targetDebuffIgnite					= UnitDebuffID("target", Ignite , "player")	
 
 	
 				--------------------

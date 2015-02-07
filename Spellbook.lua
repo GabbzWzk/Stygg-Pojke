@@ -99,6 +99,7 @@ function spellbook:init()
 	T17_4P_Frost	= 165469
 	T17_4P_Arcane	= 166872  -- Arcane Instability
 
+
 end
 
 function spellbook.update(SpellID, event)
