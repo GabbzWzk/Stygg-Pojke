@@ -231,26 +231,10 @@ if select(3, UnitClass("player")) == 8 then
 		end 
 	end
 	function castLivingBomb(target)
-		-- # Living Bomb application
-		-- actions.living_bomb=inferno_blast,cycle_targets=1,if=dot.living_bomb.ticking&active_dot.living_bomb<active_enemies
-		if targetDebuffLivingBombRemain > 0 and targetNumberOfEnemiesinLBRange > 0 then 
-			if castSpell(target, InfernoBlast, false, false) then
-				return true
-			end
-		end 
-
-		-- actions.living_bomb+=/living_bomb,cycle_targets=1, if=target!=prismatic_crystal&(active_dot.living_bomb=0|(ticking&active_dot.living_bomb=1))&(((!talent.incanters_flow.enabled|incanters_flow_dir<0|buff.incanters_flow.stack=5)&remains<3.6)|((incanters_flow_dir>0|buff.incanters_flow.stack=1)&remains<gcd.max))&target.time_to_die>remains+12
-		if targetName ~= "Prismatic Crystal" and targetTimeToDie > (12 + targetDebuffLivingBombRemain) and targetDebuffLivingBombRemain < 3.6 then
-			if (not spellIncantersFlowIsKnown) or (playerBuffIncantersFlowDirection == "Down") or (playerBuffIncantersFlowStacks == 5)  then
-				if castSpell(target, LivingBomb, true, false) then
-					return true
-				end
-			end
-			if playerBuffIncantersFlowDirection == "Up" or playerBuffIncantersFlowStacks == 1 and targetDebuffLivingBombRemain < 1 then
-				if castSpell(target, LivingBomb, true, false) then
-					return true
-				end
-			end
+		print("WTF")
+		if castSpell(target, LivingBomb, true, false) then
+			print("Not")
+			return true
 		end
 	end
 

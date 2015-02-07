@@ -420,58 +420,87 @@ end
 
 function FireSingleTarget()
 
---# Single target sequence
---actions.single_target=inferno_blast,if=
---(dot.combustion.ticking&active_dot.combustion<active_enemies)|(dot.living_bomb.ticking&active_dot.living_bomb<active_enemies)
+    
+	-- TODO : GÖR KLART NEDAN
+	--inferno_blast,if=(dot.combustion.ticking&active_dot.combustion<active_enemies)|(dot.living_bomb.ticking&active_dot.living_bomb<active_enemies)
+	
 
 
 
---# Use Pyro procs before they run out
---actions.single_target+=/pyroblast,if=buff.pyroblast.up&buff.pyroblast.remains<action.fireball.execute_time
-    if playerBuffPyroBlast and playerBuffPyroBlastTimeLeft < 2  then 
-        CastSpellByName("Pyroblast", target)
-        return true
+	--pyroblast,if=buff.pyroblast.up&buff.pyroblast.remains<action.fireball.execute_time
+	if playerBuffPyroBlast and playerBuffPyroBlastTimeLeft < 2  then 
+        if CastSpellByName("Pyroblast", target) then
+        	return true
+        end
     end
---actions
---actions.single_target+=/pyroblast,if=set_bonus.tier16_2pc_caster&buff.pyroblast.up&buff.potent_flames.up&buff.potent_flames.remains<gcd.max
---actions.single_target+=/pyroblast,if=set_bonus.tier17_4pc&buff.pyromaniac.react
+	
+	--pyroblast,if=set_bonus.tier16_2pc_caster&buff.pyroblast.up&buff.potent_flames.up&buff.potent_flames.remains<gcd.max
+	--pyroblast,if=set_bonus.tier17_4pc&buff.pyromaniac.react
+	
+	-- Todo : jag har skapat en in flight value på playerspellFireballInFlight = true, testa den
+	--pyroblast,if=buff.pyroblast.up&buff.heating_up.up&action.fireball.in_flight
+	--if playerBuffPyroBlast and playerBuffHeatingUp then -- Todo :action.fireball.in_flight FIREBALL SKALL VARA I FLIGHT!
+    --    CastSpellByName("Pyroblast", target)
+    --    return true
+    --end
+	
 
---# Pyro camp during regular sequence; Do not use Pyro procs without HU and first using fireball
---actions.single_target+=/pyroblast,if=buff.pyroblast.up&buff.heating_up.up&action.fireball.in_flight
-    if playerBuffPyroBlast and playerBuffHeatingUp then -- Todo :action.fireball.in_flight FIREBALL SKALL VARA I FLIGHT!
-        CastSpellByName("Pyroblast", target)
-        return true
-    end
--- Living Bomb !
-    if castLivingBomb(target) then
-        return true
-    end
---actions.single_target+=/inferno_blast,if=buff.pyroblast.down&buff.heating_up.up
-    if not playerBuffPyroBlast and playerBuffHeatingUp then -- Todo :!action.fireball.in_flight
-        if castInfernoBlast(target) then
-          return true
+	--actions.single_target+=/inferno_blast,if=buff.pyroblast.down&buff.heating_up.up
+	if not playerBuffPyroBlast and playerBuffHeatingUp then 
+    	if castInfernoBlast(target) then
+        	return true
       	end
     end
---actions.single_target+=/call_action_list,name=active_talents
-    if castLivingBomb(target) then
-        return true
-    end
---actions.single_target+=/inferno_blast,if=buff.pyroblast.up&buff.heating_up.down&!action.fireball.in_flight
+    
+		
+	--Todo:meteor,if=active_enemies>=5|(glyph.combustion.enabled&(!talent.incanters_flow.enabled|buff.incanters_flow.stack+incanters_flow_dir>=4)&cooldown.meteor.duration-cooldown.combustion.remains<10)
+	
+	--call_action_list,name=living_bomb,if=talent.living_bomb.enabled
+	if targetName ~= "Prismatic Crystal" and targetTimeToDie > (12 + targetDebuffLivingBombRemain) and targetDebuffLivingBombRemain < 3.6 then
+		if (not spellIncantersFlowIsKnown) or (playerBuffIncantersFlowDirection == "Down") or (playerBuffIncantersFlowStacks == 5)  then
+			if castLivingBomb(target) then
+       			return true
+    		end
+		end
+
+		if playerBuffIncantersFlowDirection == "Up" or playerBuffIncantersFlowStacks == 1 and targetDebuffLivingBombRemain < 1 then
+			if castLivingBomb(target) then
+       			return true
+    		end
+		end
+	end
+
+    --Todo:blast_wave,if=(!talent.incanters_flow.enabled|buff.incanters_flow.stack>=4)&(time_to_die<10|!talent.prismatic_crystal.enabled|(charges=1&cooldown.prismatic_crystal.remains>recharge_time)|charges=2|current_target=prismatic_crystal)
+    
+	
+	--actions.single_target+=/inferno_blast,if=buff.pyroblast.up&buff.heating_up.down&!action.fireball.in_flight
     if playerBuffPyroBlast and not playerBuffHeatingUp then -- Todo :!action.fireball.in_flight
         if castInfernoBlast(target) then
-          return true
-      end
+        	return true
+      	end
     end
---actions.single_target+=/fireball
+	
+	--actions.single_target+=/fireball
 	if not player.isMoving then
-		if castFireball("target") then
+		if castFireball(target) then
 			return true
 		end
 	end
---actions.single_target+=/scorch,moving=1
+
+	--actions.single_target+=/scorch,moving=1
 	if player.isMoving  then
-		if castScorch("target") then
+		if castScorch(target) then
 			return true
 		end
 	end
 end
+
+--if targetDebuffLivingBombRemain > 0 and targetNumberOfEnemiesinLBRange > 0 then 
+--			if castSpell(target, InfernoBlast, false, false) then
+--				return true
+--			end
+--		end 
+
+		-- actions.living_bomb+=/living_bomb,cycle_targets=1, if=target!=prismatic_crystal&(active_dot.living_bomb=0|(ticking&active_dot.living_bomb=1))&(((!talent.incanters_flow.enabled|incanters_flow_dir<0|buff.incanters_flow.stack=5)&remains<3.6)|((incanters_flow_dir>0|buff.incanters_flow.stack=1)&remains<gcd.max))&target.time_to_die>remains+12
+--		
+--	end

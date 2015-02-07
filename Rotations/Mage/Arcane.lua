@@ -75,20 +75,22 @@ if select(3, UnitClass("player")) == 8 then
 				
 				
 				--Buffs
-				playerBuffArcanePower			= UnitBuffID("player",ArcanePower) 
-				playerBuffArcanePowerTimeLeft	= getBuffRemain("player",ArcanePower)
-				playerBuffArcaneMissile			= UnitBuffID("player",ArcaneMissilesP)
-				stacksArcaneMisslesP			= getBuffStacks("player",ArcaneMissilesP)
-				arcaneCharge 					= Charge()
+				playerBuffArcanePower				= UnitBuffID("player",ArcanePower) 
+				playerBuffArcanePowerTimeLeft		= getBuffRemain("player",ArcanePower)
+				playerBuffArcaneMissile				= UnitBuffID("player",ArcaneMissilesP)
+				stacksArcaneMisslesP				= getBuffStacks("player",ArcaneMissilesP)
+				arcaneCharge 						= Charge()
 
-				playerBuffPyroBlast				= UnitBuffID("player",PyroblastBuff)
-				playerBuffPyroBlastTimeLeft		= getBuffRemain("player",Pyroblast)
+				playerBuffPyroBlast					= UnitBuffID("player",PyroblastBuff)
+
+				playerBuffPyroBlastTimeLeft			= getBuffRemain("player",Pyroblast)
 
 		      	playerBuffIncantersFlowDirection	= getIncantersFlowsDirection()
       			playerBuffIncantersFlowStacks		= getBuffStacks("player", IncantersFlow)
 
 
-				playerBuffHeatingUp				= UnitBuffID("player",HeatingUp)
+				playerBuffHeatingUp					= UnitBuffID("player",HeatingUp)
+
 		
 				--player Spells
 				playerSpellPrismaticCrystalIsKnown	= isKnown(PrismaticCrystal) 
