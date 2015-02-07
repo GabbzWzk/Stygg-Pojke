@@ -80,10 +80,16 @@ if select(3, UnitClass("player")) == 8 then
 				playerBuffArcaneMissile			= UnitBuffID("player",ArcaneMissilesP)
 				stacksArcaneMisslesP			= getBuffStacks("player",ArcaneMissilesP)
 				arcaneCharge 					= Charge()
+
 				playerBuffPyroBlast				= UnitBuffID("player",PyroblastBuff)
-				playerBuffHeatingUp				= UnitBuffID("player",HeatingUp)
 				playerBuffPyroBlastTimeLeft		= getBuffRemain("player",Pyroblast)
 
+		      	playerBuffIncantersFlowDirection	= getIncantersFlowsDirection()
+      			playerBuffIncantersFlowStacks		= getBuffStacks("player", IncantersFlow)
+
+
+				playerBuffHeatingUp				= UnitBuffID("player",HeatingUp)
+		
 				--player Spells
 				playerSpellPrismaticCrystalIsKnown	= isKnown(PrismaticCrystal) 
 				playerSpellPrismaticCrystalCD 		= getSpellCD(PrismaticCrystal)	--Todo : Replace with this
@@ -94,7 +100,7 @@ if select(3, UnitClass("player")) == 8 then
 				isKnownOverPowered					= isKnown(Overpowered)
 				isKnownArcaneOrb					= isKnown(ArcaneOrb)
 				isKnownSupernova					= getTalent(5,3) --isKnown(Supernova)
-
+				spellIncantersFlowIsKnown			= isKnown(IncantersFlow)
 				
 				cdArcanePower						= getSpellCD(ArcanePower)
 				
@@ -103,11 +109,18 @@ if select(3, UnitClass("player")) == 8 then
 				------------------
 				targetDebuffNetherTempest 			= UnitDebuffID("target",NetherTempest, "player")	
 				targetDebuffNetherTempestTimeLeft	= getDebuffRemain("target",NetherTempest, "player")
+				targetDebuffLivingBombRemain		= getDebuffRemain("target",LivingBomb, "player") or 0
+      			targetNumberOfEnemiesinLBRange		= getNumberOfTargetsWithOutLivingBomb(getEnemies(target,10)) -- Variable name not correct, its viable units in range for spread
+
+      			targetDebuffCombustionRemain		= getDebuffRemain("target",Combustion, "player") or 0
+      			targetNumberOfEnemiesinCombustionRange = getNumberOfTargetsWithOutCombustion(getEnemies(target,10))
+      			targetDebuffIgnite					= UnitDebuffID("target", Ignite , "player")	
 
 				
 				chargesSuperNova					= GetSpellCharges(Supernova) or 0
 				reChargeSuperNova					= getRecharge(Supernova) or 0
-				targetDebuffIgnite					= UnitDebuffID("target", Ignite , "player")	
+			
+      			
 
 	
 				--------------------
