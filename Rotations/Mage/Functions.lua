@@ -484,76 +484,7 @@ if select(3, UnitClass("player")) == 8 then
 
 	end
 
-	-- AoE
-	function ArcaneMageAoESimcraft()
-
-		-- actions.aoe=call_action_list,name=cooldowns
-		-- actions.aoe+=/nether_tempest,cycle_targets=1,if=buff.arcane_charge.stack=4&(active_dot.nether_tempest=0|(ticking&remains<3.6))
-		if Charge()==4 and (not UnitDebuffID("target",NetherTempest) or (UnitDebuffID("target",NetherTempest) and getDebuffRemain("target",NetherTempest)<3.6)) then
-			return true
-		end
-
-		-- actions.aoe+=/supernova
-		if chargesSuperNova > 0 then
-			if castSpell("target",Supernova,false,false) then
-				return true
-			end
-		end
-
-		-- actions.aoe+=/arcane_barrage,if=buff.arcane_charge.stack=4
-		if castArcaneBarrage("target", 4) then
-			return true 
-		end
-
-		-- actions.aoe+=/arcane_orb,if=buff.arcane_charge.stack<4
-		if castArcaneOrb("target", 3) then
-			return true
-		end
-
-		-- actions.aoe+=/cone_of_cold,if=glyph.cone_of_cold.enabled
-		if hasGlyph(323) then
-			if castSpell("target",ConeOfCold,false,true) then
-				return true
-			end
-		end
-
-		-- actions.aoe+=/arcane_explosion
-		if getNumEnemies("player",10) then
-			if castSpell("target",ArcaneExplosion,true,false) then
-				return true
-			end
-		end
-
-	end
-
-	-- Cooldowns
-	function ArcaneMageCooldowns()
-		-- Berserk
-		if isChecked("Racial") then
-			if isKnown(Berserkering) then
-				if castSpell("player",Berserkering,true,true) then
-					return true
-				end
-			end
-		end
-
-		-- Arcane Power
-		if isChecked("Arcane Power") then
-			if castSpell("player",ArcanePower,true,true) then
-				return true
-			end
-		end
-
-		-- actions+=/cold_snap,if=buff.presence_of_mind.down&cooldown.presence_of_mind.remains>75
-		if isKnown(ColdSnap) then
-			if isChecked(ColdSnap) then
-				if not UnitBuffID("player",PresenceOfMind) and getSpellCD(PresenceOfMind)>75 then
-					return;
-				end
-			end
-		end
-
-	end
+	
 
 	function CalculateHP(unit)
 	  incomingheals = UnitGetIncomingHeals(unit) or 0

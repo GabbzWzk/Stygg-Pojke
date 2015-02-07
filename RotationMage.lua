@@ -2,6 +2,10 @@
 -- Arcane Mage
 ------------------
 print("Mage Rotations")
+
+------------------------------
+-- Arcane Mage 
+----------------------------
 	-- Arcane Mage Specific Rotations. Focused on Burst and Single target usage. Fire will be used for AoE.
 	-- Talents that will be focused is, 
 		-- SuperNova and Nether Tempest, Tempest for lasting cleave and SuperNova for Single target and spawning adds
@@ -16,6 +20,9 @@ print("Mage Rotations")
 		-- Conserve Rotation
 		-- There is a function check that cancels the Evocation, but we only check if we are over 93%
 
+------------------------------
+-- Arcane Mage Pre Pull Sequence
+----------------------------
 function ArcaneMagePrepull()
 --# Executed before combat begins. Accepts non-harmful actions only.
 --actions.precombat=flask,type=greater_draenic_intellect_flask
@@ -45,6 +52,9 @@ end
 --actions+=/call_action_list,name=burn,if=time_to_die<mana.pct*0.35*spell_haste|cooldown.evocation.remains<=(mana.pct-30)*0.3*spell_haste|(buff.arcane_power.up&cooldown.evocation.remains<=(mana.pct-30)*0.4*spell_haste)
 --actions+=/call_action_list,name=conserve
 
+------------------------------
+-- Arcane Mage Prismatic Crystal Set Up
+----------------------------
 function ArcaneMageInitPrismaticCrystal()
 --# Conditions for initiating Prismatic Crystal
 --actions.init_crystal=call_action_list,name=conserve,if=buff.arcane_charge.stack<4
@@ -52,6 +62,9 @@ function ArcaneMageInitPrismaticCrystal()
 --actions.init_crystal+=/prismatic_crystal,if=glyph.arcane_power.enabled&buff.arcane_charge.stack=4&cooldown.arcane_power.remains>75
 end
 
+------------------------------
+-- Arcane Mage Prismatic Crystal Sequence
+----------------------------
 function ArcaneMageExecutePrismaticCrystalRotation()
 --# Actions while Prismatic Crystal is active
 --actions.crystal_sequence=call_action_list,name=cooldowns
@@ -65,14 +78,46 @@ function ArcaneMageExecutePrismaticCrystalRotation()
 --actions.crystal_sequence+=/arcane_blast
 end
 
---# Consolidated damage cooldown abilities
---actions.cooldowns=arcane_power
---actions.cooldowns+=/blood_fury
---actions.cooldowns+=/berserking
---actions.cooldowns+=/arcane_torrent
---actions.cooldowns+=/potion,name=draenic_intellect,if=buff.arcane_power.up&(!talent.prismatic_crystal.enabled|pet.prismatic_crystal.active)
---actions.cooldowns+=/use_item,slot=trinket1
+-- Cooldowns
+function ArcaneMageCooldowns()
+	--# Consolidated damage cooldown abilities
+	--actions.cooldowns=arcane_power
+	--actions.cooldowns+=/blood_fury
+	--actions.cooldowns+=/berserking
+	--actions.cooldowns+=/arcane_torrent
+	--actions.cooldowns+=/potion,name=draenic_intellect,if=buff.arcane_power.up&(!talent.prismatic_crystal.enabled|pet.prismatic_crystal.active)
+	--actions.cooldowns+=/use_item,slot=trinket1
+	
+	-- Berserk
+	if isChecked("Racial") then
+		if isKnown(Berserkering) then
+			if castSpell("player",Berserkering,true,true) then
+			--	return true
+			end
+		end
+	end
+	-- Arcane Power
+	if isChecked("Arcane Power") then
+		if castSpell("player",ArcanePower,true,true) then
+			-- return true
+		end
+	end
 
+	-- Potion
+	if isChecked("Potions") then
+		print("Missing Potions Logic")
+	end
+
+	if isChecked("Trinket 1") then
+		print("Missing Trinket Logic")
+	end
+
+end
+
+
+------------------------------
+-- Arcane Mage AoE Rotation ToDo
+----------------------------
 --# AoE sequence
 --actions.aoe=call_action_list,name=cooldowns
 --actions.aoe+=/nether_tempest,cycle_targets=1,if=buff.arcane_charge.stack=4&(active_dot.nether_tempest=0|(ticking&remains<3.6))
@@ -81,13 +126,45 @@ end
 --actions.aoe+=/arcane_orb,if=buff.arcane_charge.stack<4
 --actions.aoe+=/cone_of_cold,if=glyph.cone_of_cold.enabled
 --actions.aoe+=/arcane_explosion
-
+-- AoE
+function ArcaneMageAoESimcraft()
+	
+	-- actions.aoe+=/nether_tempest,cycle_targets=1,if=buff.arcane_charge.stack=4&(active_dot.nether_tempest=0|(ticking&remains<3.6))
+	if Charge()==4 and (not UnitDebuffID("target",NetherTempest) or (UnitDebuffID("target",NetherTempest) and getDebuffRemain("target",NetherTempest)<3.6)) then
+		return true
+	end
+		-- actions.aoe+=/supernova
+	if chargesSuperNova > 0 then
+		if castSpell("target",Supernova,false,false) then
+			return true
+		end
+	end
+		-- actions.aoe+=/arcane_barrage,if=buff.arcane_charge.stack=4
+	if castArcaneBarrage("target", 4) then
+		return true 
+	end
+		-- actions.aoe+=/arcane_orb,if=buff.arcane_charge.stack<4
+	if castArcaneOrb("target", 3) then
+		return true
+	end
+		-- actions.aoe+=/cone_of_cold,if=glyph.cone_of_cold.enabled
+	if hasGlyph(323) then
+		if castSpell("target",ConeOfCold,false,true) then
+			return true
+		end
+	end
+		-- actions.aoe+=/arcane_explosion
+	if getNumEnemies("player",10) then
+		if castSpell("target",ArcaneExplosion,true,false) then
+			return true
+		end
+	end
+end
 
 
 ------------------------------
 -- Arcane Mage Burn Phase Rotation
 ----------------------------
-
 function ArcaneMageSingleTargetSimcraftBurn()
 	
 	--# High mana usage, "Burn" sequence
