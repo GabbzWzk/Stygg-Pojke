@@ -24,6 +24,10 @@ function spellcast:insertSpellCastSucceeded(spellID, time)
 	--print("Event Cast Success : " ..GetTime())
 	player.lastCast = spellID
 	spellbook.update(spellID, "SpellCastSucceeded")
+	if spellID == Fireball then
+		playerspellFireballInFlight = true
+		print("FireBall Success : " ..time)
+	end
 	--spellcast.queue[spellID].lastSucceeded = time
 end
 function spellcast:insertSpellCastStop(spellID, time)
