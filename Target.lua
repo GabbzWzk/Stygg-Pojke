@@ -80,5 +80,7 @@ function targets:update()
     if not UnitExists("target") or UnitIsDead("target") or UnitIsFriend("player","target") then
         TargetUnit(targets.unitsdyn40)
     end
+    targetName = UnitName("target")
+    targetTimeToDie = 40 --Todo need to make this correct
                 
 end
