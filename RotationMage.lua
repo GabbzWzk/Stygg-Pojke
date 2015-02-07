@@ -383,37 +383,40 @@ function PyroChain()
 --actions.init_combust+=/start_pyro_chain,if=
 --(cooldown.combustion.remains<gcd.max*4&buff.pyroblast.up&buff.heating_up.up&action.fireball.in_flight)|
 --	(buff.pyromaniac.up&cooldown.combustion.remains<ceil(buff.pyromaniac.remains%gcd.max)*(gcd.max+talent.kindling.enabled)))
-function CombustionSequence()
---# Combustion Sequence
---actions.combust_sequence=stop_pyro_chain,if=cooldown.combustion.duration-cooldown.combustion.remains<15
---actions.combust_sequence+=/prismatic_crystal
---actions.combust_sequence+=/blood_fury
---actions.combust_sequence+=/berserking
-			if castSpell("player",Berserkering,true,true) then
-				return true
-			end
+end
 
---actions.combust_sequence+=/arcane_torrent
---actions.combust_sequence+=/potion,name=draenic_intellect
---actions.combust_sequence+=/fireball,if=!dot.ignite.ticking&!in_flight
+function CombustionSequence()
+	--# Combustion Sequence
+	--actions.combust_sequence=stop_pyro_chain,if=cooldown.combustion.duration-cooldown.combustion.remains<15
+	--actions.combust_sequence+=/prismatic_crystal
+	--actions.combust_sequence+=/blood_fury
+	--actions.combust_sequence+=/berserking
+	if castSpell("player",Berserkering,true,true) then
+		return true
+	end
+
+	--actions.combust_sequence+=/arcane_torrent
+	--actions.combust_sequence+=/potion,name=draenic_intellect
+	--actions.combust_sequence+=/fireball,if=!dot.ignite.ticking&!in_flight
 	if not player.isMoving and not targetDebuffIgnite then -- INFLIGHT
 		if castFireball("target") then
 			return true
 		end
 	end
---actions.combust_sequence+=/pyroblast,if=buff.pyroblast.up
+	
+	--actions.combust_sequence+=/pyroblast,if=buff.pyroblast.up
     if playerBuffPyroBlast  then 
         CastSpellByName("Pyroblast", target)
         return true
     end
---# Meteor Combustions can run out of Pyro procs before impact. Use IB to delay Combustion
---actions.combust_sequence+=/inferno_blast,if=talent.meteor.enabled&cooldown.meteor.duration-cooldown.meteor.remains<gcd.max*3
---actions.combust_sequence+=/combustion
+	--# Meteor Combustions can run out of Pyro procs before impact. Use IB to delay Combustion
+	--actions.combust_sequence+=/inferno_blast,if=talent.meteor.enabled&cooldown.meteor.duration-cooldown.meteor.remains<gcd.max*3
+	--actions.combust_sequence+=/combustion
     if playerBuffPyroBlast and playerBuffPyroBlastTimeLeft < 2  then 
         CastSpellByName("Combustion", target)
         return true
     end
---action
+end
 
 function FireSingleTarget()
 

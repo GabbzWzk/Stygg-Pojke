@@ -82,7 +82,7 @@ if select(3, UnitClass("player")) == 8 then
 				arcaneCharge 					= Charge()
 				playerBuffPyroBlast				= UnitBuffID("player",PyroblastBuff)
 				playerBuffHeatingUp				= UnitBuffID("player",HeatingUp)
-				playerBuffPyroBlastTimeLeft		= getBuffRemain("player",PyroBlast)
+				playerBuffPyroBlastTimeLeft		= getBuffRemain("player",Pyroblast)
 
 				--player Spells
 				playerSpellPrismaticCrystalIsKnown	= isKnown(PrismaticCrystal) 
@@ -147,6 +147,25 @@ if select(3, UnitClass("player")) == 8 then
 				Interrupt()
 			end
 
+			 if player.specc == 1 then -- Arcane ?
+			 	if isChecked("Burn Phase") then
+					if playerSpellEvocationCD < 20 then
+						if ArcaneMageSingleTargetSimcraftBurn() then
+							return true
+						end
+					end
+				end
+				if ArcaneMageSingleTargetSimcraftConserve() then
+					return true
+				end
+			 
+			 elseif player.specc  == 2 then -- Fire
+			 	return FireSingleTarget()
+			 else
+			 	print("3")
+			 end
+
+
 			-------------------------------------
 			-- Rotation Selector,	should be configurable in gui
 			-------------------------------------
@@ -171,16 +190,7 @@ if select(3, UnitClass("player")) == 8 then
                
 			-- AoE Handler, single, AoE or auto
 			
-			if isChecked("Burn Phase") then
-				if playerSpellEvocationCD < 20 then
-					if ArcaneMageSingleTargetSimcraftBurn() then
-						return true
-					end
-				end
-			end
-			if ArcaneMageSingleTargetSimcraftConserve() then
-				return true
-			end
+			
 		end
 	end
 end

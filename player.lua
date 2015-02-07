@@ -36,6 +36,7 @@ function player:init() -- Init Player Object
     player.isCasting        = 0
     player.currentCast      = 0
     player.lastCast         = 0
+    player.specc            = GetSpecialization()
 
 	 
         -----------------
