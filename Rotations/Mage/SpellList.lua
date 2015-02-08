@@ -231,9 +231,7 @@ if select(3, UnitClass("player")) == 8 then
 		end 
 	end
 	function castLivingBomb(target)
-		print("WTF")
 		if castSpell(target, LivingBomb, true, false) then
-			print("Not")
 			return true
 		end
 	end

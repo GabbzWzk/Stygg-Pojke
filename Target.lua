@@ -83,5 +83,17 @@ function targets:update()
     target = "target"
     targetName = UnitName("target")
     targetTimeToDie = 100 --Todo need to make this correct
-                
+    targetdebuffcombustion = UnitDebuffID(target,Combustion,"player")
+    if targetdebuffcombustion then 
+        targetsinrangeforcombustioncleave = getNumberOfTargetsWithOutCombustion(getEnemies("target",10))
+    else
+        targetsinrangeforcombustioncleave = 0
+    end
+
+    targetdebufflivingbomb = UnitDebuffID(target,LivingBomb,"player")
+    if targetdebufflivingbomb then
+        targetsinrangeforlivingbombcleave = getNumberOfTargetsWithOutLivingBomb(getEnemies("target",10))
+    else
+        targetsinrangeforlivingbombcleave = 0
+    end      
 end

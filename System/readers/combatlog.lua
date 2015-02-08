@@ -119,10 +119,12 @@ function cl:common(...)
             --print("Spell Cast Failed "  .. spellName .." " ..GetTime())    -- 
             
         end
-        if param == "SPELL_DAMAGE"  then
+        if param == "SPELL_DAMAGE" then
             --print("Spell Damage "  .. spellName .." " ..GetTime())
-            print("Fireball Spell Damage :" ..GetTime())
-            playerspellFireballInFlight = false
+            if spell == Fireball then
+                print("Fireball Spell Damage :" ..GetTime())
+                playerspellFireballInFlight = false
+            end
         end
         if param == "SPELL_MISSED" then
             --print("Spell Missed "  .. spellName .." " ..GetTime())

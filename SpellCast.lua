@@ -26,7 +26,7 @@ function spellcast:insertSpellCastSucceeded(spellID, time)
 	spellbook.update(spellID, "SpellCastSucceeded")
 	if spellID == Fireball then
 		playerspellFireballInFlight = true
-		print("FireBall Success : " ..time)
+		print("FireBall Success at Time : " ..time)
 	end
 	--spellcast.queue[spellID].lastSucceeded = time
 end

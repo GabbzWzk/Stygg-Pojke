@@ -374,8 +374,14 @@ function ArcaneMageSingleTargetSimcraftConserve()
 		end
 	end
 end
+
+
+
+
 --------------------------
--- FIRESINGLETARGET() 
+-- Fire Mage Rotation
+--			Focusing on AoE damage using talents x, y
+--			Strategy to ....
 --------------------------
 
 function PyroChain()
@@ -398,20 +404,20 @@ function CombustionSequence()
 	--actions.combust_sequence+=/arcane_torrent
 	--actions.combust_sequence+=/potion,name=draenic_intellect
 	--actions.combust_sequence+=/fireball,if=!dot.ignite.ticking&!in_flight
-	if not player.isMoving and not targetDebuffIgnite then -- INFLIGHT
+	if not targetDebuffIgnite and not playerspellFireballInFlight then -- INFLIGHT
 		if castFireball("target") then
 			return true
 		end
 	end
 	
 	--actions.combust_sequence+=/pyroblast,if=buff.pyroblast.up
-    if playerBuffPyroBlast  then 
+    if playerBuffPyroBlast then 
         CastSpellByName("Pyroblast", target)
         return true
     end
 	--# Meteor Combustions can run out of Pyro procs before impact. Use IB to delay Combustion
 	--actions.combust_sequence+=/inferno_blast,if=talent.meteor.enabled&cooldown.meteor.duration-cooldown.meteor.remains<gcd.max*3
-	--actions.combust_sequence+=/combustion
+	--actions.combust_sequence+=/combustion  Todo : What? This does not make sence, we are not looking at ignite damage and hte code is not same as simcraft
     if playerBuffPyroBlast and playerBuffPyroBlastTimeLeft < 2  then 
         CastSpellByName("Combustion", target)
         return true
@@ -420,12 +426,12 @@ end
 
 function FireSingleTarget()
 
-    
-	-- TODO : GÖR KLART NEDAN
 	--inferno_blast,if=(dot.combustion.ticking&active_dot.combustion<active_enemies)|(dot.living_bomb.ticking&active_dot.living_bomb<active_enemies)
-	
-
-
+	if (targetdebuffcombustion and targetsinrangeforcombustioncleave > 0) or (targetdebufflivingbomb and targetsinrangeforlivingbombcleave > 0) then -- Need to track combustion dots on enemy, so for each enemy in range and we do not have a combustion dot on him we should spread.
+        if castInfernoBlast(target) then
+        	return true
+      	end
+    end
 
 	--pyroblast,if=buff.pyroblast.up&buff.pyroblast.remains<action.fireball.execute_time
 	if playerBuffPyroBlast and playerBuffPyroBlastTimeLeft < 2  then 
@@ -437,12 +443,12 @@ function FireSingleTarget()
 	--pyroblast,if=set_bonus.tier16_2pc_caster&buff.pyroblast.up&buff.potent_flames.up&buff.potent_flames.remains<gcd.max
 	--pyroblast,if=set_bonus.tier17_4pc&buff.pyromaniac.react
 	
-	-- Todo : jag har skapat en in flight value på playerspellFireballInFlight = true, testa den
+
 	--pyroblast,if=buff.pyroblast.up&buff.heating_up.up&action.fireball.in_flight
-	--if playerBuffPyroBlast and playerBuffHeatingUp then -- Todo :action.fireball.in_flight FIREBALL SKALL VARA I FLIGHT!
-    --    CastSpellByName("Pyroblast", target)
-    --    return true
-    --end
+	if playerBuffPyroBlast and playerBuffHeatingUp and playerspellFireballInFlight then
+        CastSpellByName("Pyroblast", target)
+        return true
+    end
 	
 
 	--actions.single_target+=/inferno_blast,if=buff.pyroblast.down&buff.heating_up.up
@@ -474,7 +480,7 @@ function FireSingleTarget()
     
 	
 	--actions.single_target+=/inferno_blast,if=buff.pyroblast.up&buff.heating_up.down&!action.fireball.in_flight
-    if playerBuffPyroBlast and not playerBuffHeatingUp then -- Todo :!action.fireball.in_flight
+    if playerBuffPyroBlast and not playerBuffHeatingUp and playerspellFireballInFlight then
         if castInfernoBlast(target) then
         	return true
       	end

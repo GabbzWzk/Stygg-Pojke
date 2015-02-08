@@ -103,6 +103,8 @@ if select(3, UnitClass("player")) == 8 then
 				isKnownArcaneOrb					= isKnown(ArcaneOrb)
 				isKnownSupernova					= getTalent(5,3) --isKnown(Supernova)
 				spellIncantersFlowIsKnown			= isKnown(IncantersFlow)
+
+				--playerspellFireballInFlight set at other place
 				
 				cdArcanePower						= getSpellCD(ArcanePower)
 				
