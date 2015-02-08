@@ -2,6 +2,104 @@
 -- Arcane Mage
 ------------------
 print("Mage Rotations")
+-- Cooldowns
+-- Defensives
+function Defensive()
+
+	---------------
+	-- Healthstone
+	---------------
+	if isChecked("Healthstone") == true then
+		if getHP("player") <= getValue("Healthstone") then
+			if canUse(5512) then
+				UseItemByName(tostring(select(1,GetItemInfo(5512))))
+			end
+		end
+	end
+
+	if isChecked("Def Potions") == true then
+		if getHP("player") <= getValue("Def Potions") then
+			if canUse(109223) then
+				UseItemByName(tostring(select(1,GetItemInfo(109223))))
+			end
+		end
+	end
+
+	---------------
+	-- Pots
+	---------------
+
+	---------------
+	-- Defensive Trinkets
+	---------------
+
+	---------------
+	-- Racials?
+	---------------
+
+	---------------
+	-- Class 
+	---------------
+
+	---------------
+	-- Mages
+	---------------
+	if select(3, UnitClass("player")) == 8 then
+		-- Evanesce
+		if isKnown(Evanesce) then
+			if isChecked("Evanesce") then
+				if getHP("player") < getValue("Evanesce") then
+					if castSpell("player",Evanesce,true,false) then
+						return true
+					end
+				end
+			end
+		end
+
+		if isKnown(IceBlock) then
+			if isChecked("IceBlock") then
+				if getHP("player") < getValue("IceBlock") then
+					if castSpell("player",IceBlock,true,false) then
+						return true
+					end
+				end
+			end
+		end
+
+		if isKnown(IceBarrier) then
+			if isChecked("IceBlock") then
+				if getHP("player") < getValue("IceBlock") then
+					if castSpell("player",IceBarrier,true,false) then
+						return true
+					end
+				end
+			end
+		end
+	end
+end	
+
+function OffensiveCooldowns()
+	-- Berserk
+	if isChecked("Racial") then
+		if isKnown(Berserkering) then
+			if castSpell("player",Berserkering,true,true) then
+			--	return true
+			end
+		end
+	end
+
+	-- Potions	TODO : Make this class/specc agnostic, should be based on 
+	if isChecked("DPS Potions") then
+		if canUse(109218) then -- WoD Potion Int
+        	UseItemByName(tostring(select(1,GetItemInfo(109218))))
+        end
+	end
+
+	if isChecked("Trinkets") then
+		print("Missing Trinket Logic")
+	end
+end
+
 
 ------------------------------
 -- Arcane Mage 
@@ -25,18 +123,29 @@ function ArcaneMageRotation()
 	if ArcaneMageAoESimcraft() then
 		return true
 	end
-	
 
 	if isChecked("Burn Phase") then
-		if playerSpellEvocationCD < 20 then
-			if ArcaneMageSingleTargetSimcraftBurn() then
-				return true
-			end
+		if ArcaneMageSingleTargetSimcraftBurn() then
+			return true
 		end
 	end
 	
 	if ArcaneMageSingleTargetSimcraftConserve() then
 		return true
+	end
+end
+
+function ArcaneMageCooldowns()
+	
+	OffensiveCooldowns()
+
+	if player.specc == 1 then
+		-- Arcane Power
+		if isChecked("Arcane Power") then
+			if castSpell("player",ArcanePower,true,true) then
+				return true
+			end
+		end
 	end
 end
 
@@ -53,6 +162,7 @@ function ArcaneMagePrepull()
 --actions.precombat+=/mirror_image
 --actions.precombat+=/potion,name=draenic_intellect
 --actions.precombat+=/arcane_blast
+	return false
 end
 
 --# Executed every time the actor is available.
@@ -76,117 +186,138 @@ end
 -- Arcane Mage Prismatic Crystal Set Up
 ----------------------------
 function ArcaneMageInitPrismaticCrystal()
---# Conditions for initiating Prismatic Crystal
---actions.init_crystal=call_action_list,name=conserve,if=buff.arcane_charge.stack<4
---actions.init_crystal+=/prismatic_crystal,if=buff.arcane_charge.stack=4&cooldown.arcane_power.remains<0.5
---actions.init_crystal+=/prismatic_crystal,if=glyph.arcane_power.enabled&buff.arcane_charge.stack=4&cooldown.arcane_power.remains>75
+	--# Conditions for initiating Prismatic Crystal
+	--actions.init_crystal=call_action_list,name=conserve,if=buff.arcane_charge.stack<4
+	if Charge() < 4 then
+		return false
+	end
+	--actions.init_crystal+=/prismatic_crystal,if=buff.arcane_charge.stack=4&cooldown.arcane_power.remains<0.5
+	if Charge() == 4 and cdArcanePower < 1 then
+		if castPrismaticCrystal() then
+			return true
+		end
+	end
+
+	--actions.init_crystal+=/prismatic_crystal,if=glyph.arcane_power.enabled&buff.arcane_charge.stack=4&cooldown.arcane_power.remains>75
+	if Charge() == 4 and cdArcanePower > 75 then
+		if castPrismaticCrystal() then
+			return true
+		end
+	end
+	return false
 end
 
 ------------------------------
 -- Arcane Mage Prismatic Crystal Sequence
 ----------------------------
 function ArcaneMageExecutePrismaticCrystalRotation()
---# Actions while Prismatic Crystal is active
---actions.crystal_sequence=call_action_list,name=cooldowns
---actions.crystal_sequence+=/nether_tempest,if=buff.arcane_charge.stack=4&!ticking&pet.prismatic_crystal.remains>8
---actions.crystal_sequence+=/supernova,if=mana.pct<96
---actions.crystal_sequence+=/presence_of_mind,if=cooldown.cold_snap.up|pet.prismatic_crystal.remains<action.arcane_blast.cast_time
---actions.crystal_sequence+=/arcane_blast,if=buff.arcane_charge.stack=4&mana.pct>93&pet.prismatic_crystal.remains>cast_time+buff.arcane_missiles.stack*2*spell_haste+action.arcane_missiles.travel_time
---actions.crystal_sequence+=/arcane_missiles,if=pet.prismatic_crystal.remains>2*spell_haste+travel_time
---actions.crystal_sequence+=/supernova,if=pet.prismatic_crystal.remains<action.arcane_blast.cast_time
---actions.crystal_sequence+=/choose_target,if=pet.prismatic_crystal.remains<action.arcane_blast.cast_time&buff.presence_of_mind.down
---actions.crystal_sequence+=/arcane_blast
-end
-
--- Cooldowns
-function ArcaneMageCooldowns()
-	--# Consolidated damage cooldown abilities
-	--actions.cooldowns=arcane_power
-	--actions.cooldowns+=/blood_fury
-	--actions.cooldowns+=/berserking
-	--actions.cooldowns+=/arcane_torrent
-	--actions.cooldowns+=/potion,name=draenic_intellect,if=buff.arcane_power.up&(!talent.prismatic_crystal.enabled|pet.prismatic_crystal.active)
-	--actions.cooldowns+=/use_item,slot=trinket1
+	--# Actions while Prismatic Crystal is active
+	--actions.crystal_sequence=call_action_list,name=cooldowns --Todo : This is already done before since our CD is longer then 12 seconds
+	local crystalremains = UnitMana("target")/8.34 -- Power is 100 and time is 12 so we need to calculate
 	
-	-- Berserk
-	if isChecked("Racial") then
-		if isKnown(Berserkering) then
-			if castSpell("player",Berserkering,true,true) then
-			--	return true
+	--actions.crystal_sequence+=/nether_tempest,if=buff.arcane_charge.stack=4&!ticking&pet.prismatic_crystal.remains>8
+	-- Todo:  we need to get the timer for Prismatic Crystal
+	if Charge() == 4 and not UnitDebuffID("target",NetherTempest, "player") and crystalremains > 8 then
+		if castSpell("target",NetherTempest,false,false) then
+			return true
+		end
+	end
+	--actions.crystal_sequence+=/supernova,if=mana.pct<96
+	if chargesSuperNova > 0 and player.mana < 96 then
+		if castSpell("target",Supernova,false,false) then
+			return true
+		end
+	end
+
+	--actions.crystal_sequence+=/presence_of_mind,if=cooldown.cold_snap.up|pet.prismatic_crystal.remains<action.arcane_blast.cast_time
+	if crystalremains < castTimeArcaneBlast then
+		if cdPresenceOfMind == 0 then
+			if castSpell("player", PresenceOfMind, false, false) then
+				if castSpell("target",ArcaneBlast,false,true) then
+					return true
+				end
 			end
 		end
 	end
-	-- Arcane Power
-	if isChecked("Arcane Power") then
-		if castSpell("player",ArcanePower,true,true) then
-			-- return true
+
+	--actions.crystal_sequence+=/arcane_blast,if=buff.arcane_charge.stack=4&mana.pct>93&pet.prismatic_crystal.remains>cast_time+buff.arcane_missiles.stack*2*spell_haste+action.arcane_missiles.travel_time
+	if Charge() == 4 and player.mana > 93 and crystalremains > castTimeArcaneBlast + 3.4 then -- Todo : What does this mean? Cast Arcane Blast if time remains on crystal is less then cast time Arcane Blast plus 2 stacks of missiles? ie 2 cast of MM? No it should be multippled per AM Stack
+		if castSpell("target",ArcaneBlast,false,true) then
+			return true
+		end
+	end
+	--actions.crystal_sequence+=/arcane_missiles,if=pet.prismatic_crystal.remains>2*spell_haste+travel_time
+	if stacksArcaneMisslesP > 0 and crystalremains > 1.7 then  --Todo, removed hard coded AM times
+		if castSpell("target",ArcaneMissiles,false,true) then
+			return true
 		end
 	end
 
-	-- Potion
-	if isChecked("Potions") then
-		print("Missing Potions Logic")
+	--actions.crystal_sequence+=/supernova,if=pet.prismatic_crystal.remains<action.arcane_blast.cast_time
+	if crystalremains < castTimeArcaneBlast and chargesSuperNova > 0 then
+		if castSpell("target",Supernova,false,false) then
+			return true
+		end
 	end
 
-	if isChecked("Trinket 1") then
-		print("Missing Trinket Logic")
-	end
+	--actions.crystal_sequence+=/choose_target,if=pet.prismatic_crystal.remains<action.arcane_blast.cast_time&buff.presence_of_mind.down
+	-- Todo Switch Target here
 
+	--actions.crystal_sequence+=/arcane_blast
+	if castSpell("target",ArcaneBlast,false,true) then
+		return true
+	end
+	return false
 end
-
 
 ------------------------------
 -- Arcane Mage AoE Rotation ToDo
 ----------------------------
---Once you reach five or more targets that are stacked, you will break away from your usual rotation and follow this priority:
-	--Supernova or Nether Tempest
-	--Arcane Barrage once you reach 4 stacks
-	--Arcane Orb if you talented it and you are not at 4 stacks
-	--Cone of Cold if you have it glyphed
---# AoE sequence
---actions.aoe=call_action_list,name=cooldowns
---actions.aoe+=/nether_tempest,cycle_targets=1,if=buff.arcane_charge.stack=4&(active_dot.nether_tempest=0|(ticking&remains<3.6))
---actions.aoe+=/supernova
---actions.aoe+=/arcane_barrage,if=buff.arcane_charge.stack=4
---actions.aoe+=/arcane_orb,if=buff.arcane_charge.stack<4
---actions.aoe+=/cone_of_cold,if=glyph.cone_of_cold.enabled
---actions.aoe+=/arcane_explosion
--- AoE
 function ArcaneMageAoESimcraft()
 	
-	if targets.nrTargetAroundTarget > 4 then	--Todo : We should for each of this have a seperate number, for example, Super nova is non facing while a
-		-- actions.aoe+=/nether_tempest,cycle_targets=1,if=buff.arcane_charge.stack=4&(active_dot.nether_tempest=0|(ticking&remains<3.6))
-		if Charge()==4 and (not UnitDebuffID("target",NetherTempest, "player") or (UnitDebuffID("target",NetherTempest, "player") and getDebuffRemain("target",NetherTempest, "player")<3.6)) then
-			return true
-		end
-		-- actions.aoe+=/supernova
-		if chargesSuperNova > 0 then
-			if castSpell("target",Supernova,false,false) then
+	-- actions.aoe+=/nether_tempest,cycle_targets=1,if=buff.arcane_charge.stack=4&(active_dot.nether_tempest=0|(ticking&remains<3.6))
+	if Charge() == 4 and (not UnitDebuffID("target",NetherTempest, "player") or (UnitDebuffID("target",NetherTempest, "player") and getDebuffRemain("target",NetherTempest, "player")<3.6)) then
+		if  targets.nrTargetAroundTarget > 4 then
+			if castSpell("target",NetherTempest,false,false) then
 				return true
 			end
 		end
-		-- actions.aoe+=/arcane_barrage,if=buff.arcane_charge.stack=4
-		if castArcaneBarrage("target", 4) then	--Todo : For example, Arcane Barrage only hit 4 target so why do we check for 5
+	end
+	
+	-- actions.aoe+=/supernova
+	if chargesSuperNova > 0 and targets.nrTargetAroundTarget > 4 then
+		if castSpell("target",Supernova,false,false) then
+			return true
+		end
+	end
+	
+	-- actions.aoe+=/arcane_barrage,if=buff.arcane_charge.stack=4
+	if targets.nrTargetAroundTarget > 4 and Charge() == 4 then
+		if castArcaneBarrage("target", 4) then
 			return true 
 		end
-		-- actions.aoe+=/arcane_orb,if=buff.arcane_charge.stack<4
+	end
+	
+	-- actions.aoe+=/arcane_orb,if=buff.arcane_charge.stack<4
+	if targets.nrTargetAroundTarget > 3 then	
 		if castArcaneOrb("target", 3) then
 			return true
 		end
-	end	
+	end
 	
 	-- actions.aoe+=/cone_of_cold,if=glyph.cone_of_cold.enabled
-	if hasGlyph(323) then
+	if hasGlyph(323) and targets.nrTargetAroundTarget > 4 then
 		if castSpell("target",ConeOfCold,false,true) then
 			return true
 		end
 	end
 		-- actions.aoe+=/arcane_explosion
-	if targets.nrTargetsArcaneExplosion then								-- Todo : the range for Arcane Explosion is default 10 but can be glyphed to 15, need to be coded.
+	if targets.nrTargetsArcaneExplosion > 4 then								-- Todo : the range for Arcane Explosion is default 10 but can be glyphed to 15, need to be coded.
 		if castSpell("target",ArcaneExplosion,true,false) then
 			return true
 		end
 	end
+	return false
 end
 
 
@@ -197,8 +328,27 @@ function ArcaneMageSingleTargetSimcraftBurn()
 	
 	--# High mana usage, "Burn" sequence
 	-- actions.burn=call_action_list,name=cooldowns
+	--TODOD FIXA DESYNCH AV PC; AP OCH EVOCATION: Vi kan inte vänta på Evo innan vi kastar PC i interim gångern utan AP. Vi desynchar så mycket att vi tappar n PC
 	if BadRobot_data['Cooldowns'] == 2 and arcaneCharge > 3 then
 		ArcaneMageCooldowns()
+	end
+
+	if isChecked("Prismatic Crystal") then
+		if ArcaneMageInitPrismaticCrystal() then 
+			return true
+		end
+	end
+
+	if UnitName(target) == "Prismatic Crystal" then
+		if ArcaneMageExecutePrismaticCrystalRotation() then
+			return true
+		end
+	end
+
+	if playerSpellEvocationCD > 15 then
+		if ArcaneMageSingleTargetSimcraftConserve() then
+			return true
+		end
 	end
 	
 	--actions.burn+=/arcane_missiles,if=buff.arcane_missiles.react=3
@@ -225,7 +375,7 @@ function ArcaneMageSingleTargetSimcraftBurn()
 	end	
 	
 	--actions.burn+=/nether_tempest,cycle_targets=1,if=target!=prismatic_crystal&buff.arcane_charge.stack=4&(active_dot.nether_tempest=0|(ticking&remains<3.6))
-	if UnitName("target") == "Prismatic Crystal" and arcaneCharge > 3 and (not UnitDebuffID("target",NetherTempest) or ((UnitDebuffID("target",NetherTempest) and getDebuffRemain("target",NetherTempest)<3.6))) then
+	if UnitName(target) == "Prismatic Crystal" and arcaneCharge > 3 and (not UnitDebuffID("target",NetherTempest) or ((UnitDebuffID("target",NetherTempest) and getDebuffRemain("target",NetherTempest)<3.6))) then
 		if castSpell("target",NetherTempest,true,false) then
 			return true
 		end

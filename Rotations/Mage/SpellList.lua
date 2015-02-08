@@ -53,7 +53,7 @@ if select(3, UnitClass("player")) == 8 then
 -- Talents
 	ColdSnap		= 11958;
 	IceFloes		= 108839;
-	PrismaticCrystal = 155152;
+	PrismaticCrystal = 155152
 
 
 -- Shared
@@ -213,6 +213,23 @@ if select(3, UnitClass("player")) == 8 then
 				return true
 			end 
 		end
+	end
+
+	function castPrismaticCrystal()
+		-- Should check different ways here, one is at target, one is at mouseover etc
+		-- We code at target for now and then a toggle
+		if isChecked("Prismatic Crystal") then
+			if getValue("Prismatic Crystal") == 1 then -- Target
+				if getGround(target) then
+            		return castGround(target,PrismaticCrystal,40) == true or false
+          		end
+			end
+			if getValue("Prismatic Crystal") == 2 then -- Mouse
+				print("Prism MO not Supported")
+				return false
+			end
+		end
+		return false
 	end
 	function castScorch(target)
 		if castSpell(target, Scorch,false,false) then

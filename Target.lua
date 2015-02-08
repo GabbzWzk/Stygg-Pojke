@@ -96,5 +96,5 @@ function targets:update()
         targetsinrangeforlivingbombcleave = getNumberOfTargetsWithOutLivingBomb(getEnemies("target",10))
     else
         targetsinrangeforlivingbombcleave = 0
-    end      
+    end 
 end

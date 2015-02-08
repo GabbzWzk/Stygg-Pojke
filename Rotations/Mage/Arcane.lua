@@ -1,5 +1,7 @@
--- Todo : Fix the spellname in UNIT_SPELL_SENT
--- Todo : Handle Mana Burst toggle
+--TODOS:
+--		Fix the desynch in Arcane where EVOCATION, PRISMATIC CRYSTAL AND ARCANE POWER. PC on CD, PC and AP X seconds before Evocation. Different times on AP or not AP Evocation.
+--		Jump into conservce if Evo is on cD and low mana
+--		Fix slash command for usefull spells and toggles, IceBlock, Counterspell(focus), etc
 
 if select(3, UnitClass("player")) == 8 then
 
@@ -22,6 +24,7 @@ if select(3, UnitClass("player")) == 8 then
 		-- Manual Command: We prioritise the users input, we should use modifiers to pause the bot or somehow change the rotation, we should add / slash commands such as badrobot castspell [spellid]
 		------------------------------
 		if IsLeftShiftKeyDown() then -- Pause the script, keybind in wow shift+1 etc for manual cast
+			print(" AP CD : " ..getSpellCD(ArcanePower))
 			return true
 		end
 
@@ -71,8 +74,6 @@ if select(3, UnitClass("player")) == 8 then
 				player:update()
 				targets:update()
 				
-
-				
 				
 				--Buffs
 				playerBuffArcanePower				= UnitBuffID("player",ArcanePower) 
@@ -91,8 +92,9 @@ if select(3, UnitClass("player")) == 8 then
 
 				playerBuffHeatingUp					= UnitBuffID("player",HeatingUp)
 
-		
-				--player Spells
+				---------------------
+				-- Player Spells
+				---------------------
 				playerSpellPrismaticCrystalIsKnown	= isKnown(PrismaticCrystal) 
 				playerSpellPrismaticCrystalCD 		= getSpellCD(PrismaticCrystal)	--Todo : Replace with this
 				
@@ -107,6 +109,7 @@ if select(3, UnitClass("player")) == 8 then
 				--playerspellFireballInFlight set at other place
 				
 				cdArcanePower						= getSpellCD(ArcanePower)
+				cdPresenceOfMind					= getSpellCD(PresenceOfMind)
 				
 				------------------
 				-- Target
@@ -132,9 +135,11 @@ if select(3, UnitClass("player")) == 8 then
 				--------------------	
 				castTimeArcaneBlast					 = select(4,GetSpellInfo(ArcaneBlast))/1000
 
+			
+
 			if cancelEvocation() then
 				RunMacroText("/stopcasting")
-			end
+			end -- Todo : We should a check if we are channeling Evo and then return false if we should not cancel
 			
 			if not isItOkToClipp() then
 				return true

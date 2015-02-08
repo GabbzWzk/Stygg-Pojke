@@ -52,15 +52,21 @@ if select(3, UnitClass("player")) == 8 then
 				checkOp("Racial")
 				textOp("Racial")
 
-				checkOp("Trinket 1")  -- We forces the user to have on use trinkets on the first slot
-				textOp("Trinket 1")
+				checkOp("Trinkets")  -- We forces the user to have on use trinkets on the first slot
+				textOp("Trinkets")
 
-				checkOp("Potions")
-				textOp("Potions")
+				checkOp("DPS Potions")
+				textOp("DPS Potions")
 
 				if isKnown(MirrorImage) then
 					checkOp("Mirror Image")
 					textOp("Mirror Image")
+				end
+
+				if isKnown(PrismaticCrystal) then
+					checkOp("Prismatic Crystal")
+					dropOp("Prismatic Crystal Option", 1, "Specify where to place", "|cffFFBB00Target", "|cff0077FFMouseover")
+					textOp("Prismatic Crystal")
 				end
 
 				if isKnown(ColdSnap) then
@@ -89,9 +95,9 @@ if select(3, UnitClass("player")) == 8 then
 				boxOp("Healthstone", 0, 100  , 5, 25, "|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use |cffFFFFFFHealthstone")
 				textOp("Healthstone")
 
-				checkOp("Potion")
-				boxOp("Potion", 0, 100  , 5, 25, "|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use |cffFFFFFFPotion")
-				textOp("Potion")
+				checkOp("Def Potions")
+				boxOp("Def Potions", 0, 100  , 5, 25, "|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use |cffFFFFFFPotion")
+				textOp("Def Potions")
 				-- Todo : more generic defensives?
 
 				if isKnown(Evanesce) then

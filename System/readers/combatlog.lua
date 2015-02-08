@@ -117,7 +117,7 @@ function cl:common(...)
             end
         end
         if param == "SPELL_CAST_SUCCESS"  then
-            print("Spell Cast Success "  .. spellName .." " ..GetTime())    -- 
+            --print("Spell Cast Success "  .. spellName .." " ..GetTime())    -- 
              if spell == Fireball then
                 --print("Fireball Spell Damage :" ..GetTime())
                 --playerspellFireballInFlight = true
