@@ -49,6 +49,7 @@ function targets:update()
     -- PBAOE
     targets.nrTargetsMelee = #getEnemies("player",5) -- Used for checking if i need to blink or root people
     targets.nrTargetsArcaneExplosion = #getEnemies("player",15) -- Arcane Explosion, this is glyphed so we should check if we have the glyph or range from spellbook
+    targets.nrTargetAroundTarget = #getEnemies("target",15)
     -- Frost Nova 12 yards
 
     

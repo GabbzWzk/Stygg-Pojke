@@ -165,19 +165,9 @@ if select(3, UnitClass("player")) == 8 then
 			end
 
 			 if player.specc == 1 then -- Arcane ?
-			 	if isChecked("Burn Phase") then
-					if playerSpellEvocationCD < 20 then
-						if ArcaneMageSingleTargetSimcraftBurn() then
-							return true
-						end
-					end
-				end
-				if ArcaneMageSingleTargetSimcraftConserve() then
-					return true
-				end
-			 
+			 	return ArcaneMageRotation()
 			 elseif player.specc  == 2 then -- Fire
-			 	return FireSingleTarget()
+			 	return FireMageRotation()
 			 else
 			 	print("3")
 			 end

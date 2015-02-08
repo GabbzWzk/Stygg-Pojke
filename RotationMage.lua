@@ -19,6 +19,26 @@ print("Mage Rotations")
 		-- Burn Rotation
 		-- Conserve Rotation
 		-- There is a function check that cancels the Evocation, but we only check if we are over 93%
+function ArcaneMageRotation()
+	
+	--Is there AoE 
+	if ArcaneMageAoESimcraft() then
+		return true
+	end
+	
+
+	if isChecked("Burn Phase") then
+		if playerSpellEvocationCD < 20 then
+			if ArcaneMageSingleTargetSimcraftBurn() then
+				return true
+			end
+		end
+	end
+	
+	if ArcaneMageSingleTargetSimcraftConserve() then
+		return true
+	end
+end
 
 ------------------------------
 -- Arcane Mage Pre Pull Sequence
@@ -118,6 +138,11 @@ end
 ------------------------------
 -- Arcane Mage AoE Rotation ToDo
 ----------------------------
+--Once you reach five or more targets that are stacked, you will break away from your usual rotation and follow this priority:
+	--Supernova or Nether Tempest
+	--Arcane Barrage once you reach 4 stacks
+	--Arcane Orb if you talented it and you are not at 4 stacks
+	--Cone of Cold if you have it glyphed
 --# AoE sequence
 --actions.aoe=call_action_list,name=cooldowns
 --actions.aoe+=/nether_tempest,cycle_targets=1,if=buff.arcane_charge.stack=4&(active_dot.nether_tempest=0|(ticking&remains<3.6))
@@ -129,32 +154,35 @@ end
 -- AoE
 function ArcaneMageAoESimcraft()
 	
-	-- actions.aoe+=/nether_tempest,cycle_targets=1,if=buff.arcane_charge.stack=4&(active_dot.nether_tempest=0|(ticking&remains<3.6))
-	if Charge()==4 and (not UnitDebuffID("target",NetherTempest) or (UnitDebuffID("target",NetherTempest) and getDebuffRemain("target",NetherTempest)<3.6)) then
-		return true
-	end
-		-- actions.aoe+=/supernova
-	if chargesSuperNova > 0 then
-		if castSpell("target",Supernova,false,false) then
+	if targets.nrTargetAroundTarget > 4 then	--Todo : We should for each of this have a seperate number, for example, Super nova is non facing while a
+		-- actions.aoe+=/nether_tempest,cycle_targets=1,if=buff.arcane_charge.stack=4&(active_dot.nether_tempest=0|(ticking&remains<3.6))
+		if Charge()==4 and (not UnitDebuffID("target",NetherTempest, "player") or (UnitDebuffID("target",NetherTempest, "player") and getDebuffRemain("target",NetherTempest, "player")<3.6)) then
 			return true
 		end
-	end
+		-- actions.aoe+=/supernova
+		if chargesSuperNova > 0 then
+			if castSpell("target",Supernova,false,false) then
+				return true
+			end
+		end
 		-- actions.aoe+=/arcane_barrage,if=buff.arcane_charge.stack=4
-	if castArcaneBarrage("target", 4) then
-		return true 
-	end
+		if castArcaneBarrage("target", 4) then	--Todo : For example, Arcane Barrage only hit 4 target so why do we check for 5
+			return true 
+		end
 		-- actions.aoe+=/arcane_orb,if=buff.arcane_charge.stack<4
-	if castArcaneOrb("target", 3) then
-		return true
-	end
-		-- actions.aoe+=/cone_of_cold,if=glyph.cone_of_cold.enabled
+		if castArcaneOrb("target", 3) then
+			return true
+		end
+	end	
+	
+	-- actions.aoe+=/cone_of_cold,if=glyph.cone_of_cold.enabled
 	if hasGlyph(323) then
 		if castSpell("target",ConeOfCold,false,true) then
 			return true
 		end
 	end
 		-- actions.aoe+=/arcane_explosion
-	if getNumEnemies("player",10) then
+	if targets.nrTargetsArcaneExplosion then								-- Todo : the range for Arcane Explosion is default 10 but can be glyphed to 15, need to be coded.
 		if castSpell("target",ArcaneExplosion,true,false) then
 			return true
 		end
@@ -383,6 +411,23 @@ end
 --			Focusing on AoE damage using talents x, y
 --			Strategy to ....
 --------------------------
+function FireMageRotation()
+
+	-- Is there AoE peeps araound
+	--FireAoEMage
+	-- Shall i combust?
+	if isChecked("Burn Phase") then
+		--FireMageCombustionRotation()
+	end
+	-- Last do single filler with spread
+	return FireSingleTarget()
+end
+
+function FireAoETarget()
+	--Fire's cleave is pretty simple, you want to cast Inferno Blast to spread your DoTs to other nearby targets, make sure that you always spread Combustion instantly after using it.
+	--Also make sure to spread Living Bomb before it expires, since the detonation is a large source of damage.
+	--When there are five or more targets, you should use Dragon's Breath on cooldown (if glyphed) and keep up the debuff that Flamestrike applies.
+end
 
 function PyroChain()
 --# Kindling or Level 90 Combustion

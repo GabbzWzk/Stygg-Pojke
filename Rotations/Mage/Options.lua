@@ -67,18 +67,19 @@ if select(3, UnitClass("player")) == 8 then
 					checkOp("Cold Snap")
 					textOp("Cold Snap")
 				end
-
-				if isKnown(ArcanePower) then	
-					checkOp("Arcane Power")
-					textOp("Arcane Power")
-				end
-
-				if isKnown(IcyVeins) then
-					checkOp("Icy Veins")
-					textOp("Icy Veins")
-				end
-
-				
+				if player.specc == 1 then 				-- Arcane 
+				 	if isKnown(ArcanePower) then	
+						checkOp("Arcane Power")
+						textOp("Arcane Power")
+					end
+			 	elseif player.specc  == 2 then 			-- Fire
+			 		
+			 	else                                 	-- Frost
+			 		if isKnown(IcyVeins) then
+						checkOp("Icy Veins")
+						textOp("Icy Veins")
+					end
+			 	end	
 
 			-- Wrapper -----------------------------------------
 			wrapOp("--- Defensives ---")
@@ -111,193 +112,13 @@ if select(3, UnitClass("player")) == 8 then
 				dropOp("RotationSelect", 1, "Choose Rotation to use.", "|cffFFBB00Standard", "|cff0077FFNot Implemented")
 				textOp("Rotation Priority")
 
-				checkOp("Arcane Blast")
-				boxOp("ArcaneBlast (x4)", 80, 100  , 1, 93, "|cffFFBB00Under what |cff69ccf0%Mana|cffFFBB00 dont cast |cff69ccf0Arcane Blast at 4 stacks.")
-				textOp("ArcaneBlast (x4)")
-
-				checkOp("Burn Phase", "Do not enable on Dummy.")
-				textOp("Burn Phase")
-
-			--[[General Configs]]
-			CreateGeneralsConfig()
-			WrapsManager()
-		end
-	end
-
-	function FrostMageConfig()
-		if currentConfig ~= "Frost ragnar" then
-			ClearConfig()
-			thisConfig = 0
-			--[[Title]]
-			CreateNewTitle(thisConfig,"Frost |cffFF0000ragnar");
-
-			-- Wrapper -----------------------------------------
-			CreateNewWrap(thisConfig,"--- Buffs ---");
-
-			--[[Arcane Brilliance]]
-			CreateNewCheck(thisConfig,"Arcane Brilliance");
-			CreateNewText(thisConfig,"Arcane Brilliance");
-
-			-- Wrapper -----------------------------------------
-			CreateNewWrap(thisConfig,"--- Cooldowns ---");
-
-			if isKnown(MirrorImage) then
-				CreateNewCheck(thisConfig,"Mirror Image");
-				CreateNewText(thisConfig,"Mirror Image");
-			end
-
-			CreateNewCheck(thisConfig,"Icy Veins");
-			CreateNewText(thisConfig,"Icy Veins");
-
-			CreateNewCheck(thisConfig,"Racial");
-			CreateNewText(thisConfig,"Racial");
-
-			-- Wrapper -----------------------------------------
-			CreateNewWrap(thisConfig,"--- Defensives ---");
-
-
-
-			-- Wrapper -----------------------------------------
-			CreateNewWrap(thisConfig,"--- Toggles");
-
-			--[[Pause Toggle]]
-			CreateNewCheck(thisConfig,"Pause Toggle");
-			CreateNewDrop(thisConfig,"Pause Toggle", 3, "Toggle2")
-			CreateNewText(thisConfig,"Pause Toggle");
-
-			-- --[[Focus Toggle]]
-			-- CreateNewCheck(thisConfig,"Focus Toggle");
-			-- CreateNewDrop(thisConfig,"Focus Toggle", 2, "Toggle2")
-			-- CreateNewText(thisConfig,"Focus Toggle");
-
-			-- Wrapper -----------------------------------------
-			CreateNewWrap(thisConfig,"--- Rotation ---");
-
-			-- Rotation
-			CreateNewDrop(thisConfig, "RotationSelect", 1, "Choose Rotation to use.", "|cffFFBB00IcyVeins", "|cff0077FFSimCraft");
-			CreateNewText(thisConfig, "Rotation Priority");
-
-			--[[General Configs]]
-			CreateGeneralsConfig();
-
-
-			WrapsManager();
-		end
-	end
-
-	function ArcaneMageConfig()
-		if currentConfig ~= "Arcane Ragnar & Gabbz" then
-			ClearConfig()
-			thisConfig = 0
-			--[[Title]]
-			 titleOp("Arcane |cffFF0000Ragnar & Gabbz")
-
-			-- Wrapper -----------------------------------------
-			wrapOp("--- Buffs ---")
-
-			--[[Arcane Brilliance]]
-			checkOp("Arcane Brilliance")
-			textOp("Arcane Brilliance")
-
-			-- Wrapper -----------------------------------------
-			wrapOp("--- Cooldowns ---")
-
-			if isKnown(MirrorImage) then
-				checkOp("Mirror Image")
-				textOp("Mirror Image")
-			end
-
-			checkOp("Arcane Power")
-			textOp("Arcane Power")
-
-			checkOp("Racial")
-			textOp("Racial")
-
-			if isKnown(ColdSnap) then
-				checkOp("Cold Snap")
-				textOp("Cold Snap")
-			end
-
-			-- Wrapper -----------------------------------------
-			wrapOp("--- Defensives ---")
-
-			if isKnown(Evanesce) then
-				CreateNewCheck(thisConfig,"Evanesce");
-				boxOp("Evanesce", 0, 100  , 5, 30, "|cffFFBB00Under what |cff69ccf0%HP|cffFFBB00 cast |cff69ccf0Evanesce.")
-				textOp("Evanesce")
-			end
-
-			-- Healthstone
-			checkOp("Healthstone")
-			boxOp("Healthstone", 0, 100  , 5, 25, "|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use |cffFFFFFFHealthstone")
-			textOp("Healthstone")
-
-			-- Wrapper -----------------------------------------
-			wrapOp("--- Rotation ---")
-			checkOp("Arcane Blast")
-			boxOp("ArcaneBlast (x4)", 80, 100  , 1, 93, "|cffFFBB00Under what |cff69ccf0%Mana|cffFFBB00 dont cast |cff69ccf0Arcane Blast at 4 stacks.")
-			textOp("ArcaneBlast (x4)")
-
-			checkOp("Burn Phase", "Do not enable on Dummy.")
-			textOp("Burn Phase")
-
-			--[[General Configs]]
-			CreateGeneralsConfig()
-			WrapsManager()
-		end
-	end
-
-	function FireMageConfig()
-		if currentConfig ~= "Fire Mage Gabbz" then
-			ClearConfig()
-			thisConfig = 0
-			--[[Title]]
-			 titleOp("Fire Gabbz")
-
-			-- Wrapper -----------------------------------------
-			wrapOp("--- Buffs ---")
-
-			
-			-- Wrapper -----------------------------------------
-			wrapOp("--- Cooldowns ---")
-
-			if isKnown(MirrorImage) then
-				checkOp("Mirror Image")
-				textOp("Mirror Image")
-			end
-
-			if isKnown(ColdSnap) then
-				checkOp("Cold Snap")
-				textOp("Cold Snap")
-			end
-
-			checkOp("Racial")
-			textOp("Racial")
-
-			checkOp("Potions")
-			textOp("Potions")
-
-			-- Wrapper -----------------------------------------
-			wrapOp("--- Defensives ---")
-
-			if isKnown(Evanesce) then
-				CreateNewCheck(thisConfig,"Evanesce");
-				boxOp("Evanesce", 0, 100  , 5, 30, "|cffFFBB00Under what |cff69ccf0%HP|cffFFBB00 cast |cff69ccf0Evanesce.")
-				textOp("Evanesce")
-			end
-
-			-- Healthstone
-			checkOp("Healthstone")
-			boxOp("Healthstone", 0, 100  , 5, 25, "|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use |cffFFFFFFHealthstone")
-			textOp("Healthstone")
-
-			-- Wrapper -----------------------------------------
-			wrapOp("--- Rotation ---")
-			checkOp("Gabbz")
-			textOp("Gabbz Standard")
-
-			checkOp("Burst")
-			textOp("Burst")
+				if player.specc == 1 then 				-- Arcane 
+					checkOp("Arcane Blast")
+					boxOp("ArcaneBlast (x4)", 80, 100  , 1, 93, "|cffFFBB00Under what |cff69ccf0%Mana|cffFFBB00 dont cast |cff69ccf0Arcane Blast at 4 stacks.")
+					textOp("ArcaneBlast (x4)")
+				end
+					checkOp("Burn Phase", ", Used for offensive CDs such as combustion, icy viens, Arcane Power")
+					textOp("Burn Phase")
 
 			--[[General Configs]]
 			CreateGeneralsConfig()
