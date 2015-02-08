@@ -449,7 +449,7 @@ function CombustionSequence()
 	--actions.combust_sequence+=/arcane_torrent
 	--actions.combust_sequence+=/potion,name=draenic_intellect
 	--actions.combust_sequence+=/fireball,if=!dot.ignite.ticking&!in_flight
-	if not targetDebuffIgnite and not playerspellFireballInFlight then -- INFLIGHT
+	if not targetDebuffIgnite and not playerspellFireballInFlight then
 		if castFireball("target") then
 			return true
 		end
