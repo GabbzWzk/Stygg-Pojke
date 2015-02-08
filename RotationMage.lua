@@ -423,7 +423,19 @@ function FireMageRotation()
 	return FireSingleTarget()
 end
 
+
 function FireAoETarget()
+
+	
+	--Fire's cleave is pretty simple, you want to cast Inferno Blast to spread your DoTs to other nearby targets, make sure that you always spread Combustion instantly after using it.
+	--Also make sure to spread Living Bomb before it expires, since the detonation is a large source of damage.
+	--When there are five or more targets, you should use Dragon's Breath on cooldown (if glyphed) and keep up the debuff that Flamestrike applies.
+end
+
+function FireCleaveTarget()
+-- When we have pyroblast buff up and we not using Combustion or Combustion is on CD  
+--we should check targets that dont have the Pyroblast DoT on them and cast pyro on that target. This si only true when mobs are tanked or stationary away frome achother
+	
 	--Fire's cleave is pretty simple, you want to cast Inferno Blast to spread your DoTs to other nearby targets, make sure that you always spread Combustion instantly after using it.
 	--Also make sure to spread Living Bomb before it expires, since the detonation is a large source of damage.
 	--When there are five or more targets, you should use Dragon's Breath on cooldown (if glyphed) and keep up the debuff that Flamestrike applies.
@@ -445,11 +457,16 @@ function CombustionSequence()
 	if castSpell("player",Berserkering,true,true) then
 		return true
 	end
+end
+
+
+function FireSingleTarget()
+
 
 	--actions.combust_sequence+=/arcane_torrent
 	--actions.combust_sequence+=/potion,name=draenic_intellect
 	--actions.combust_sequence+=/fireball,if=!dot.ignite.ticking&!in_flight
-	if not targetDebuffIgnite and not playerspellFireballInFlight then -- INFLIGHT
+	if not targetDebuffIgnite and not player.isCasting == Fireball then 
 		if castFireball("target") then
 			return true
 		end
@@ -463,24 +480,22 @@ function CombustionSequence()
 	--# Meteor Combustions can run out of Pyro procs before impact. Use IB to delay Combustion
 	--actions.combust_sequence+=/inferno_blast,if=talent.meteor.enabled&cooldown.meteor.duration-cooldown.meteor.remains<gcd.max*3
 	--actions.combust_sequence+=/combustion  Todo : What? This does not make sence, we are not looking at ignite damage and hte code is not same as simcraft
-    if playerBuffPyroBlast and playerBuffPyroBlastTimeLeft < 2  then 
-        CastSpellByName("Combustion", target)
+    if not playerBuffPyroBlast and  targetDebuffIgnite  then 
+    	if castSpell("target", Combustion,false,false) then
+        --CastSpellByName("Combustion", target)
         return true
-    end
-end
-
-function FireSingleTarget()
-
+    	end
+    end	
 	--inferno_blast,if=(dot.combustion.ticking&active_dot.combustion<active_enemies)|(dot.living_bomb.ticking&active_dot.living_bomb<active_enemies)
-	if (targetdebuffcombustion and targetsinrangeforcombustioncleave > 0) or (targetdebufflivingbomb and targetsinrangeforlivingbombcleave > 0) then -- Need to track combustion dots on enemy, so for each enemy in range and we do not have a combustion dot on him we should spread.
-        if castInfernoBlast(target) then
-        	return true
-      	end
-    end
+	--if (targetDebuffIgniteffcombustion and targetsinrangeforcombustioncleave > 0) or (targetdebufflivingbomb and targetsinrangeforlivingbombcleave > 0) then -- Need to track combustion dots on enemy, so for each enemy in range and we do not have a combustion dot on him we should spread.
+   --     if castInfernoBlast(target) then
+   --     	return true
+    --  	end
+   -- end
 
 	--pyroblast,if=buff.pyroblast.up&buff.pyroblast.remains<action.fireball.execute_time
 	if playerBuffPyroBlast and playerBuffPyroBlastTimeLeft < 2  then 
-        if CastSpellByName("Pyroblast", target) then
+        if CastSpellByName("Pyroblast", target) then 
         	return true
         end
     end
@@ -490,7 +505,8 @@ function FireSingleTarget()
 	
 
 	--pyroblast,if=buff.pyroblast.up&buff.heating_up.up&action.fireball.in_flight
-	if playerBuffPyroBlast and playerBuffHeatingUp and playerspellFireballInFlight then
+	if playerBuffPyroBlast and playerBuffHeatingUp and player.isCasting == Fireball
+		then  
         CastSpellByName("Pyroblast", target)
         return true
     end
@@ -498,7 +514,7 @@ function FireSingleTarget()
 
 	--actions.single_target+=/inferno_blast,if=buff.pyroblast.down&buff.heating_up.up
 	if not playerBuffPyroBlast and playerBuffHeatingUp then 
-    	if castInfernoBlast(target) then
+    	if castInfernoBlast(target) then 
         	return true
       	end
     end

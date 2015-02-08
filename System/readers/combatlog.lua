@@ -109,11 +109,19 @@ function cl:common(...)
         if param == "SPELL" then
             --print("Spell " .. spellName .." " ..GetTime())
         end
-        if param == "SPEL_PERIODIC" then
+        if param == "SPELL_PERIODIC" then
            -- print("Spell Periodic "  .. spellName .." " ..GetTime())
+            if spell == Ignite then
+                --print("Fireball Spell Damage :" ..GetTime())
+                --playerspellFireballInFlight = true
+            end
         end
         if param == "SPELL_CAST_SUCCESS"  then
-            --print("Spell Cast Success "  .. spellName .." " ..GetTime())    -- 
+            print("Spell Cast Success "  .. spellName .." " ..GetTime())    -- 
+             if spell == Fireball then
+                --print("Fireball Spell Damage :" ..GetTime())
+                --playerspellFireballInFlight = true
+            end
         end
         if param == "SPELL_CAST_FAILED"  then
             --print("Spell Cast Failed "  .. spellName .." " ..GetTime())    -- 
@@ -122,9 +130,9 @@ function cl:common(...)
         if param == "SPELL_DAMAGE" then
             --print("Spell Damage "  .. spellName .." " ..GetTime())
             if spell == Fireball then
-                print("Fireball Spell Damage :" ..GetTime())
-                playerspellFireballInFlight = false
-            end
+                --print("Fireball Spell Damage :" ..GetTime())
+                --playerspellFireballInFlight = false
+            end    
         end
         if param == "SPELL_MISSED" then
             --print("Spell Missed "  .. spellName .." " ..GetTime())

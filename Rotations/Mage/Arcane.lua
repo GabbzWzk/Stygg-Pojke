@@ -83,7 +83,7 @@ if select(3, UnitClass("player")) == 8 then
 
 				playerBuffPyroBlast					= UnitBuffID("player",PyroblastBuff)
 
-				playerBuffPyroBlastTimeLeft			= getBuffRemain("player",Pyroblast)
+				playerBuffPyroBlastTimeLeft			= getBuffRemain("player",PyroblastBuff)
 
 		      	playerBuffIncantersFlowDirection	= getIncantersFlowsDirection()
       			playerBuffIncantersFlowStacks		= getBuffStacks("player", IncantersFlow)
