@@ -466,11 +466,7 @@ function FireSingleTarget()
 	--actions.combust_sequence+=/arcane_torrent
 	--actions.combust_sequence+=/potion,name=draenic_intellect
 	--actions.combust_sequence+=/fireball,if=!dot.ignite.ticking&!in_flight
-<<<<<<< HEAD
 	if not targetDebuffIgnite and not player.isCasting == Fireball then 
-=======
-	if not targetDebuffIgnite and not playerspellFireballInFlight then
->>>>>>> origin/master
 		if castFireball("target") then
 			return true
 		end
