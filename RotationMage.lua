@@ -537,7 +537,10 @@ end
 --------------------------
 -- Fire Mage Rotation
 --			Focusing on AoE damage using talents x, y
---			Strategy to ....
+--			Strategy to 
+--			Todo :Combustion and Pyro Chain i am not sure what this means but we cant wait for a perfect ignite. Fire is cleave and AoE so we need to think when and perhaps not always how much.
+--					However a very good ignite value should be there in case we are hitting 5K ignites
+--			Todo : We are spreading Living Bomb from target when we have LB ticking on adds that have not exploded, we cant not cast Fireblast unless we are spreading.
 --------------------------
 function FireMageRotation()
 
@@ -555,6 +558,21 @@ function FireMageRotation()
 	
 	-- Last do single filler with spread
 	return FireSingleTarget()
+end
+
+function FireMageCooldowns()
+	-- Todo : we need to make sure to synch and what not here
+	-- We dont want to use pots unless we have Arcane Power
+	OffensiveCooldowns()
+
+	if player.specc == 2 then
+		-- What is Fire specc CD? Only Combustion?
+		--if isChecked("Arcane Power") then
+		--	if castSpell("player",ArcanePower,true,true) then
+		--		return true
+		--	end
+		--end
+	end
 end
 
 
@@ -576,33 +594,27 @@ function FireCleaveTarget()
 end
 
 function CombustionSequence()
-	--if PyroChain() then
-		----# Kindling or Level 90 Combustion
---actions.init_combust+=/start_pyro_chain,if=
---	(cooldown.combustion.remains<gcd.max*4&buff.pyroblast.up&buff.heating_up.up&action.fireball.in_flight)|
---	(buff.pyromaniac.up&cooldown.combustion.remains<ceil(buff.pyromaniac.remains%gcd.max)*(gcd.max+talent.kindling.enabled)))
-	--return true
-		--initiate Combustion
-			-- Prismatic Crystal (Not recommended talent so low prio)
-			-- Racials, Pots, Trinkets
-			-- PyroChain()
-		--castCombustion
-	--# Combustion Sequence
-	--actions.combust_sequence=stop_pyro_chain,if=cooldown.combustion.duration-cooldown.combustion.remains<15
-	--actions.combust_sequence+=/prismatic_crystal
-	--actions.combust_sequence+=/blood_fury
-	--actions.combust_sequence+=/berserking
-	if castSpell("player",Berserkering,true,true) then
-		return true
+
+	--actions.init_combust+=/start_pyro_chain,if=(cooldown.combustion.remains<gcd.max*4&buff.pyroblast.up&buff.heating_up.up&action.fireball.in_flight)|(buff.pyromaniac.up&cooldown.combustion.remains<ceil(buff.pyromaniac.remains%gcd.max)*(gcd.max+talent.kindling.enabled)))
+	if (cdCombustion < 3 and playerBuffPyroBlast and playerBuffHeatingUp and player.isCasting == Fireball) then -- Todo The last or stuff
+			print("Now we should") -- This never happens, something is wrong
+			-- Use all CDs that are checked
+			FireMageCooldowns()
+			-- Here us the famous pyrochain!!!!
+			-- then vast combustion either with a defined ignite value that is high or when the chain is done.
+			--castCombustion
+		--# Combustion Sequence
+		--actions.combust_sequence=stop_pyro_chain,if=cooldown.combustion.duration-cooldown.combustion.remains<15
+
+		--actions.combust_sequence+=/combustion  Todo : What? This does not make sence, we are not looking at ignite damage and hte code is not same as simcraft
+	    if not playerBuffPyroBlast and targetDebuffIgnite  then 
+	    	print("Time")
+	    	if castSpell("target", Combustion,false,false) then
+	    		CastSpellByName("Combustion", target)
+	        	return true
+	    	end
+	    end
 	end
-	
-	--actions.combust_sequence+=/combustion  Todo : What? This does not make sence, we are not looking at ignite damage and hte code is not same as simcraft
-    --if not playerBuffPyroBlast and  targetDebuffIgnite  then 
-    --	if castSpell("target", Combustion,false,false) then
-        --CastSpellByName("Combustion", target)
-    --    return true
-    --	end
-    --end
 end
 
 function FireBurstRotation()
@@ -613,6 +625,11 @@ function FireBurstRotation()
 	--		return true
 	--	end
 	--end
+	if cdCombustion < 3 then
+		if CombustionSequence() then
+			return true
+		end
+	end
 	
 	-- Rest of the Burst stuff, such as?
 end

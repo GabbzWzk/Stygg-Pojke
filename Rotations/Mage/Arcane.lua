@@ -110,6 +110,7 @@ if select(3, UnitClass("player")) == 8 then
 				
 				cdArcanePower						= getSpellCD(ArcanePower)
 				cdPresenceOfMind					= getSpellCD(PresenceOfMind)
+				cdCombustion						= getSpellCD(Combustion)
 				
 				------------------
 				-- Target
