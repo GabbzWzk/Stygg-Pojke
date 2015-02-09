@@ -534,9 +534,6 @@ function ArcaneMageSingleTargetSimcraftConserve()
 	end
 end
 
-
-
-
 --------------------------
 -- Fire Mage Rotation
 --			Focusing on AoE damage using talents x, y
@@ -584,7 +581,7 @@ function CombustionSequence()
 --actions.init_combust+=/start_pyro_chain,if=
 --	(cooldown.combustion.remains<gcd.max*4&buff.pyroblast.up&buff.heating_up.up&action.fireball.in_flight)|
 --	(buff.pyromaniac.up&cooldown.combustion.remains<ceil(buff.pyromaniac.remains%gcd.max)*(gcd.max+talent.kindling.enabled)))
-	return true
+	--return true
 		--initiate Combustion
 			-- Prismatic Crystal (Not recommended talent so low prio)
 			-- Racials, Pots, Trinkets
