@@ -123,8 +123,8 @@ function ArcaneMageRotation()
 	if ArcaneMageAoESimcraft() then
 		return true
 	end
-
-	if isChecked("Burn Phase") then
+	-- Burst is toggle, if not we only do conserve as Arcane Mage
+	if BadRobot_data['Cooldowns'] == 2 then 
 		if ArcaneMageSingleTargetSimcraftBurn() then
 			return true
 		end
@@ -136,7 +136,8 @@ function ArcaneMageRotation()
 end
 
 function ArcaneMageCooldowns()
-	
+	-- Todo : we need to make sure to synch and what not here
+	-- We dont want to use pots unless we have Arcane Power
 	OffensiveCooldowns()
 
 	if player.specc == 1 then
@@ -165,22 +166,6 @@ function ArcaneMagePrepull()
 	return false
 end
 
---# Executed every time the actor is available.
-
---actions=counterspell,if=target.debuff.casting.react
---actions+=/blink,if=movement.distance>10
---actions+=/blazing_speed,if=movement.remains>0
---actions+=/cold_snap,if=health.pct<30
---actions+=/time_warp,if=target.health.pct<25|time>5
---actions+=/ice_floes,if=buff.ice_floes.down&(raid_event.movement.distance>0|raid_event.movement.in<action.arcane_missiles.cast_time)
---actions+=/rune_of_power,if=buff.rune_of_power.remains<cast_time
---actions+=/mirror_image
---actions+=/cold_snap,if=buff.presence_of_mind.down&cooldown.presence_of_mind.remains>75
---actions+=/call_action_list,name=init_crystal,if=talent.prismatic_crystal.enabled&cooldown.prismatic_crystal.up
---actions+=/call_action_list,name=crystal_sequence,if=talent.prismatic_crystal.enabled&pet.prismatic_crystal.active
---actions+=/call_action_list,name=aoe,if=active_enemies>=4
---actions+=/call_action_list,name=burn,if=time_to_die<mana.pct*0.35*spell_haste|cooldown.evocation.remains<=(mana.pct-30)*0.3*spell_haste|(buff.arcane_power.up&cooldown.evocation.remains<=(mana.pct-30)*0.4*spell_haste)
---actions+=/call_action_list,name=conserve
 
 ------------------------------
 -- Arcane Mage Prismatic Crystal Set Up
@@ -321,15 +306,21 @@ function ArcaneMageAoESimcraft()
 end
 
 
-------------------------------
+------------------------------------
 -- Arcane Mage Burn Phase Rotation
-----------------------------
+--		Name a bit missleading, this is the burst section where Burn phase for Arcane is one of the actions to do in this phase
+--		Major CDs are Arcane Power on 3 minute CD and is linked to also the usage of Racials, Trinkets, PC and Burn phase
+--		The issue is that abilities will be desynched in the rotation, primarly Evocation and Burn phase with PC. The minor burst(PC and OR Burn phase) are hindering the synch
+--			with AP. The solution is that the minor burst then PC and Burn will not happen at the same time.
+--			So first Major will be AP, PC, Berserking, Trinket, Pot(Prepull) and Burn Phase.
+--			The minor will use PC on CD if we dont prelong the AP to much waiting for Evocation.
+--			The second major will be as soon as AP is Off CD.
+------------------------------------
 function ArcaneMageSingleTargetSimcraftBurn()
 	
-	--# High mana usage, "Burn" sequence
 	-- actions.burn=call_action_list,name=cooldowns
-	--TODOD FIXA DESYNCH AV PC; AP OCH EVOCATION: Vi kan inte vänta på Evo innan vi kastar PC i interim gångern utan AP. Vi desynchar så mycket att vi tappar n PC
-	if BadRobot_data['Cooldowns'] == 2 and arcaneCharge > 3 then
+
+	if arcaneCharge == 4 then 
 		ArcaneMageCooldowns()
 	end
 
@@ -353,7 +344,7 @@ function ArcaneMageSingleTargetSimcraftBurn()
 	
 	--actions.burn+=/arcane_missiles,if=buff.arcane_missiles.react=3
 	if stacksArcaneMisslesP == 3 then
-		if castSpell("target",ArcaneMissiles,false,true) then
+		if castSpell(target,ArcaneMissiles,false,true) then
 			return true
 		end
 	end
@@ -366,35 +357,26 @@ function ArcaneMageSingleTargetSimcraftBurn()
 	--end
 	
 	-- actions.burn+=/supernova,if=time_to_die<8|charges=2
-	if isKnownSupernova then					
+	if isKnownSupernova then 					
 		if chargesSuperNova > 1 then
-			if castSpell("target",Supernova,false,false) then
+			if castSpell(target,Supernova,false,false) then
 				return true
 			end
 		end
 	end	
 	
 	--actions.burn+=/nether_tempest,cycle_targets=1,if=target!=prismatic_crystal&buff.arcane_charge.stack=4&(active_dot.nether_tempest=0|(ticking&remains<3.6))
-	if UnitName(target) == "Prismatic Crystal" and arcaneCharge > 3 and (not UnitDebuffID("target",NetherTempest) or ((UnitDebuffID("target",NetherTempest) and getDebuffRemain("target",NetherTempest)<3.6))) then
-		if castSpell("target",NetherTempest,true,false) then
+	if arcaneCharge > 3 and (not UnitDebuffID("target",NetherTempest) or ((UnitDebuffID("target",NetherTempest) and getDebuffRemain("target",NetherTempest)<3.6))) then
+		if castSpell(target,NetherTempest,true,false) then
 			return true
 		end
 	end
 	
 	--actions.burn+=/arcane_orb,if=buff.arcane_charge.stack<4
-	if castArcaneOrb("target", 3) then
+	if castArcaneOrb(target, 3) then
 		return true
 	end
-
-	-- Todo : Still valid? Should not be here in burn if PRismatic Crystal is up
-	if isKnownSupernova and chargesSuperNova > 0 then
-		if UnitName("target") == "Prismatic Crystal" then
-			if castSpell("target",Supernova,false,false) then
-				return true
-			end
-		end
-	end
-
+	
 	--actions.burn+=/presence_of_mind,if=mana.pct>96&(!talent.prismatic_crystal.enabled|!cooldown.prismatic_crystal.up)
 	if player.mana > 96 and (not playerSpellPrismaticCrystalIsKnown or playerSpellPrismaticCrystalCD > 0)  then
 		if castSpell("player",PresenceOfMind,true,false) then
@@ -404,7 +386,7 @@ function ArcaneMageSingleTargetSimcraftBurn()
 	
 	--actions.burn+=/arcane_blast,if=buff.arcane_charge.stack=4&mana.pct>93
 	if arcaneCharge > 3 and player.mana > getValue("ArcaneBlast (x4)") then
-		if castSpell("target",ArcaneBlast,false,true) then
+		if castSpell(target,ArcaneBlast,false,true) then
 			return true
 		end
 	end	
@@ -414,7 +396,7 @@ function ArcaneMageSingleTargetSimcraftBurn()
 	--actions.burn+=/supernova,if=mana.pct>70&mana.pct<96
 	if isKnownSupernova and chargesSuperNova > 0 then
 		if (player.mana < 96) and (player.mana > 70) then
-			if castSpell("target",Supernova,false,false) then
+			if castSpell(target,Supernova,false,false) then
 				return true
 			end
 		end
@@ -440,7 +422,6 @@ function ArcaneMageSingleTargetSimcraftBurn()
 	if castArcaneBlast("target") then
 		return true
 	end
-
 	return false
 end
 
@@ -711,13 +692,3 @@ function FireSingleTarget()
 		end
 	end
 end
-
---if targetDebuffLivingBombRemain > 0 and targetNumberOfEnemiesinLBRange > 0 then 
---			if castSpell(target, InfernoBlast, false, false) then
---				return true
---			end
---		end 
-
-		-- actions.living_bomb+=/living_bomb,cycle_targets=1, if=target!=prismatic_crystal&(active_dot.living_bomb=0|(ticking&active_dot.living_bomb=1))&(((!talent.incanters_flow.enabled|incanters_flow_dir<0|buff.incanters_flow.stack=5)&remains<3.6)|((incanters_flow_dir>0|buff.incanters_flow.stack=1)&remains<gcd.max))&target.time_to_die>remains+12
---		
---	end
