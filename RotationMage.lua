@@ -545,11 +545,17 @@ end
 function FireMageRotation()
 
 	-- Is there AoE peeps araound
-	--FireAoEMage
-	-- Shall i combust?
-	if isChecked("Burn Phase") then
-		--FireMageCombustionRotation()
+	--	if FireAoEMage() then
+	--		return true
+	--	end
+	
+	-- Handle the burst and CDs : Its evolving around Combustion, so initiate PyroChain etc
+	if BadRobot_data['Cooldowns'] == 2 then 
+		if FireBurstRotation() then
+			return true
+		end
 	end
+	
 	-- Last do single filler with spread
 	return FireSingleTarget()
 end
@@ -572,14 +578,18 @@ function FireCleaveTarget()
 	--When there are five or more targets, you should use Dragon's Breath on cooldown (if glyphed) and keep up the debuff that Flamestrike applies.
 end
 
-function PyroChain()
---# Kindling or Level 90 Combustion
---actions.init_combust+=/start_pyro_chain,if=
---(cooldown.combustion.remains<gcd.max*4&buff.pyroblast.up&buff.heating_up.up&action.fireball.in_flight)|
---	(buff.pyromaniac.up&cooldown.combustion.remains<ceil(buff.pyromaniac.remains%gcd.max)*(gcd.max+talent.kindling.enabled)))
-end
-
 function CombustionSequence()
+	--if PyroChain() then
+		----# Kindling or Level 90 Combustion
+--actions.init_combust+=/start_pyro_chain,if=
+--	(cooldown.combustion.remains<gcd.max*4&buff.pyroblast.up&buff.heating_up.up&action.fireball.in_flight)|
+--	(buff.pyromaniac.up&cooldown.combustion.remains<ceil(buff.pyromaniac.remains%gcd.max)*(gcd.max+talent.kindling.enabled)))
+	return true
+		--initiate Combustion
+			-- Prismatic Crystal (Not recommended talent so low prio)
+			-- Racials, Pots, Trinkets
+			-- PyroChain()
+		--castCombustion
 	--# Combustion Sequence
 	--actions.combust_sequence=stop_pyro_chain,if=cooldown.combustion.duration-cooldown.combustion.remains<15
 	--actions.combust_sequence+=/prismatic_crystal
@@ -588,12 +598,30 @@ function CombustionSequence()
 	if castSpell("player",Berserkering,true,true) then
 		return true
 	end
+	
+	--actions.combust_sequence+=/combustion  Todo : What? This does not make sence, we are not looking at ignite damage and hte code is not same as simcraft
+    --if not playerBuffPyroBlast and  targetDebuffIgnite  then 
+    --	if castSpell("target", Combustion,false,false) then
+        --CastSpellByName("Combustion", target)
+    --    return true
+    --	end
+    --end
+end
+
+function FireBurstRotation()
+	
+	-- Check if we should start pyro chain to get a combustion
+	--if "cd on combustion is over or soonish"  then
+	--	if CombustionSequence() then
+	--		return true
+	--	end
+	--end
+	
+	-- Rest of the Burst stuff, such as?
 end
 
 
 function FireSingleTarget()
-
-
 	--actions.combust_sequence+=/arcane_torrent
 	--actions.combust_sequence+=/potion,name=draenic_intellect
 	--actions.combust_sequence+=/fireball,if=!dot.ignite.ticking&!in_flight
@@ -608,15 +636,11 @@ function FireSingleTarget()
         CastSpellByName("Pyroblast", target)
         return true
     end
+	
 	--# Meteor Combustions can run out of Pyro procs before impact. Use IB to delay Combustion
 	--actions.combust_sequence+=/inferno_blast,if=talent.meteor.enabled&cooldown.meteor.duration-cooldown.meteor.remains<gcd.max*3
-	--actions.combust_sequence+=/combustion  Todo : What? This does not make sence, we are not looking at ignite damage and hte code is not same as simcraft
-    if not playerBuffPyroBlast and  targetDebuffIgnite  then 
-    	if castSpell("target", Combustion,false,false) then
-        --CastSpellByName("Combustion", target)
-        return true
-    	end
-    end	
+	
+		
 	--inferno_blast,if=(dot.combustion.ticking&active_dot.combustion<active_enemies)|(dot.living_bomb.ticking&active_dot.living_bomb<active_enemies)
 	--if (targetDebuffIgniteffcombustion and targetsinrangeforcombustioncleave > 0) or (targetdebufflivingbomb and targetsinrangeforlivingbombcleave > 0) then -- Need to track combustion dots on enemy, so for each enemy in range and we do not have a combustion dot on him we should spread.
    --     if castInfernoBlast(target) then
@@ -642,14 +666,12 @@ function FireSingleTarget()
         return true
     end
 	
-
 	--actions.single_target+=/inferno_blast,if=buff.pyroblast.down&buff.heating_up.up
 	if not playerBuffPyroBlast and playerBuffHeatingUp then 
     	if castInfernoBlast(target) then 
         	return true
       	end
     end
-    
 		
 	--Todo:meteor,if=active_enemies>=5|(glyph.combustion.enabled&(!talent.incanters_flow.enabled|buff.incanters_flow.stack+incanters_flow_dir>=4)&cooldown.meteor.duration-cooldown.combustion.remains<10)
 	
