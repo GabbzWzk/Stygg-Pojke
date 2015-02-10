@@ -86,7 +86,7 @@ frame:SetScript("OnEvent", reader)
 function cl:common(...)
     bb.read.enrageReader(...)
     local timeStamp, param, hideCaster, source, sourceName, sourceFlags, sourceRaidFlags, destination,
-            destName, destFlags, destRaidFlags, spell, spellName, _, spellType = ...
+            destName, destFlags, destRaidFlags, spell, spellName, spellType, suffixone = ...
 
     if source == bb.guid then
 	end
@@ -114,6 +114,13 @@ function cl:common(...)
             if spell == Ignite then
                 --print("Fireball Spell Damage :" ..GetTime())
                 --playerspellFireballInFlight = true
+            end
+        end
+         if param == "SPELL_PERIODIC_DAMAGE" then
+           -- print("Spell Periodic "  .. spellName .." " ..GetTime())
+            if spell == Ignite then
+                print("Ignite Spell Damage :" ..suffixone)
+                playerspellignitelasttick = suffixone
             end
         end
         if param == "SPELL_CAST_SUCCESS"  then

@@ -594,29 +594,36 @@ function FireCleaveTarget()
 end
 
 function CombustionSequence()
-	if  not CombustionReady then CombustionReady = false end
-	if  not CombustionPyroChain then CombustionPyroChain = false or 0 end
+	if not CombustionReady then 
+		CombustionReady = false 
+	end
+	if not CombustionPyroChain then 
+		CombustionPyroChain = false or 0 --??
+	end
+
 	--actions.init_combust+=/start_pyro_chain,if=(cooldown.combustion.remains<gcd.max*4&buff.pyroblast.up&buff.heating_up.up&action.fireball.in_flight)|(buff.pyromaniac.up&cooldown.combustion.remains<ceil(buff.pyromaniac.remains%gcd.max)*(gcd.max+talent.kindling.enabled)))
 	if (cdCombustion < 3 and playerBuffPyroBlast and playerBuffHeatingUp and player.isCasting == Fireball) or CombustionReady == true then -- Todo The last or stuff
-			--print("Now we should"..GetTime()) -- This never happens, something is wrong
-			if not CombustionReady == true then CombustionPyroChain = GetTime()
-			end
-			CombustionReady = true 
-			-- Use all CDs that are checked
-			--FireMageCooldowns()
-			-- Here us the famous pyrochain!!!!
-			-- then vast combustion either with a defined ignite value that is high or when the chain is done.
-			--castCombustion
+		if not CombustionReady == true then 
+			CombustionPyroChain = GetTime()
+		end
+
+		CombustionReady = true 
+		
+		-- Use all CDs that are checked
+		FireMageCooldowns()
+		-- Here us the famous pyrochain!!!!
+		-- then vast combustion either with a defined ignite value that is high or when the chain is done.
+		--castCombustion
 		--# Combustion Sequence
 		--actions.combust_sequence=stop_pyro_chain,if=cooldown.combustion.duration-cooldown.combustion.remains<15
 		if playerBuffPyroBlast and CombustionReady == true   then 
         	if CastSpellByName("Pyroblast", target) then 
-        		return true
-        	end
-   		end
+	       		return true
+	       	end
+		end
+	
 		--actions.combust_sequence+=/combustion  Todo : What? This does not make sence, we are not looking at ignite damage and hte code is not same as simcraft
-	    if not playerBuffPyroBlast and CombustionReady == true and  (GetTime() - CombustionPyroChain >= 4)--and targetDebuffIgnite  
-	    	then 
+	    if (not playerBuffPyroBlast and CombustionReady == true and (GetTime() - CombustionPyroChain >= 4)) or playerspellignitelasttick > 4000 then --and targetDebuffIgnite  
 	    	RunMacroText("/stopcasting")
 	    	print("Time"..(GetTime() - CombustionPyroChain))
 	    	if castSpell("target", Combustion,false,false) then
