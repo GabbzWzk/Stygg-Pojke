@@ -594,23 +594,35 @@ function FireCleaveTarget()
 end
 
 function CombustionSequence()
-
+	if  not CombustionReady then CombustionReady = false end
+	if  not CombustionPyroChain then CombustionPyroChain = false or 0 end
 	--actions.init_combust+=/start_pyro_chain,if=(cooldown.combustion.remains<gcd.max*4&buff.pyroblast.up&buff.heating_up.up&action.fireball.in_flight)|(buff.pyromaniac.up&cooldown.combustion.remains<ceil(buff.pyromaniac.remains%gcd.max)*(gcd.max+talent.kindling.enabled)))
-	if (cdCombustion < 3 and playerBuffPyroBlast and playerBuffHeatingUp and player.isCasting == Fireball) then -- Todo The last or stuff
-			print("Now we should") -- This never happens, something is wrong
+	if (cdCombustion < 3 and playerBuffPyroBlast and playerBuffHeatingUp and player.isCasting == Fireball) or CombustionReady == true then -- Todo The last or stuff
+			--print("Now we should"..GetTime()) -- This never happens, something is wrong
+			if not CombustionReady == true then CombustionPyroChain = GetTime()
+			end
+			CombustionReady = true 
 			-- Use all CDs that are checked
-			FireMageCooldowns()
+			--FireMageCooldowns()
 			-- Here us the famous pyrochain!!!!
 			-- then vast combustion either with a defined ignite value that is high or when the chain is done.
 			--castCombustion
 		--# Combustion Sequence
 		--actions.combust_sequence=stop_pyro_chain,if=cooldown.combustion.duration-cooldown.combustion.remains<15
-
+		if playerBuffPyroBlast and CombustionReady == true   then 
+        	if CastSpellByName("Pyroblast", target) then 
+        		return true
+        	end
+   		end
 		--actions.combust_sequence+=/combustion  Todo : What? This does not make sence, we are not looking at ignite damage and hte code is not same as simcraft
-	    if not playerBuffPyroBlast and targetDebuffIgnite  then 
-	    	print("Time")
+	    if not playerBuffPyroBlast and CombustionReady == true and  (GetTime() - CombustionPyroChain >= 4)--and targetDebuffIgnite  
+	    	then 
+	    	RunMacroText("/stopcasting")
+	    	print("Time"..(GetTime() - CombustionPyroChain))
 	    	if castSpell("target", Combustion,false,false) then
-	    		CastSpellByName("Combustion", target)
+				print("Combustion0")
+	    		CombustionReady = false
+	    		--CastSpellByName("Combustion", target)
 	        	return true
 	    	end
 	    end
@@ -639,17 +651,13 @@ function FireSingleTarget()
 	--actions.combust_sequence+=/arcane_torrent
 	--actions.combust_sequence+=/potion,name=draenic_intellect
 	--actions.combust_sequence+=/fireball,if=!dot.ignite.ticking&!in_flight
-	if not targetDebuffIgnite and not player.isCasting == Fireball then 
-		if castFireball("target") then
-			return true
-		end
-	end
+	--if not targetDebuffIgnite and not player.isCasting == Fireball then 
+	--	if castFireball("target") then
+	--		return true
+	--	end
+	--end
 	
-	--actions.combust_sequence+=/pyroblast,if=buff.pyroblast.up
-    if playerBuffPyroBlast then 
-        CastSpellByName("Pyroblast", target)
-        return true
-    end
+
 	
 	--# Meteor Combustions can run out of Pyro procs before impact. Use IB to delay Combustion
 	--actions.combust_sequence+=/inferno_blast,if=talent.meteor.enabled&cooldown.meteor.duration-cooldown.meteor.remains<gcd.max*3
@@ -667,7 +675,7 @@ function FireSingleTarget()
         if CastSpellByName("Pyroblast", target) then 
         	return true
         end
-    end
+   end
 	
 	--pyroblast,if=set_bonus.tier16_2pc_caster&buff.pyroblast.up&buff.potent_flames.up&buff.potent_flames.remains<gcd.max
 	--pyroblast,if=set_bonus.tier17_4pc&buff.pyromaniac.react
