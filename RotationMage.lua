@@ -555,7 +555,6 @@ function FireMageRotation()
 			return true
 		end
 	end
-	
 	-- Last do single filler with spread
 	return FireSingleTarget()
 end
@@ -605,27 +604,13 @@ function CombustionSequence()
 	if (cdCombustion < 3 and playerBuffPyroBlast and playerBuffHeatingUp and player.isCasting == Fireball) or CombustionReady == true then -- Todo The last or stuff
 		if not CombustionReady == true then 
 			CombustionPyroChain = GetTime()
+			CombustionReady = true
+			print("Starting now ") 
 		end
 
-		CombustionReady = true 
-		
-		-- Use all CDs that are checked
-		FireMageCooldowns()
-		-- Here us the famous pyrochain!!!!
-		-- then vast combustion either with a defined ignite value that is high or when the chain is done.
-		--castCombustion
-		--# Combustion Sequence
-		--actions.combust_sequence=stop_pyro_chain,if=cooldown.combustion.duration-cooldown.combustion.remains<15
-		if playerBuffPyroBlast and CombustionReady == true   then 
-        	if CastSpellByName("Pyroblast", target) then 
-	       		return true
-	       	end
-		end
-	
 		--actions.combust_sequence+=/combustion  Todo : What? This does not make sence, we are not looking at ignite damage and hte code is not same as simcraft
-	    if (not playerBuffPyroBlast and CombustionReady == true and (GetTime() - CombustionPyroChain >= 4)) or playerspellignitelasttick > 4000 then --and targetDebuffIgnite  
+	    if (not playerBuffPyroBlast and CombustionReady == true and (GetTime() - CombustionPyroChain >= 4.9)) or playerspellignitelasttick > 4000 then --and targetDebuffIgnite  
 	    	RunMacroText("/stopcasting")
-	    	print("Time"..(GetTime() - CombustionPyroChain))
 	    	if castSpell("target", Combustion,false,false) then
 				print("Combustion0")
 	    		CombustionReady = false
@@ -633,6 +618,35 @@ function CombustionSequence()
 	        	return true
 	    	end
 	    end
+
+		-- Use all CDs that are checked
+		FireMageCooldowns()
+		
+		if playerBuffPyroBlast then 
+        	if CastSpellByName("Pyroblast", "target") then 
+	       		return true
+	       	end
+		end
+	
+	    if playerBuffHeatingUp then 
+    		if castInfernoBlast("target") then 
+    			print("Casting IB")
+        		return true
+      		end
+    	end
+
+    	if GetTime() - CombustionPyroChain + castTimeFireball >= 4 then
+    		if castFireball("target") then
+    			print("Casting Fireball")
+				return true
+			end
+		end
+		
+		if castInfernoBlast("target") then 
+			print("Last cast IB")
+        	return true
+      	end
+    	
 	end
 end
 
@@ -689,14 +703,13 @@ function FireSingleTarget()
 	
 
 	--pyroblast,if=buff.pyroblast.up&buff.heating_up.up&action.fireball.in_flight
-	if playerBuffPyroBlast and playerBuffHeatingUp and player.isCasting == Fireball
-		then  
+	if playerBuffPyroBlast and playerBuffHeatingUp and player.isCasting == Fireball then  
         CastSpellByName("Pyroblast", target)
         return true
     end
 	
 	--actions.single_target+=/inferno_blast,if=buff.pyroblast.down&buff.heating_up.up
-	if not playerBuffPyroBlast and playerBuffHeatingUp then 
+	if not playerBuffPyroBlast and playerBuffHeatingUp and (cdCombustion > 8 and BadRobot_data['Cooldowns'] == 2) then 
     	if castInfernoBlast(target) then 
         	return true
       	end
@@ -723,7 +736,7 @@ function FireSingleTarget()
     
 	
 	--actions.single_target+=/inferno_blast,if=buff.pyroblast.up&buff.heating_up.down&!action.fireball.in_flight
-    if playerBuffPyroBlast and not playerBuffHeatingUp and playerspellFireballInFlight then
+    if playerBuffPyroBlast and not playerBuffHeatingUp and playerspellFireballInFlight and (cdCombustion > 8 and BadRobot_data['Cooldowns'] == 2) then
         if castInfernoBlast(target) then
         	return true
       	end

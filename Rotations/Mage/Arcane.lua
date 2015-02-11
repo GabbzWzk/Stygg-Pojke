@@ -135,6 +135,7 @@ if select(3, UnitClass("player")) == 8 then
 				-- Spellbook		-- handles the players Spells, such as CD, casttime, etc
 				--------------------	
 				castTimeArcaneBlast					 = select(4,GetSpellInfo(ArcaneBlast))/1000
+				castTimeFireball					 = select(4,GetSpellInfo(Fireball))/1000
 
 			
 

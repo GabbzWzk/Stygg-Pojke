@@ -86,7 +86,7 @@ frame:SetScript("OnEvent", reader)
 function cl:common(...)
     bb.read.enrageReader(...)
     local timeStamp, param, hideCaster, source, sourceName, sourceFlags, sourceRaidFlags, destination,
-            destName, destFlags, destRaidFlags, spell, spellName, spellType, suffixone = ...
+            destName, destFlags, destRaidFlags, spell, spellName, spellType, suffixone, suffixtwo, suffixthree, suffixfour, suffifive, suffixsix, crit = ...
 
     if source == bb.guid then
 	end
@@ -118,8 +118,15 @@ function cl:common(...)
         end
          if param == "SPELL_PERIODIC_DAMAGE" then
            -- print("Spell Periodic "  .. spellName .." " ..GetTime())
-            if spell == Ignite then
-                print("Ignite Spell Damage :" ..suffixone)
+            if spell == Ignite and destination == UnitGUID("target") then -- We need to determine if this is our current target.... destination?
+                print("Ignite Spell Damage :" ..suffixone .." Time : " ..GetTime())
+                if suffixone ~= playerspellignitelasttick then
+                    -- So the last tick and this is different, we should calculate the diff
+                    -- Store the damage difference and time
+                    -- This way we can see when a dip in ignite occurs and we can also see where the large ignite banks are
+                    -- Each tick is 1 sec, the bank is 5 seconds? so we need to store the last 5 ticks and the time when they where added
+                    -- So we now when the ticks expire, so when we have a good last tick we can cast pyrochain?
+                end    
                 playerspellignitelasttick = suffixone
             end
         end
@@ -135,11 +142,7 @@ function cl:common(...)
             
         end
         if param == "SPELL_DAMAGE" then
-            --print("Spell Damage "  .. spellName .." " ..GetTime())
-            if spell == Fireball then
-                --print("Fireball Spell Damage :" ..GetTime())
-                --playerspellFireballInFlight = false
-            end    
+           
         end
         if param == "SPELL_MISSED" then
             --print("Spell Missed "  .. spellName .." " ..GetTime())
