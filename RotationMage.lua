@@ -709,7 +709,7 @@ function FireSingleTarget()
     end
 	
 	--actions.single_target+=/inferno_blast,if=buff.pyroblast.down&buff.heating_up.up
-	if not playerBuffPyroBlast and playerBuffHeatingUp and (cdCombustion > 8 and BadRobot_data['Cooldowns'] == 2) then 
+	if not playerBuffPyroBlast and playerBuffHeatingUp then 
     	if castInfernoBlast(target) then 
         	return true
       	end
@@ -736,7 +736,7 @@ function FireSingleTarget()
     
 	
 	--actions.single_target+=/inferno_blast,if=buff.pyroblast.up&buff.heating_up.down&!action.fireball.in_flight
-    if playerBuffPyroBlast and not playerBuffHeatingUp and playerspellFireballInFlight and (cdCombustion > 8 and BadRobot_data['Cooldowns'] == 2) then
+    if playerBuffPyroBlast and not playerBuffHeatingUp and playerspellFireballInFlight  then
         if castInfernoBlast(target) then
         	return true
       	end
