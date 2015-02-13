@@ -609,9 +609,9 @@ function CombustionSequence()
 		end
 
 		--actions.combust_sequence+=/combustion  Todo : What? This does not make sence, we are not looking at ignite damage and hte code is not same as simcraft
-	    if (not playerBuffPyroBlast and CombustionReady == true and (GetTime() - CombustionPyroChain >= 4.9)) or playerspellignitelasttick > 4000 then --and targetDebuffIgnite  
+	    if (not playerBuffPyroBlast and CombustionReady == true and (GetTime() - CombustionPyroChain >= 3)) or playerspellignitelasttick > 4000 then --and targetDebuffIgnite  
 	    	RunMacroText("/stopcasting")
-	    	if castSpell("target", Combustion,false,false) then
+	    	if castSpell(target, Combustion,false,false) then
 				print("Combustion0")
 	    		CombustionReady = false
 	    		--CastSpellByName("Combustion", target)
@@ -623,30 +623,16 @@ function CombustionSequence()
 		FireMageCooldowns()
 		
 		if playerBuffPyroBlast then 
-        	if CastSpellByName("Pyroblast", "target") then 
+        	if CastSpellByName("Pyroblast", target) then 
 	       		return true
 	       	end
 		end
 	
 	    if playerBuffHeatingUp then 
-    		if castInfernoBlast("target") then 
-    			print("Casting IB")
+    		if castInfernoBlast(target) then 
         		return true
       		end
     	end
-
-    	if GetTime() - CombustionPyroChain + castTimeFireball >= 4 then
-    		if castFireball("target") then
-    			print("Casting Fireball")
-				return true
-			end
-		end
-		
-		if castInfernoBlast("target") then 
-			print("Last cast IB")
-        	return true
-      	end
-    	
 	end
 end
 
