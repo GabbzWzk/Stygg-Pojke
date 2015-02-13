@@ -88,13 +88,39 @@ function cl:common(...)
     local timeStamp, param, hideCaster, source, sourceName, sourceFlags, sourceRaidFlags, destination,
             destName, destFlags, destRaidFlags, spell, spellName, spellType, suffixone, suffixtwo, suffixthree, suffixfour, suffifive, suffixsix, crit = ...
 
+   
+
     if source == bb.guid then
 	end
 
     ---------------------
     -- Bad Robot New Stuff
     ---------------------
-    --
+
+    -- Added player.buff for now, later we add it for all units
+    if destination == UnitGUID("player") then
+        if param == "SPELL_AURA_REFRESH" then
+            print("Spell Aura Refresh "  .. spell .." " ..GetTime()) --Fired when getting Buff
+            setAuras("player", spell, auratype, stacks)
+        end
+        
+        if param == "SPELL_AURA_APPLIED" then
+            print("Spell Aura Applied "  .. spell .." " ..GetTime())
+            setAuras("player", spell, auratype, stacks)
+        end
+        
+        if param == "SPELL_AURA_APPLIED_DOSE"  then
+            print("Spell Aura Applied Dose "  .. spell .." " ..GetTime())
+            setAuras("player", spell, auratype, stacks)
+        end
+        
+        if param == "SPELL_AURA_REMOVED" then
+            print("Spell Aura Removed "  .. spell .." " ..GetTime())
+            removeAuras("player", spell)
+        end        
+    end
+
+
     if source == bb.guid then
         -- Params 
         -- SPELL
@@ -146,18 +172,6 @@ function cl:common(...)
         end
         if param == "SPELL_MISSED" then
             --print("Spell Missed "  .. spellName .." " ..GetTime())
-        end
-        if param == "SPELL_AURA_REFRESH" then
-            --print("Spell Aura Refresh "  .. spellName .." " ..GetTime()) --Fired when getting Buff
-        end
-        if param == "SPELL_AURA_APPLIED" then
-            --print("Spell Aura Applied "  .. spellName .." " ..GetTime())
-        end
-        if param == "SPELL_AURA_APPLIED_DOSE"  then
-            --print("Spell Aura Applied Dose "  .. spellName .." " ..GetTime())
-        end
-        if param == "SPELL_AURA_REMOVED" then
-            --print("Spell Aura Removed "  .. spellName .." " ..GetTime())
         end
     end
     

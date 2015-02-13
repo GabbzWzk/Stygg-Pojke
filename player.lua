@@ -19,7 +19,7 @@ player = {}
 -----------------------------------
 function player:init() -- Init Player Object should be called once
     -- Health values
-	player.healthmax        = UnitMaxHealth("player")
+	player.healthmax        = UnitHealthMax("player")
     player.health 			= UnitHealth("player")
     player.healthlast       = UnitHealth("player")                  -- Init the same as current health
 	player.hp 				= getHP("player")
@@ -29,13 +29,14 @@ function player:init() -- Init Player Object should be called once
     player.manalast         = getMana("player")                     -- At init we set what we have
     player.manatoempty      = 0                                     -- Set to zero since we dont have a counter for it at init
 
-    player.haste            = GetHaste()    
+    player.haste            = GetHaste() 
+    --player.agility          = GetAgility()     
     
     player.inCombat         = UnitAffectingCombat("player")
     player.combatStarted    = 0
     player.globalCooldown   = select(2,getSpellCD(61304))           -- Does this work?
     player.isMoving         = isMoving("player")
-	player.buff             = { }
+	player.buff             = getAuras("player")                                   -- Should have a function that read all buffs on player
 	player.spell            = spellbook:getPlayerSpells()
 	player.glyph            = { }
 	player.talent           = { }
@@ -108,11 +109,11 @@ function player:update()
     
     player.isMoving         = isMoving("player")
     player.haste            = GetHaste()  
-    player.inCombat         = UnitAffectingCombat("player")         -- Should be using events
+    
     player.globalCooldown   = select(2,getSpellCD(61304))
 
     -- buffs                                                        -- Should be using events but for now use old school
-
+    --player.buff             = getAuras("player")
     -- spells                                                       -- Should be using events but for now use old school
    
     -- Buffs ToDo :  we should move this into event trigger population.
@@ -122,6 +123,11 @@ function player:update()
     -- Spell Cooldowns
     --player.spell.arcanepower = getSpellCD(self.spell.avengingWrath)
     --player.spell.globalCooldown = getSpellCD(61304)
+
+
+    --Attributes already updated by events
+    --player.inCombat
+    --player.combatStarted
 end
 
 -----------------------------------

@@ -252,6 +252,7 @@ function bb.read.commonReaders()
 			
 			if SourceUnit == "player" then
 				spellcast:insertSpellCastSent(SpellID, GetTime(), SpellCastTarget)
+				print("Unit Sent : " ..GetTime())
 			end
 		end
 

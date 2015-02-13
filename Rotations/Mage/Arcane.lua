@@ -24,7 +24,6 @@ if select(3, UnitClass("player")) == 8 then
 		-- Manual Command: We prioritise the users input, we should use modifiers to pause the bot or somehow change the rotation, we should add / slash commands such as badrobot castspell [spellid]
 		------------------------------
 		if IsLeftShiftKeyDown() then -- Pause the script, keybind in wow shift+1 etc for manual cast
-			
 			return true
 		end
 

@@ -156,3 +156,35 @@ function spellbook:getPlayerSpells()
 		return spellbook:mageSpells()
 	end
 end
+
+-- Todo : Should change this to spellbook:
+-- if getCharges(115399) > 0 then
+function getCharges(spellID)
+	return select(1,GetSpellCharges(spellID))
+end
+
+-- Todo : Should change this to spellbook:
+function getRecharge(spellID)
+	local charges,maxCharges,chargeStart,chargeDuration = GetSpellCharges(spellID)
+	if charges then
+		if charges < maxCharges then
+			chargeEnd = chargeStart + chargeDuration
+			return chargeEnd - GetTime()
+		end
+	return 0
+	end
+end
+
+-- if getSpellCD(12345) <= 0.4 then
+function getSpellCD(SpellID)
+	if GetSpellCooldown(SpellID) == 0 then
+		return 0
+	else
+		local Start ,CD = GetSpellCooldown(SpellID)
+		local MyCD = Start + CD - GetTime()
+		if getOptionCheck("Latency Compensation") then
+			MyCD = MyCD - getLatency()
+		end
+		return MyCD
+	end
+end
