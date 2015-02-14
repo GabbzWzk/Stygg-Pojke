@@ -36,7 +36,7 @@ function player:init() -- Init Player Object should be called once
     player.combatStarted    = 0
     player.globalCooldown   = select(2,getSpellCD(61304))           -- Does this work?
     player.isMoving         = isMoving("player")
-	player.buff             = getAuras("player")                                   -- Should have a function that read all buffs on player
+	player.buff             = getAuras("player") or {}                                  -- Should have a function that read all buffs on player
 	player.spell            = spellbook:getPlayerSpells()
 	player.glyph            = { }
 	player.talent           = { }
@@ -111,6 +111,7 @@ function player:update()
     player.haste            = GetHaste()  
     
     player.globalCooldown   = select(2,getSpellCD(61304))
+    player.lastupdatetime   = GetTime()
 
     -- buffs                                                        -- Should be using events but for now use old school
     --player.buff             = getAuras("player")
@@ -151,4 +152,26 @@ function player:close()
     player.lastCast         = nil
     player.specc            = nil
     player                  = nil -- or wipe?
+end
+
+
+--------------------------
+-- Time To die for player:      Should calculate time to death looking at health difference for each pulse the alst 10 seconds.
+--------------------------
+function player:getTimeToDie()
+    --player.healthlast       
+    --player.health           
+    --player.hp               
+    --player.lastupdatetime
+    --if ((timecurr - timestart)==0) or ((thpstart - thpcurr)==0) then
+    --  timeToDie = 999
+    --else
+    --    timeToDie = round2(thpcurr/((thpstart - thpcurr) / (timecurr - timestart)),2)
+    --end
+    
+    --if timeToDie==nil then
+    --    return 999
+    --else
+    --    return timeToDie
+    --end
 end

@@ -1,62 +1,3 @@
-function GetObjectExists(Unit)
-	if select(2,pcall(ObjectExists,Unit)) == 1 then
-    	return true
-  	else
-    	return false
-  	end
-end
-
-function GetObjectFacing(Unit)
-	if GetObjectExists(Unit) then
-    	return select(2,pcall(ObjectFacing,Unit))
-  	else
-    	return false
-  	end
-end
-
-function GetObjectPosition(Unit)
-	if GetObjectExists(Unit) then
-    	return select(2,pcall(ObjectPosition,Unit))
-  	else
-    	return false
-  	end
-end
-
-function GetObjectType(Unit)
-  	if GetObjectExists(Unit) then
-    	return select(2,pcall(ObjectType,Unit))
-  	else
-    	return false
-  	end
-end
-
-function GetObjectIndex(Index)
-  	if GetObjectExists(select(2,pcall(ObjectWithIndex,Index))) then
-    	return select(2,pcall(ObjectWithIndex,Index))
-  	else
-    	return false
-  	end
-end
-
-function GetObjectCount()
-	return select(2,pcall(ObjectCount))
-end
-
-function IGetLocation(Unit)
-	return GetGetObjectPosition(Unit)
-end
-
-
-
-
-
---[[           ]]		  --[[]]		--[[]]     --[[]]
---[[           ]]		 --[[  ]]		--[[  ]]   --[[]]
---[[]]				    --[[    ]] 		--[[    ]] --[[]]
---[[]]				   --[[      ]] 	--[[           ]]
---[[]]				  --[[        ]]	--[[           ]]
---[[           ]]	 --[[]]    --[[]]	--[[]]   --[[  ]]
---[[           ]]	--[[]]      --[[]]	--[[]]     --[[]]
 
 -- if canAttack("player","target") then
 function canAttack(Unit1,Unit2)
@@ -72,15 +13,7 @@ function canAttack(Unit1,Unit2)
 	return UnitCanAttack(Unit1,Unit2)
 end
 
--- if canCast(12345,true)
-function canCast(SpellID,KnownSkip,MovementCheck)
-	local myCooldown = getSpellCD(SpellID) or 0
-	local lagTolerance = getValue("Lag Tolerance") or 0
-  	if (KnownSkip == true or isKnown(SpellID)) and IsUsableSpell(SpellID) and myCooldown < 0.1
-   	  and (MovementCheck == false or myCooldown == 0 or isMoving("player") ~= true or UnitBuffID("player",79206) ~= nil) then
-      	return true
-    end
-end
+
 
 function canDisarm(Unit)
 	if DisarmedTarget == nil then DisarmedTarget = 0 end
@@ -103,15 +36,7 @@ end
 
 
 
--- if canHeal("target") then
-function canHeal(Unit)
-	if UnitExists(Unit) and UnitInRange(Unit) == true and UnitCanCooperate("player",Unit)
-		and not UnitIsEnemy("player",Unit) and not UnitIsCharmed(Unit) and not UnitIsDeadOrGhost(Unit)
-		and getLineOfSight(Unit) == true and not UnitDebuffID(Unit,33786) then
-		return true
-	end
-	return false
-end
+
 
 -- canInterrupt("target",20)
 function canInterrupt(unit,percentint)
@@ -260,150 +185,6 @@ function canTrinket(trinketSlot)
 	end
 end
 
-function castAoEHeal(spellID,numUnits,missingHP,rangeValue)
-	-- i start an iteration that i use to build each units Table,which i will reuse for the next second
-	if not holyRadianceRangeTable or not holyRadianceRangeTableTimer or holyRadianceRangeTable <= GetTime() - 1 then
-		holyRadianceRangeTable = { }
-		for i = 1,#nNova do
-			-- i declare a sub-table for this unit if it dont exists
-			if nNova[i].distanceTable == nil then nNova[i].distanceTable = { } end
-			-- i start a second iteration where i scan unit ranges from one another.
-			for j = 1,#nNova do
-				-- i make sure i dont compute unit range to hisself.
-				if not UnitIsUnit(nNova[i].unit,nNova[j].unit) then
-					-- table the units
-					nNova[i].distanceTable[j] = { distance = getDistance(nNova[i].unit,nNova[j].unit),unit = nNova[j].unit,hp = nNova[j].hp }
-				end
-			end
-		end
-	end
-	-- declare locals that will hold number
-	local bestTarget,bestTargetUnits = 1,1
-	-- now that nova range is built,i can iterate it
-	local inRange,missingHealth,mostMissingHealth = 0,0,0
-	for i = 1,#nNova do
-		if nNova[i].distanceTable ~= nil then
-			-- i count units in range
-			for j = 1,#nNova do
-				if nNova[i].distanceTable[j] and nNova[i].distanceTable[j].distance < rangeValue then
-					inRange = inRange + 1
-					missingHealth = missingHealth + (100 - nNova[i].distanceTable[j].hp)
-				end
-			end
-			nNova[i].inRangeForHolyRadiance = inRange
-			-- i check if this is going to be the best unit for my spell
-			if missingHealth > mostMissingHealth then
-				bestTarget,bestTargetUnits,mostMissingHealth = i,inRange,missingHealth
-			end
-		end
-	end
-	if bestTargetUnits and bestTargetUnits > 3 and mostMissingHealth and missingHP and mostMissingHealth > missingHP then
-		if castSpell(nNova[bestTarget].unit,spellID,true,true) then return true end
-	end
-end
-
--- castGround("target",12345,40)
-function castGround(Unit,SpellID,maxDistance)
-	if UnitExists(Unit) and getSpellCD(SpellID) == 0 and getLineOfSight("player",Unit)
-	  and getDistance("player",Unit) <= maxDistance then
- 		CastSpellByName(GetSpellInfo(SpellID),"player")
-		if IsAoEPending() then
-		--local distanceToGround = getGroundDistance(Unit) or 0
-		local X,Y,Z = GetObjectPosition(Unit)
-			CastAtPosition(X,Y,Z) --distanceToGround
-			return true
-		end
- 	end
- 	return false
-end
-
--- castGroundBetween("target",12345,40)
-function castGroundBetween(Unit,SpellID,maxDistance)
-	if UnitExists(Unit) and getSpellCD(SpellID) <= 0.4 and getLineOfSight("player",Unit) and getDistance("player",Unit) <= maxDistance then
- 		CastSpellByName(GetSpellInfo(SpellID),"player")
-		if IsAoEPending() then
-		local X,Y,Z = GetObjectPosition(Unit)
-			CastAtPosition(X,Y,Z)
-			return true
-		end
- 	end
- 	return false
-end
-
--- if shouldNotOverheal(spellCastTarget) > 80 then
-function shouldNotOverheal(Unit)
-	local myIncomingHeal,allIncomingHeal = 0,0
-	if UnitGetIncomingHeals(Unit,"player") ~= nil then myIncomingHeal = UnitGetIncomingHeals(Unit,"player") end
-	if UnitGetIncomingHeals(Unit) ~= nil then allIncomingHeal = UnitGetIncomingHeals(Unit) end
-	local allIncomingHeal = UnitGetIncomingHeals(Unit) or 0
-	local overheal = 0
-	if myIncomingHeal >= allIncomingHeal then
-		overheal = myIncomingHeal
-	else
-		overheal = allIncomingHeal
-	end
-	local CurShield = UnitHealth(Unit)
-	if UnitDebuffID("player",142861) then --Ancient Miasma
-		CurShield = select(15,UnitDebuffID(Unit,142863)) or select(15,UnitDebuffID(Unit,142864)) or select(15,UnitDebuffID(Unit,142865)) or (UnitHealthMax(Unit) / 2)
-		overheal = 0
-	end
-	local overhealth = 100 * (CurShield+ overheal ) / UnitHealthMax(Unit)
-	if overhealth and overheal then
-		return overhealth,overheal
-	else
-		return 0,0
-	end
-end
-
--- candidate to replace shouldStopOverheal
---function shouldNotOverheal(Unit)
---	for i = 1,#nNova do
---		if Unit == nNova[i].unit then
---			return nNova[i].hp,nNova[i].absorb
---		end
---	end
---end
-
--- if castHealGround(_HealingRain,18,80,3) then
-function castHealGround(SpellID,Radius,Health,NumberOfPlayers)
-	if shouldStopCasting(SpellID) ~= true then
-		local lowHPTargets,foundTargets = { },{ }
-		for i = 1,#nNova do
-			if nNova[i].hp <= Health then
-				if UnitIsVisible(nNova[i].unit) and GetObjectPosition(nNova[i].unit) ~= nil then
-					local X,Y,Z = GetObjectPosition(nNova[i].unit)
-					tinsert(lowHPTargets,{ unit = nNova[i].unit,x = X,y = Y,z = Z })
-		end end end
-		if #lowHPTargets >= NumberOfPlayers then
-			for i = 1,#lowHPTargets do
-				for j = 1,#lowHPTargets do
-					if lowHPTargets[i].unit ~= lowHPTargets[j].unit then
-						if math.sqrt(((lowHPTargets[j].x-lowHPTargets[i].x)^2)+((lowHPTargets[j].y-lowHPTargets[i].y)^2)) < Radius then
-							for k = 1,#lowHPTargets do
-								if lowHPTargets[i].unit ~= lowHPTargets[k].unit and lowHPTargets[j].unit ~= lowHPTargets[k].unit then
-									if math.sqrt(((lowHPTargets[k].x-lowHPTargets[i].x)^2)+((lowHPTargets[k].y-lowHPTargets[i].y)^2)) < Radius and math.sqrt(((lowHPTargets[k].x-lowHPTargets[j].x)^2)+((lowHPTargets[k].y-lowHPTargets[j].y)^2)) < Radius then
-										tinsert(foundTargets,{ unit = lowHPTargets[i].unit,x = lowHPTargets[i].x,y = lowHPTargets[i].y,z = lowHPTargets[i].z })
-										tinsert(foundTargets,{ unit = lowHPTargets[j].unit,x = lowHPTargets[j].x,y = lowHPTargets[j].y,z = lowHPTargets[i].z })
-										tinsert(foundTargets,{ unit = lowHPTargets[k].unit,x = lowHPTargets[k].x,y = lowHPTargets[k].y,z = lowHPTargets[i].z })
-			end end end end end end end
-			local medX,medY,medZ = 0,0,0
-			if foundTargets ~= nil and #foundTargets >= NumberOfPlayers then
-				for i = 1,3 do
-					medX = medX + foundTargets[i].x
-					medY = medY + foundTargets[i].y
-					medZ = medZ + foundTargets[i].z
-				end
-				medX,medY,medZ = medX/3,medY/3,medZ/3
-				local myX,myY = GetObjectPosition("player")
-				if math.sqrt(((medX-myX)^2)+((medY-myY)^2)) < 40 then
-			 		CastSpellByName(GetSpellInfo(SpellID),"player")
-					if IsAoEPending() then
-						CastAtPosition(medX,medY,medZ)
-						if SpellID == 145205 then shroomsTable[1] = { x = medX,y = medY,z = medZ} end
-						return true
-	end end end end end
-	return false
-end
 
 --[[castSpell(Unit,SpellID,FacingCheck,MovementCheck,SpamAllowed,KnownSkip)
 Parameter 	Value
@@ -426,119 +207,9 @@ function getLatency()
 	return lag
 end
 
--- castSpell("target",12345,true)
---                ( 1  ,    2  ,     3     ,     4       ,      5    ,   6     ,   7     ,    8       ,   9    )
-function castSpell(Unit,SpellID,FacingCheck,MovementCheck,SpamAllowed,KnownSkip,DeadCheck,DistanceSkip,usableSkip)
-	if GetObjectExists(Unit) and betterStopCasting(SpellID) ~= true
-      and (not UnitIsDeadOrGhost(Unit) or DeadCheck) then
-		-- we create an usableSkip for some specific spells like hammer of wrath aoe mode
-        if usableSkip == nil then
-            usableSkip = false
-        end
-        -- stop if not enough power for that spell
-		if usableSkip ~= true and IsUsableSpell(SpellID) ~= true then
-			return false
-		end
-		-- Table used to prevent refiring too quick
-	    if timersTable == nil then
-	    	timersTable = {}
-	    end
-		-- make sure it is a known spell
-		if not (KnownSkip == true or isKnown(SpellID)) then return false end
-		-- gather our spell range information
-		local spellRange = select(6,GetSpellInfo(SpellID))
-		if DistanceSkip == nil then DistanceSkip = false end
-	  	if spellRange == nil or (spellRange < 4 and DistanceSkip==false) then spellRange = 4 end
-	  	if DistanceSkip == true then spellRange = 40 end
-		-- Check unit,if it's player then we can skip facing
-		if (Unit == nil or UnitIsUnit("player",Unit)) or -- Player
-			(Unit ~= nil and UnitIsFriend("player",Unit)) then  -- Ally
-            FacingCheck = true
-        elseif isSafeToAttack(Unit) ~= true then -- enemy
-            return false
-        end
-		-- if MovementCheck is nil or false then we dont check it
-		if MovementCheck == false or isMoving("player") ~= true
-          -- skip movement check during spiritwalkers grace and aspect of the fox
-          or UnitBuffID("player",79206) ~= nil or UnitBuffID("player",172106) ~= nil or UnitBuffID("player",108839) ~= nil then
-			-- if ability is ready and in range
-			if getSpellCD(SpellID) == 0 and (getOptionCheck("Skip Distance Check") or getDistance("player",Unit) <= spellRange or DistanceSkip == true) then
-                -- if spam is not allowed
-	    		if SpamAllowed == false then
-	    			-- get our last/current cast
-	      			if timersTable == nil or (timersTable ~= nil and (timersTable[SpellID] == nil or timersTable[SpellID] <= GetTime() -0.6)) then
-	       				if (FacingCheck == true or getFacing("player",Unit) == true) and (UnitIsUnit("player",Unit) or getLineOfSight("player",Unit) == true) then
-	        				timersTable[SpellID] = GetTime()
-	        				currentTarget = UnitGUID(Unit)
-	        				CastSpellByName(GetSpellInfo(SpellID),Unit)
-                            lastSpellCast = SpellID
-                            -- change main button icon
-							if getOptionCheck("Start/Stop BadRobot") then
-                                mainButton:SetNormalTexture(select(3,GetSpellInfo(SpellID)))
-                            end
-	        				return true
-	        			end
-					end
-				elseif (FacingCheck == true or getFacing("player",Unit) == true) and (UnitIsUnit("player",Unit) or getLineOfSight("player",Unit) == true) then
-	  		   		currentTarget = UnitGUID(Unit)
-					CastSpellByName(GetSpellInfo(SpellID),Unit)
-					if getOptionCheck("Start/Stop BadRobot") then
-						mainButton:SetNormalTexture(select(3,GetSpellInfo(SpellID)))
-					end
-					return true
-				end
-	    	end
-	  	end
-	end
-  	return false
-end
 
-function castMouseoverHealing(Class)
-	if UnitAffectingCombat("player") then
-		local spellTable = {
-			["Druid"] = { heal = 8936,dispel = 88423 }
-		}
-		local npcTable = {
-			71604,-- Contaminated Puddle- Immerseus - SoO
-			71995,-- Norushen
-			71996,-- Norushen
-			72000,-- Norushen
-			71357,-- Wrathion
-		}
-		local SpecialTargets = { "mouseover","target","focus"}
-		local dispelid = spellTable[Class].dispel
-		for i = 1,#SpecialTargets do
-			local target = SpecialTargets[i]
-			if UnitExists(target) and not UnitIsPlayer(target) then
-				local npcID = tonumber(string.match(UnitGUID(target),"-(%d+)-%x+$"))
-				for i = 1,#npcTable do
-					if npcID == npcTable[i] then
-						-- Dispel
-						for n = 1,40 do
-					      	local buff,_,_,count,bufftype,duration = UnitDebuff(target,n)
-				      		if buff then
-				        		if bufftype == "Magic" or bufftype == "Curse" or bufftype == "Poison" then
-				        			if castSpell(target,88423,true,false) then
-				        				return
-				        			end
-				        		end
-				      		else
-				        		break
-				      		end
-					  	end
-					  	-- Heal
-						local npcHP = getHP(target)
-						if npcHP < 100 then
-							if castSpell(target,spellTable[Class].heal,true) then
-								return
-							end
-						end
-					end
-				end
-			end
-		end
-	end
-end
+
+
 
 
 --[[           ]]   --[[           ]]    --[[           ]]
@@ -609,53 +280,6 @@ end
 
 
 
--- if getDistance("player","target") <= 40 then
-function getDistance(Unit1,Unit2)
-	-- If both units are visible
-	if GetObjectExists(Unit1) and UnitIsVisible(Unit1) == true and (Unit2 == nil or (GetObjectExists(Unit2) and UnitIsVisible(Unit2) == true)) then
-		-- If Unit2 is nil we compare player to Unit1
-		if Unit2 == nil then
-            Unit2 = Unit1
-            Unit1 = "player"
-        end
-        -- if unit1 is player, we can use our lib to get precise range
-		if Unit1 == "player" and (isDummy(Unit2) or UnitCanAttack(Unit2,"player") == true) then
-			return rc:GetRange(Unit2) or 1000
-        -- else, we use FH positions
-		else
-            local X1,Y1,Z1 = GetObjectPosition(Unit1)
-            local X2,Y2,Z2 = GetObjectPosition(Unit2)
-            return math.sqrt(((X2-X1)^2) + ((Y2-Y1)^2) + ((Z2-Z1)^2)) - ((UnitCombatReach(Unit1)) + (UnitCombatReach(Unit2)))
-		end
-	else
-		return 100
-	end
-end
-
-function getRealDistance(Unit1,Unit2)
-	if GetObjectExists(Unit1) and UnitIsVisible(Unit1) == true
-      and GetObjectExists(Unit2) and UnitIsVisible(Unit2) == true then
-		local X1,Y1,Z1 = GetObjectPosition(Unit1)
-		local X2,Y2,Z2 = GetObjectPosition(Unit2)
-        return math.sqrt(((X2-X1)^2) + ((Y2-Y1)^2) + ((Z2-Z1)^2)) - (UnitCombatReach(Unit1) + UnitCombatReach(Unit2))
-	else
-		return 100
-	end
-end
-
-function getDistanceToObject(Unit1,X2,Y2,Z2)
-	if Unit1 == nil then
-		Unit1 = "player"
-	end
-	if ObjectExists(Unit1) and UnitIsVisible(Unit1) then
-		local X1,Y1 = GetObjectPosition(Unit1)
-		return math.sqrt(((X2-X1)^2) + ((Y2-Y1)^2) + ((Z2-Z1)^2))
-	else
-		return 100
-	end
-end
-
-
 -- findTarget(10,true,1)   will find closest target in 10 yard front that have more or equal to 1%hp
 function findTarget(range,facingCheck,minimumHealth)
 	if enemiesTable ~= nil then
@@ -692,42 +316,7 @@ function getFallTime()
 	return fallTime
 end
 
--- if getFacing("target","player") == false then
-function getFacing(Unit1,Unit2,Degrees)
-	if Degrees == nil then
-		Degrees = 90
-	end
-	if Unit2 == nil then
-		Unit2 = "player"
-	end
-	if GetObjectExists(Unit1) and UnitIsVisible(Unit1) and GetObjectExists(Unit2) and UnitIsVisible(Unit2) then
-		local Angle1,Angle2,Angle3
-		local Angle1 = GetObjectFacing(Unit1)
-		local Angle2 = GetObjectFacing(Unit2)
-		local Y1,X1,Z1 = GetObjectPosition(Unit1)
-        local Y2,X2,Z2 = GetObjectPosition(Unit2)
-	    if Y1 and X1 and Z1 and Angle1 and Y2 and X2 and Z2 and Angle2 then
-	        local deltaY = Y2 - Y1
-	        local deltaX = X2 - X1
-	        Angle1 = math.deg(math.abs(Angle1-math.pi*2))
-	        if deltaX > 0 then
-	            Angle2 = math.deg(math.atan(deltaY/deltaX)+(math.pi/2)+math.pi)
-	        elseif deltaX <0 then
-	            Angle2 = math.deg(math.atan(deltaY/deltaX)+(math.pi/2))
-	        end
-	        if Angle2-Angle1 > 180 then
-	        	Angle3 = math.abs(Angle2-Angle1-360)
-	        else
-	        	Angle3 = math.abs(Angle2-Angle1)
-	        end
-	        if Angle3 < Degrees then
-	        	return true
-	        else
-	        	return false
-	        end
-	    end
-	end
-end
+
 
 function getGUID(unit)
 	local nShortHand = ""
@@ -762,27 +351,7 @@ function getHP(Unit)
     return 0
 end
 
--- if getLowAllies(60) > 3 then
-function getLowAllies(Value)
- 	local lowAllies = 0
- 	for i = 1,#nNova do
-  		if nNova[i].hp < Value then
-   			lowAllies = lowAllies + 1
-  		end
- 	end
- 	return lowAllies
-end
 
--- if getLowAlliesInTable(60, nNove) > 3 then
-function getLowAlliesInTable(Value, unitTable)
- 	local lowAllies = 0
- 	for i = 1,#unitTable do
-  		if unitTable[i].hp < Value then
-   			lowAllies = lowAllies + 1
-  		end
- 	end
- 	return lowAllies
-end
 
 -- if getMana("target") <= 15 then
 function getMana(Unit)
@@ -849,81 +418,6 @@ function getNumEnemies(Unit,Radius)
  	return #getEnemies(Unit,Radius)
 end
 
--- if getLineOfSight("target"[,"target"]) then
-function getLineOfSight(Unit1,Unit2)
-	if Unit2 == nil then
-		if Unit1 == "player" then
-			Unit2 = "target"
-		else
-			Unit2 = "player"
-		end
-	end
-	local skipLoSTable = {
-		76585,-- Ragewing
-	}
-	for i = 1,#skipLoSTable do
-		if getUnitID(Unit1) == skipLoSTable[i] or getUnitID(Unit2) == skipLoSTable[i] then
-			return true
-		end
-	end
-	if GetObjectExists(Unit1) and UnitIsVisible(Unit1) and GetObjectExists(Unit2) and UnitIsVisible(Unit2) then
-		local X1,Y1,Z1 = GetObjectPosition(Unit1)
-		local X2,Y2,Z2 = GetObjectPosition(Unit2)
-		if TraceLine(X1,Y1,Z1 + 2,X2,Y2,Z2 + 2, 0x10) == nil then
-			return true
-		else
-			return false
-		end
-	else
-		return true
-	end
-end
-
--- if getGround("target"[,"target"]) then
-function getGround(Unit)
-	if GetObjectExists(Unit) and UnitIsVisible(Unit) then
-		local X1,Y1,Z1 = GetObjectPosition(Unit)
-		if TraceLine(X1,Y1,Z1,X1,Y1,Z1-2, 0x10) == nil and TraceLine(X1,Y1,Z1,X1,Y1,Z1-2, 0x100) == nil then
-			return nil
-		else
-			return true
-		end
-	end
-end
-
-function getGroundDistance(Unit)
-	if GetObjectExists(Unit) and UnitIsVisible(Unit) then
-		local X1,Y1,Z1 = GetObjectPosition(Unit)
-		for i = 1,100 do
-			if TraceLine(X1,Y1,Z1,X1,Y1,Z1-i/10, 0x10) ~= nil or TraceLine(X1,Y1,Z1,X1,Y1,Z1-i/10, 0x100) ~= nil then
-				return i/10
-			end
-		end
-	end
-end
-
--- if getPetLineOfSight("target"[,"target"]) then
-function getPetLineOfSight(Unit)
-	if GetObjectExists(Unit) and UnitIsVisible("pet") and UnitIsVisible(Unit) then
-		local X1,Y1,Z1 = GetObjectPosition("pet")
-		local X2,Y2,Z2 = GetObjectPosition(Unit)
-		if TraceLine(X1,Y1,Z1 + 2,X2,Y2,Z2 + 2, 0x10) == nil then
-			return true
-		else
-			return false
-		end
-	else
-		return true
-	end
-end
-
-
-
---- Round
-function round2(num,idp)
-  mult = 10^(idp or 0)
-  return math.floor(num * mult + 0.5) / mult
-end
 
 -- if getTalent(8) == true then
 function getTalent(Row,Column)
@@ -1563,22 +1057,7 @@ function isInPvP()
 	end
 end
 
--- if isKnown(106832) then
-function isKnown(spellID)
-	--if spellID == 175980 then
-	--	if getTalent(5,3) then
-	--		return true
-	--	end
-	--end
-  	local spellName = GetSpellInfo(spellID)
-	if GetSpellBookItemInfo(tostring(spellName)) ~= nil then
-    	return true
-  	end
-	if IsPlayerSpell(tonumber(spellID)) == true then
-		return true
-	end
-  	return false
-end
+
 
 -- if isLooting() then
 function isLooting()
@@ -1713,16 +1192,7 @@ function IsStandingTime(time)
 	end
 end
 
--- if isCasting(12345,"target") then
-function isCasting(SpellID,Unit)
-	if GetObjectExists(Unit) and UnitIsVisible(Unit) then
-		if isCasting(tostring(GetSpellInfo(SpellID)),Unit) == 1 then
-			return true
-		end
-	else
-		return false
-	end
-end
+
 
 -- if isValidTarget("target") then
 function isValidTarget(Unit)
@@ -1848,51 +1318,7 @@ end
 --[[           ]]	--[[]]				--[[           ]]
 --[[           ]]	--[[]]      		--[[           ]]
 
--- if isChecked("Debug") then
-function isChecked(Value)
-	--print(BadRobot_data.options[GetSpecialization()]["profile"..Value.."Check"])
-	if BadRobot_data.options[GetSpecialization()] and BadRobot_data.options[GetSpecialization()][Value.."Check"] == 1 then
-		return true
-	end
-end
 
--- if isSelected("Stormlash Totem") then
-function isSelected(Value)
-	if BadRobot_data["Cooldowns"] == 3 or (isChecked(Value)
-	  and (getValue(Value) == 3 or (getValue(Value) == 2 and BadRobot_data["Cooldowns"] == 2))) then
-		return true
-	end
-end
-
--- if getValue("player") <= getValue("Eternal Flame") then
-function getValue(Value)
-	if BadRobot_data.options[GetSpecialization()] then
-		if BadRobot_data.options[GetSpecialization()][Value.."Status"] ~= nil then
-			return BadRobot_data.options[GetSpecialization()][Value.."Status"]
-		elseif BadRobot_data.options[GetSpecialization()][Value.."Drop"] ~= nil then
-			return BadRobot_data.options[GetSpecialization()][Value.."Drop"]
-		else
-			return 0
-		end
-	end
-end
-
--- used to gather informations from the bot options frame
-function getOptionCheck(Value)
-	if BadRobot_data.options[GetSpecialization()] and BadRobot_data.options[GetSpecialization()][Value.."Check"] == 1 then
-		return true
-	end
-end
-
-function getOptionValue(Value)
-	if BadRobot_data.options[GetSpecialization()] and BadRobot_data.options[GetSpecialization()][Value.."Status"] then
-		return BadRobot_data.options[GetSpecialization()][Value.."Status"]
-	elseif BadRobot_data.options[GetSpecialization()] and BadRobot_data.options[GetSpecialization()][Value.."Drop"] then
-		return BadRobot_data.options[GetSpecialization()][Value.."Drop"]
-	else
-		return 0
-	end
-end
 
 --[[Health Potion Table]]
 function hasHealthPot()

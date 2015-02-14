@@ -1,3 +1,203 @@
+function castMouseoverHealing(Class)
+	if UnitAffectingCombat("player") then
+		local spellTable = {
+			["Druid"] = { heal = 8936,dispel = 88423 }
+		}
+		local npcTable = {
+			71604,-- Contaminated Puddle- Immerseus - SoO
+			71995,-- Norushen
+			71996,-- Norushen
+			72000,-- Norushen
+			71357,-- Wrathion
+		}
+		local SpecialTargets = { "mouseover","target","focus"}
+		local dispelid = spellTable[Class].dispel
+		for i = 1,#SpecialTargets do
+			local target = SpecialTargets[i]
+			if UnitExists(target) and not UnitIsPlayer(target) then
+				local npcID = tonumber(string.match(UnitGUID(target),"-(%d+)-%x+$"))
+				for i = 1,#npcTable do
+					if npcID == npcTable[i] then
+						-- Dispel
+						for n = 1,40 do
+					      	local buff,_,_,count,bufftype,duration = UnitDebuff(target,n)
+				      		if buff then
+				        		if bufftype == "Magic" or bufftype == "Curse" or bufftype == "Poison" then
+				        			if castSpell(target,88423,true,false) then
+				        				return
+				        			end
+				        		end
+				      		else
+				        		break
+				      		end
+					  	end
+					  	-- Heal
+						local npcHP = getHP(target)
+						if npcHP < 100 then
+							if castSpell(target,spellTable[Class].heal,true) then
+								return
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+-- if canHeal("target") then
+function canHeal(Unit)
+	if UnitExists(Unit) and UnitInRange(Unit) == true and UnitCanCooperate("player",Unit)
+		and not UnitIsEnemy("player",Unit) and not UnitIsCharmed(Unit) and not UnitIsDeadOrGhost(Unit)
+		and getLineOfSight(Unit) == true and not UnitDebuffID(Unit,33786) then
+		return true
+	end
+	return false
+end
+
+function castAoEHeal(spellID,numUnits,missingHP,rangeValue)
+	-- i start an iteration that i use to build each units Table,which i will reuse for the next second
+	if not holyRadianceRangeTable or not holyRadianceRangeTableTimer or holyRadianceRangeTable <= GetTime() - 1 then
+		holyRadianceRangeTable = { }
+		for i = 1,#nNova do
+			-- i declare a sub-table for this unit if it dont exists
+			if nNova[i].distanceTable == nil then nNova[i].distanceTable = { } end
+			-- i start a second iteration where i scan unit ranges from one another.
+			for j = 1,#nNova do
+				-- i make sure i dont compute unit range to hisself.
+				if not UnitIsUnit(nNova[i].unit,nNova[j].unit) then
+					-- table the units
+					nNova[i].distanceTable[j] = { distance = getDistance(nNova[i].unit,nNova[j].unit),unit = nNova[j].unit,hp = nNova[j].hp }
+				end
+			end
+		end
+	end
+	-- declare locals that will hold number
+	local bestTarget,bestTargetUnits = 1,1
+	-- now that nova range is built,i can iterate it
+	local inRange,missingHealth,mostMissingHealth = 0,0,0
+	for i = 1,#nNova do
+		if nNova[i].distanceTable ~= nil then
+			-- i count units in range
+			for j = 1,#nNova do
+				if nNova[i].distanceTable[j] and nNova[i].distanceTable[j].distance < rangeValue then
+					inRange = inRange + 1
+					missingHealth = missingHealth + (100 - nNova[i].distanceTable[j].hp)
+				end
+			end
+			nNova[i].inRangeForHolyRadiance = inRange
+			-- i check if this is going to be the best unit for my spell
+			if missingHealth > mostMissingHealth then
+				bestTarget,bestTargetUnits,mostMissingHealth = i,inRange,missingHealth
+			end
+		end
+	end
+	if bestTargetUnits and bestTargetUnits > 3 and mostMissingHealth and missingHP and mostMissingHealth > missingHP then
+		if castSpell(nNova[bestTarget].unit,spellID,true,true) then return true end
+	end
+end
+
+
+
+-- if shouldNotOverheal(spellCastTarget) > 80 then
+function shouldNotOverheal(Unit)
+	local myIncomingHeal,allIncomingHeal = 0,0
+	if UnitGetIncomingHeals(Unit,"player") ~= nil then myIncomingHeal = UnitGetIncomingHeals(Unit,"player") end
+	if UnitGetIncomingHeals(Unit) ~= nil then allIncomingHeal = UnitGetIncomingHeals(Unit) end
+	local allIncomingHeal = UnitGetIncomingHeals(Unit) or 0
+	local overheal = 0
+	if myIncomingHeal >= allIncomingHeal then
+		overheal = myIncomingHeal
+	else
+		overheal = allIncomingHeal
+	end
+	local CurShield = UnitHealth(Unit)
+	if UnitDebuffID("player",142861) then --Ancient Miasma
+		CurShield = select(15,UnitDebuffID(Unit,142863)) or select(15,UnitDebuffID(Unit,142864)) or select(15,UnitDebuffID(Unit,142865)) or (UnitHealthMax(Unit) / 2)
+		overheal = 0
+	end
+	local overhealth = 100 * (CurShield+ overheal ) / UnitHealthMax(Unit)
+	if overhealth and overheal then
+		return overhealth,overheal
+	else
+		return 0,0
+	end
+end
+
+-- candidate to replace shouldStopOverheal
+--function shouldNotOverheal(Unit)
+--	for i = 1,#nNova do
+--		if Unit == nNova[i].unit then
+--			return nNova[i].hp,nNova[i].absorb
+--		end
+--	end
+--end
+
+-- if castHealGround(_HealingRain,18,80,3) then
+function castHealGround(SpellID,Radius,Health,NumberOfPlayers)
+	if shouldStopCasting(SpellID) ~= true then
+		local lowHPTargets,foundTargets = { },{ }
+		for i = 1,#nNova do
+			if nNova[i].hp <= Health then
+				if UnitIsVisible(nNova[i].unit) and GetObjectPosition(nNova[i].unit) ~= nil then
+					local X,Y,Z = GetObjectPosition(nNova[i].unit)
+					tinsert(lowHPTargets,{ unit = nNova[i].unit,x = X,y = Y,z = Z })
+		end end end
+		if #lowHPTargets >= NumberOfPlayers then
+			for i = 1,#lowHPTargets do
+				for j = 1,#lowHPTargets do
+					if lowHPTargets[i].unit ~= lowHPTargets[j].unit then
+						if math.sqrt(((lowHPTargets[j].x-lowHPTargets[i].x)^2)+((lowHPTargets[j].y-lowHPTargets[i].y)^2)) < Radius then
+							for k = 1,#lowHPTargets do
+								if lowHPTargets[i].unit ~= lowHPTargets[k].unit and lowHPTargets[j].unit ~= lowHPTargets[k].unit then
+									if math.sqrt(((lowHPTargets[k].x-lowHPTargets[i].x)^2)+((lowHPTargets[k].y-lowHPTargets[i].y)^2)) < Radius and math.sqrt(((lowHPTargets[k].x-lowHPTargets[j].x)^2)+((lowHPTargets[k].y-lowHPTargets[j].y)^2)) < Radius then
+										tinsert(foundTargets,{ unit = lowHPTargets[i].unit,x = lowHPTargets[i].x,y = lowHPTargets[i].y,z = lowHPTargets[i].z })
+										tinsert(foundTargets,{ unit = lowHPTargets[j].unit,x = lowHPTargets[j].x,y = lowHPTargets[j].y,z = lowHPTargets[i].z })
+										tinsert(foundTargets,{ unit = lowHPTargets[k].unit,x = lowHPTargets[k].x,y = lowHPTargets[k].y,z = lowHPTargets[i].z })
+			end end end end end end end
+			local medX,medY,medZ = 0,0,0
+			if foundTargets ~= nil and #foundTargets >= NumberOfPlayers then
+				for i = 1,3 do
+					medX = medX + foundTargets[i].x
+					medY = medY + foundTargets[i].y
+					medZ = medZ + foundTargets[i].z
+				end
+				medX,medY,medZ = medX/3,medY/3,medZ/3
+				local myX,myY = GetObjectPosition("player")
+				if math.sqrt(((medX-myX)^2)+((medY-myY)^2)) < 40 then
+			 		CastSpellByName(GetSpellInfo(SpellID),"player")
+					if IsAoEPending() then
+						CastAtPosition(medX,medY,medZ)
+						if SpellID == 145205 then shroomsTable[1] = { x = medX,y = medY,z = medZ} end
+						return true
+	end end end end end
+	return false
+end
+
+
+-- if getLowAllies(60) > 3 then
+function getLowAllies(Value)
+ 	local lowAllies = 0
+ 	for i = 1,#nNova do
+  		if nNova[i].hp < Value then
+   			lowAllies = lowAllies + 1
+  		end
+ 	end
+ 	return lowAllies
+end
+
+-- if getLowAlliesInTable(60, nNove) > 3 then
+function getLowAlliesInTable(Value, unitTable)
+ 	local lowAllies = 0
+ 	for i = 1,#unitTable do
+  		if unitTable[i].hp < Value then
+   			lowAllies = lowAllies + 1
+  		end
+ 	end
+ 	return lowAllies
+end
+
+
 --[[---------------------------------------------------------------------------------------------------
 -----------------------------------------Bubba's Healing Engine--------------------------------------]]
 if not metaTable1 then

@@ -18,19 +18,26 @@ function getAuras(unit)
 	return aurastable
 end
 
+----------------------------
+-- Function to set the current Auras to the units, triggered by combat log events
+--		Does not work properly, we want to inster into buff table using spellid so we dont need to iterate through
+--		
+----------------------------
 function setAuras(unit, spellId, auratype, stacks)
 	local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellId = UnitAura(unit,GetSpellInfo(spellId))
 	-- for now we only do player buffs, later we do it for all units
+	-- Todo :  WE need to be able to insert via spellid instead of iterating through the list if possible
 	if unit == "player" then
-		player.buff[spellId] = { name = name, count = count, duration = duration, unitCaster = unitCaster, isStealable = isStealable, auratype = auratype, stacks = stacks }
+	--	player.buff.spellId = { name = name, count = count, duration = duration, unitCaster = unitCaster, isStealable = isStealable, auratype = auratype, stacks = stacks }
 	end
+
 
 	--if unit == "target"
 	--if unit == "enemies"
 end
 function removeAuras(unit, spellId)
 	if unit == "player" then
-		players.buff[spellId] = nil
+		player.buff[spellId] = nil
 	end
 end
 

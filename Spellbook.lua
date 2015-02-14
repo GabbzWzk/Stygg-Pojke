@@ -188,3 +188,20 @@ function getSpellCD(SpellID)
 		return MyCD
 	end
 end
+
+-- if isKnown(106832) then
+function isKnown(spellID)
+	--if spellID == 175980 then
+	--	if getTalent(5,3) then
+	--		return true
+	--	end
+	--end
+  	local spellName = GetSpellInfo(spellID)
+	if GetSpellBookItemInfo(tostring(spellName)) ~= nil then
+    	return true
+  	end
+	if IsPlayerSpell(tonumber(spellID)) == true then
+		return true
+	end
+  	return false
+end

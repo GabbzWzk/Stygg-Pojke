@@ -9,6 +9,7 @@ function bb:debug(message)
 end
 
 function bb:Run()
+	print("BB Run")
 
 	rc = LibStub("LibRangeCheck-2.0")
 	minRange, maxRange = rc:GetRange('target')
@@ -183,6 +184,7 @@ end
 
 --[[Startup UI]]
 function bb:StartUI()
+	print("BB Start UI")
 	-- trigger frame creation in ui.lua
 	ConstructUI()
     -- select the active option(refresh)
@@ -191,17 +193,32 @@ function bb:StartUI()
     BadRobotFrame()
 end
 
---[[Updating UI]]
+---------------------
+-- Pulse UI : This will be run every pulse which is set to 0.01 seconds or 10 milliseconds and updates the UI
+---------------------
 function bb:PulseUI()
 	-- distance on main icon
 	targetDistance = getDistance("target") or 0
 	displayDistance = math.ceil(targetDistance)
 	mainText:SetText(displayDistance)
-	-- enemies
-	makeEnemiesTable(maxDistance)
-	-- allies
-	nNova:Update()
-	-- Pulse other features
-	-- PokeEngine()
-	--ProfessionHelper()
 end
+
+------------------------
+-- Main handler, will tick every 10 ms and handles the rotation part of the bot.
+-----------------------
+function bb:MainHandler()
+    
+    -- enemies
+    makeEnemiesTable(maxDistance)
+    --targets.update()
+    -- allies
+    player.update()
+    nNova:Update() -- Should be replaced with Raid
+    rotation:update() -- Calls the rotations to be executed
+    --systemHandler, should handle the system checks ie latency etc
+    
+    -- Pulse other features
+    -- PokeEngine()
+    --ProfessionHelper()
+end
+

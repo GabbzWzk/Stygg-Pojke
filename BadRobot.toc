@@ -14,6 +14,9 @@ Target.lua
 RotationMage.lua
 Auras.lua
 Commands.lua
+Rotation.lua
+Configuration.lua
+Object.lua
 
 ## System
 System\Beautycase.lua
