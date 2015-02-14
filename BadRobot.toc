@@ -13,6 +13,7 @@ Spellbook.lua
 Target.lua
 RotationMage.lua
 Auras.lua
+Commands.lua
 
 ## System
 System\Beautycase.lua
