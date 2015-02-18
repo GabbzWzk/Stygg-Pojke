@@ -37,7 +37,7 @@ function setAuras(unit, spellId, auratype, stacks)
 end
 function removeAuras(unit, spellId)
 	if unit == "player" then
-		player.buff[spellId] = nil
+		--player.buff[spellId] = nil
 	end
 end
 

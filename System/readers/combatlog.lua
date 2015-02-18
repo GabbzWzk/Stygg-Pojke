@@ -100,22 +100,22 @@ function cl:common(...)
     -- Added player.buff for now, later we add it for all units
     if destination == UnitGUID("player") then
         if param == "SPELL_AURA_REFRESH" then
-            print("Spell Aura Refresh "  .. spell .." " ..GetTime()) --Fired when getting Buff
+            --print("Spell Aura Refresh "  .. spell .." " ..GetTime()) --Fired when getting Buff
             setAuras("player", spell, auratype, stacks)
         end
         
         if param == "SPELL_AURA_APPLIED" then
-            print("Spell Aura Applied "  .. spell .." " ..GetTime())
+            --print("Spell Aura Applied "  .. spell .." " ..GetTime())
             setAuras("player", spell, auratype, stacks)
         end
         
         if param == "SPELL_AURA_APPLIED_DOSE"  then
-            print("Spell Aura Applied Dose "  .. spell .." " ..GetTime())
+            --print("Spell Aura Applied Dose "  .. spell .." " ..GetTime())
             setAuras("player", spell, auratype, stacks)
         end
         
         if param == "SPELL_AURA_REMOVED" then
-            print("Spell Aura Removed "  .. spell .." " ..GetTime())
+            --print("Spell Aura Removed "  .. spell .." " ..GetTime())
             removeAuras("player", spell)
         end        
     end

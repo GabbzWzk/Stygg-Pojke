@@ -6,7 +6,6 @@
 ## SavedVariablesPerCharacter: BadRobot_data
 
 BadRobot.lua
-
 Player.lua
 SpellCast.lua
 Spellbook.lua
@@ -17,6 +16,40 @@ Commands.lua
 Rotation.lua
 Configuration.lua
 Object.lua
+
+## Rotations
+### Mage ---------------------------------------------------
+Rotations\Mage\RotationMage.lua
+Rotations\Mage\Arcane.lua
+Rotations\Mage\Options.lua
+Rotations\Mage\Functions.lua
+Rotations\Mage\SpellList.lua
+Rotations\Mage\Toggles.lua
+
+### Paladin
+Rotations\Paladin\Functions.lua
+Rotations\Paladin\Options.lua
+Rotations\Paladin\SpellList.lua
+
+Rotations\Paladin\Holy\Holy.lua
+Rotations\Paladin\Holy\HolyPaladinHealingRotations.lua
+Rotations\Paladin\Holy\Libs\Functions.lua
+Rotations\Paladin\Holy\Libs\Options.lua
+Rotations\Paladin\Holy\Libs\Toggles.lua
+Rotations\Paladin\Holy\Libs\SpellList.lua
+
+Rotations\Paladin\Protection\Protection.lua
+Rotations\Paladin\Protection\Libs\Functions.lua
+Rotations\Paladin\Protection\Libs\Options.lua
+Rotations\Paladin\Protection\Libs\Toggles.lua
+Rotations\Paladin\Protection\Libs\SpellList.lua
+
+Rotations\Paladin\Retribution\Retribution.lua
+Rotations\Paladin\Retribution\Libs\Functions.lua
+Rotations\Paladin\Retribution\Libs\Options.lua
+Rotations\Paladin\Retribution\Libs\Toggles.lua
+Rotations\Paladin\Retribution\Libs\SpellList.lua
+
 
 ## System
 System\Beautycase.lua
@@ -54,14 +87,6 @@ System\ui\statusbar.lua
 System\ui\textframe.lua
 System\ui\ui.lua
 System\ui\wrapper.lua
-
-## Mage ---------------------------------------------------
-Rotations\Mage\Arcane.lua
-Rotations\Mage\Options.lua
-Rotations\Mage\Functions.lua
-Rotations\Mage\SpellList.lua
-Rotations\Mage\Toggles.lua
-
 
 ## PokeRotation
 Rotations\PokeRotation\PokeAbilities.lua
