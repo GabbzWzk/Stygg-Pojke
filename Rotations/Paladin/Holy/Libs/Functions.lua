@@ -59,31 +59,16 @@ if select(3,UnitClass("player")) == 2 then
     -- ToDo: we need a better handling over eternal flame
     
 
-    function castEternalFlame(hpValue)
+    function castEternalFlame(unit)
       if (eternalFlameTimer == nil or eternalFlameTimer <= GetTime() - 1.3) then
         eternalFlameTimer = GetTime()
       else
         return false
       end
-
-      if lowestTankHP < lowestHP then
-        if lowestTankHP < hpValue then
-          if castSpell(lowestTankUnit,_EternalFlame,true,false) then
-            return true
-          end
-        end
-      else
-        if lowestHP < hpValue then
-          if castSpell(lowestUnit,_EternalFlame,true,false) then
-            return true
-          end
-        end
+      if castSpell(unit,_EternalFlame,true,false) then
+        return true
       end
-      if _HolyPower == 5 then
-        if castSpell(lowestTankUnit,_EternalFlame,true,false) then
-          return true
-        end
-      end
+	  return false
     end
 
     -- Word Of Glory
