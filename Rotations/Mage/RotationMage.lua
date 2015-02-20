@@ -177,7 +177,7 @@ function ArcaneMageInitPrismaticCrystal()
 		return false
 	end
 	--actions.init_crystal+=/prismatic_crystal,if=buff.arcane_charge.stack=4&cooldown.arcane_power.remains<0.5
-	if Charge() == 4 and cdArcanePower < 1 then
+	if Charge() == 4 and (cdArcanePower < 1 or playerBuffArcanePower) then
 		if castPrismaticCrystal() then
 			return true
 		end

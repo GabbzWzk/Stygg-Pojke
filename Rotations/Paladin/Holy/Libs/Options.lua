@@ -28,11 +28,6 @@ if select(3,UnitClass("player")) == 2 then
     -- Cooldowns
     myWrapper("Cooldowns")
 
-    -- Guardian of Ancient Kings
-    CreateNewCheck(thisConfig,"GotAK Holy")
-    CreateNewBox(thisConfig,"GotAK Holy",0,100,1,30,"|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFGuardian of Ancient Kings")
-    CreateNewText(thisConfig,myColor.."GotAK Holy")
-
     -- Avenging Wrath
     CreateNewCheck(thisConfig,"Avenging Wrath")
     CreateNewDrop(thisConfig,"Avenging Wrath", 1,"CD")
@@ -94,36 +89,8 @@ if select(3,UnitClass("player")) == 2 then
     CreateNewBox(thisConfig,"Flash Of Light",0,100,1,40,"|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFFlash Of Light")
     CreateNewText(thisConfig,myColor.."Flash Of Light")
 
-    -- Holy Shock
-    CreateNewCheck(thisConfig,"Holy Shock","Normal",1)
-    CreateNewBox(thisConfig,"Holy Shock",0,100,1,90,"|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFHoly Shock")
-    CreateNewText(thisConfig,myColor.."Holy Shock")
-
-    -- Tier 3 talents
-    if isKnown(_SacredShield) then
-      CreateNewCheck(thisConfig,"Sacred Shield","Normal",1)
-      CreateNewBox(thisConfig,"Sacred Shield",0,100,1,95,"|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFSacred Shield")
-      CreateNewText(thisConfig,myColor.."Sacred Shield")
-    elseif isKnown(_SelflessHealer) then
-      CreateNewCheck(thisConfig,"Selfless Healer","Normal",1)
-      CreateNewBox(thisConfig,"Selfless Healer",0,100,1,35,"|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFSelfless Healer on Raid")
-      CreateNewText(thisConfig,myColor.."Selfless Healer")
-    else
-      CreateNewCheck(thisConfig,"Eternal Flame","Normal",1)
-      CreateNewBox(thisConfig,"Eternal Flame",0,100,1,70,"|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFEternal Flame on Raid")
-      CreateNewText(thisConfig,myColor.."Eternal Flame")
-    end
-    if isKnown(_SelflessHealer) or isKnown(_SacredShield) then
-      CreateNewCheck(thisConfig,"Word Of Glory","Normal",1)
-      CreateNewBox(thisConfig,"Word Of Glory",0,100,1,70,"|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFWord Of Glory on Raid")
-      CreateNewText(thisConfig,myColor.."Word Of Glory")
-    end
-
     -- Tier 6 talents
     if isKnown(_HolyPrism) then
-      CreateNewCheck(thisConfig, "Holy Prism","Normal",1)
-      CreateNewBox(thisConfig, "Holy Prism", 0, 100  , 1, 95, "|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFHoly Prism")
-      CreateNewText(thisConfig, myColor.."Holy Prism")
       -- Mode, cast always as heal or always as damage or dynamic
       CreateNewCheck(thisConfig, "Holy Prism Mode","Normal",1)
       CreateNewDrop(thisConfig, "Holy Prism Mode", 2, "Choose mode:\nFriend - Heal with damage\nEnemy - Damage with heal.\nWise - Dynamic", "Friend", "Enemy","WISE")
@@ -137,18 +104,6 @@ if select(3,UnitClass("player")) == 2 then
       CreateNewBox(thisConfig, "Execution Sentence", 0, 100  , 1, 70, "|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFExecution Sentence")
       CreateNewText(thisConfig, myColor.."Execution Sentence")
     end
-    if isKnown(_SelflessHealer) or isKnown(_SacredShield) then
-      CreateNewCheck(thisConfig, "Word Of Glory","Normal",1)
-      CreateNewBox(thisConfig, "Word Of Glory", 0, 100  , 1, 70, "|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFWord Of Glory on Raid")
-      CreateNewText(thisConfig, myColor.."Word Of Glory")
-    end
-
-
-    if isKnown(_HandOfPurity) == true then
-      CreateNewCheck(thisConfig,"Hand of Purity","Normal",1)
-      CreateNewBox(thisConfig,"Hand of Purity",0,100,1,50,"|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFHand of Purity")
-      CreateNewText(thisConfig,myColor.."Hand of Purity")
-    end
 
     CreateNewCheck(thisConfig,"Lay On Hands","Normal",1)
     CreateNewBox(thisConfig,"Lay On Hands",0,100,1,12,"|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFLay On Hands")
@@ -158,15 +113,11 @@ if select(3,UnitClass("player")) == 2 then
     CreateNewDrop(thisConfig,"LoH Targets",1,"|cffFF0000Which Targets\n|cffFFBB00We want to use \n|cffFFFFFFLay On Hands", "|cffFF0000Me.Only", "|cffFFDD11Me.Prio", "|cff00FBEETank/Heal","|cff00FF00All")
     CreateNewText(thisConfig,myColor.."LoH Targets")
 
-    CreateNewCheck(thisConfig,"Hand Of Sacrifice","Normal",1)
-    CreateNewBox(thisConfig,"Hand Of Sacrifice",0,100,1,35,"|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFHand Of Sacrifice")
-    CreateNewText(thisConfig,myColor.."Hand Of Sacrifice")
-
+    
     -- AoE Healing
     myWrapper("AoE Healing")
 
     CreateNewCheck(thisConfig,"HR Missing Health","Normal",1)
-    CreateNewBox(thisConfig,"HR Missing Health",0,100,1,75,"|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFHoly Radiance")
     CreateNewText(thisConfig,myColor.."HR Missing Health")
 
     CreateNewBox(thisConfig,"HR Units",0,25,1,3,"|cffFFBB00Minimum number of |cffFF0000%Units|cffFFBB00 to use \n|cffFFFFFFHoly Radiance")

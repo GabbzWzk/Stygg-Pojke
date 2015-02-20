@@ -5,7 +5,8 @@ function HolyPaladinRaidHealing()
   ---------------------------
   lowestHP, lowestUnit, lowestTankHP, lowestTankUnit, highestTankHP, highestTankUnit, averageHealth = getLowestSingleTargetHealingCandidates()
   aoeCandidateTenYards, numberOfUnitsInRangeTenYards = getAoeHealingCandidateNova(2, 90, 10) -- Minimum 2 Targets within 10 yards from friend
-  lightOfDawnTargets = getAoeHealingCandidateLightOfDawn(2, 90, 30) -- Minimum 2 Targets within 30 yards from player     
+  lightOfDawnTargets = getAoeHealingCandidateLightOfDawn(2, 90, 30) -- Minimum 2 Targets within 30 yards from player   
+  playerHP = 100*UnitHealth("player")/UnitHealthMax("player")  
 
   -------------------------
   -- Fast Heals First if someone is close to dying, however we should not perhaps cast this if the whole raid is getting pounded
@@ -71,18 +72,19 @@ function HolyPaladinRaidHealing()
 			end
 		end
 	end
-	
-	if aoeCandidateTenYards and numberOfUnitsInRangeTenYards > 4 and _HolyPower < 5 then
-        if castHolyRadiance(aoeCandidateTenYards) then
-			return true
-        end
+	if getOptionCheck("HR Missing Health") then
+  	if aoeCandidateTenYards and numberOfUnitsInRangeTenYards > 5 and _HolyPower < 5 then
+      if castHolyRadiance(aoeCandidateTenYards) then
+  	    return true
+      end
     end
+  end
 
-	if lightOfDawnTargets > 6 and _HolyPower > 2 then
-        if castLightOfDawn() then
-			return true
-        end
+	if lightOfDawnTargets > 5 and _HolyPower > 2 then
+    if castLightOfDawn() then
+		  return true
     end
+  end
   ------------------------------
   -- Holy Prism
   --		How should we do this? Manual for now
@@ -96,19 +98,35 @@ function HolyPaladinRaidHealing()
   --  Eternal Flame on Tanks of no HoT present and we dont overheal 
   ----------------------------------
   if _HolyPower > 2 or UnitBuffID("player", _DivinePurposeBuff) then
-	if lowestTankHP < getValue("Eternal Flame") and not UnitBuffID(lowestTankUnit, _EternalFlame) then -- Should be timeremaining < 3 seconds
-      if castEternalFlame(lowestTankUnit) then
-        return true
+  	if lowestTankHP < getValue("Eternal Flame") and not UnitBuffID(lowestTankUnit, _EternalFlame) then -- Should be timeremaining < 3 seconds
+        print("EF 1")
+        if castEternalFlame(lowestTankUnit) then
+          return true
+        end
+  	elseif lowestHP < getValue("Eternal Flame") and not UnitBuffID(lowestUnit, _EternalFlame) then
+      print("EF 2")
+  	  if castEternalFlame(lowestUnit) then
+          return true
+        end
+  	elseif highestTankHP < getValue("Eternal Flame") and not UnitBuffID(highestTankUnit, _EternalFlame) then
+      print("EF 3")
+  	  if castEternalFlame(highestTankUnit) then
+          return true
+        end
+  	end
+
+    if _HolyPower == 5 then
+      if playerHP < getValue("Eternal Flame") and not UnitBuffID("player", _EternalFlame) then
+        if castEternalFlame("player") then
+          return true
+        end
       end
-	elseif lowestHP < getValue("Eternal Flame") and not UnitBuffID(lowestUnit, _EternalFlame) then
-	  if castEternalFlame(lowestUnit) then
-        return true
+      if lowestTankHP < getValue("Eternal Flame") then -- Should be timeremaining < 3 seconds
+        if castEternalFlame(lowestTankUnit) then
+          return true
+        end
       end
-	elseif highestTankHP < getValue("Eternal Flame") and not UnitBuffID(highestTankUnit, _EternalFlame) then
-	  if castEternalFlame(highestTankUnit) then
-        return true
-      end
-	end
+    end
   end
   -------------------
   -- Cast Holyshock on if we have less then 5 HoPo

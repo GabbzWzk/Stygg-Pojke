@@ -32,7 +32,7 @@ if select(3,UnitClass("player")) == 2 then
 
   -- Flash Of Light
   function castFlashOfLight(unit)
-    if castSpell(unit, _HolyShock, true, false) then
+    if castSpell(unit, _FlashOfLight, true, false) then
       return true
     end
   end

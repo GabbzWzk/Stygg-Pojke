@@ -8,6 +8,7 @@ if select(3, UnitClass("player")) == 2 then
       PaladinHolyToggles()
       PaladinHolyOptions()
       currentConfig = "Holy Gabbz & CML"
+      --player.init()
     end
 
     -- Locals Variables
@@ -69,21 +70,13 @@ if select(3, UnitClass("player")) == 2 then
 
     --[[Off GCD in combat]]
     if UnitAffectingCombat("player") or IsLeftControlKeyDown() then -- Only heal if we are in combat or if left control is down for out of combat rotation
-      
-
-      ----------------------------
-      -- Get the AoE healing candidates only if we have Average Health below 90, this is for performance reasons, if hihg FPS make this higher.
-      ----------------------------
-      if averageHealth < 90 then
-
-      end
-
       --------------------------
       -- Beacons handling, set per configured logic, Beacon on tank, focus or wise where wise is we switches beacon for mana reasons
       --------------------------
       if BeaconOfLight() then   -- Set Beacon of Light and faith on correct target
         return true
       end
+      --player.update()
 
       --------------------
       -- Dont cast if we are already casting.
@@ -117,11 +110,9 @@ if select(3, UnitClass("player")) == 2 then
       ------------------------------
       if BadRobot_data['Healing'] == 1 then
         -- Tank Healing
-        print("1")
         return HolyPaladinTankHealing()
       elseif BadRobot_data['Healing'] == 2 then
         -- Raid Healing
-        print("2")
         return HolyPaladinRaidHealing()
       else
         -- Free For All
