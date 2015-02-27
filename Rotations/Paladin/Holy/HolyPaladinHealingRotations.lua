@@ -38,7 +38,6 @@ function HolyPaladinRaidHealing()
   -- We should single heal any target under a specific health.
   ------------------------
   if healingtargethp < getValue("Critical Health Level") and not (averageHealth < getValue("Critical Health Level"))  then
-    print("Criticals Heals")
 	-- Add Holy Prism
     if UnitBuffID("player",_InfusionOfLight) then
       if castHolyLight(healingtarget) then
@@ -91,25 +90,28 @@ function HolyPaladinRaidHealing()
   --		If no aoe heals then on Tanks
   --		If AoE check number of targets around enemies and cast on best match
   ------------------------------
- -- if getOptionCheck("Holy Prism") and castHolyPrism(healingtarget) then
- --   return true
- -- end
+  if getOptionCheck("Holy Prism Mode") and canCast(_HolyPrism) then
+    -- Cast on enemies first
+    if getValue("Holy Prism Mode") == 2 or 3 then
+      if castWiseAoEHeal(enemiesTable,_HolyPrism,15,95,1,5,false) then
+        return true
+      end
+    end
+    return false
+  end
   ---------------------------------
   --  Eternal Flame on Tanks of no HoT present and we dont overheal 
   ----------------------------------
   if _HolyPower > 2 or UnitBuffID("player", _DivinePurposeBuff) then
   	if lowestTankHP < getValue("Eternal Flame") and not UnitBuffID(lowestTankUnit, _EternalFlame) then -- Should be timeremaining < 3 seconds
-        print("EF 1")
         if castEternalFlame(lowestTankUnit) then
           return true
         end
   	elseif lowestHP < getValue("Eternal Flame") and not UnitBuffID(lowestUnit, _EternalFlame) then
-      print("EF 2")
   	  if castEternalFlame(lowestUnit) then
           return true
         end
   	elseif highestTankHP < getValue("Eternal Flame") and not UnitBuffID(highestTankUnit, _EternalFlame) then
-      print("EF 3")
   	  if castEternalFlame(highestTankUnit) then
           return true
         end

@@ -44,11 +44,11 @@ if select(3, UnitClass("player")) == 2 then
     -- Set Tanks or prioritised healing targets. Todo : Hm not keen on auto focus, we should have Tanks as target and focus
     ----------------------------
     --[[Set Main Healing Tank via focus]]
-    if IsLeftControlKeyDown() then -- Set focus, ie primary healing target with left alt and mouseover target
-      if UnitIsFriend("player","mouseover") and not UnitIsDeadOrGhost("mouseover") then
-        RunMacroText("/focus mouseover")
-      end
-    end
+    --if IsLeftControlKeyDown() then -- Set focus, ie primary healing target with left alt and mouseover target
+    --  if UnitIsFriend("player","mouseover") and not UnitIsDeadOrGhost("mouseover") then
+    --    RunMacroText("/focus mouseover")
+    --  end
+    --end
 
 
     --local favoriteTank = { name = "NONE" , health = 0}

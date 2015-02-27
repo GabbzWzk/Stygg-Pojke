@@ -191,6 +191,7 @@ if select(3,UnitClass("player")) == 2 then
       end
     end
   end
+
   function castHammerOfWrathMulti()
     local hpHammerOfWrath = 20
     local buffAvengingWrath = getBuffRemain("player",_AvengingWrath)
@@ -241,24 +242,8 @@ if select(3,UnitClass("player")) == 2 then
   end
 
   function castHolyPrism(unit)
-    if unit then
-      if castSpell(unit, _HolyPrism, true, false) then
-        return true
-      end
-    end
-    -- Cast on enemies first
-    if getValue("Holy Prism Mode") == 2 or 3 then
-      if castWiseAoEHeal(enemiesTable,_HolyPrism,15,95,1,5,false) then
-        return true
-      end
-    else
-      for i = 1, #nNova do
-        if nNova[i].hp <= getValue("Holy Prism") then
-          if castSpell(nNova[i].unit,_HolyPrism,true, false) then
-            return true
-          end
-        end
-      end
+    if castSpell(unit, _HolyPrism, true, false) then
+      return true
     end
     return false
   end
