@@ -1,3 +1,11 @@
+-- Todos:
+--          Vi måste använda DP buffen, så kolla om vi snart ska få slut på den och kasta Eternal Flame eller Light of Dawn
+--          Kolla om vi ska heala någon som har Beacon så kan vi kasta FoL om vi har en hög mana även om de inte är i låg kritisk health
+--          Kolla om vi är mana säkra så kan vi lägga in fler FoL och även Holy Raidance.
+--          Kasta FoL och Raidance om key press, dvs kasta mycket HPS
+--          Sätt config check for radiance, och mana values.
+--          How to heal during Avenging Wrath
+--
 function HolyPaladinRaidHealing()  
 
   ----------------------------
@@ -33,12 +41,76 @@ function HolyPaladinRaidHealing()
     healingtarget = lowestUnit
     healingtargethp = lowestHP
   end
+
+  ---------------------------------------
+  -- Lay on Hands logic here
+  ---------------------------------------
+  if isChecked("Lay On Hands") then
+    -- Lay on Hands Targets 1- me only 2- me prio 3- tank and heal 4- all
+    local LoHTargets = getValue("LoH Targets")
+    local LoHValue = getValue("Lay On Hands")
+    if LoHTargets == 1 then -- Only on player
+      if playerHP <= LoHValue then
+        if castLayOnHands("player") then
+          return true
+        end
+      end
+    elseif LoHTargets == 2 then -- Me Prio
+      if playerHP <= LoHValue then
+        if castLayOnHands("player") then
+          return true
+        end
+      else
+        for i = 1, #nNova do
+          if nNova[i].hp <= LoHValue then
+            if castLayOnHands(nNova[i].unit) then
+              return true
+            end
+          end
+        end
+      end
+    elseif LoHTargets == 3 then -- Me, Tanks or Healers
+      if playerHP <= LoHValue then
+        if castLayOnHands("player") then
+          return true
+        end
+      else
+        for i = 1, #nNova do
+          if nNova[i].hp <= LoHValue and (nNova[i].role == "HEALER" or nNova[i].role == "TANK") then
+            if castLayOnHands(nNova[i].unit) then
+              return true
+            end
+          end
+        end
+      end
+    elseif LoHTargets == 4 then -- All
+      for i = 1, #nNova do
+        if nNova[i].hp <= LoHValue then
+          if castLayOnHands(nNova[i].unit) then
+            return true
+          end
+        end
+      end
+    end
+  end
   
+  ----------------------------
+  -- Healing CDs logic here
+  -----------------------------
+  -- We should look at how many injured and how much and then blow them if necessary
+  -- Should have config values for on CD(Trivial Content), number of injuries and HP, or manually
+
+  -----------------------
+  -- Critical heals, here is where we need to focus on a target since he is low, blowing high mana heals if necessary.
+  --      We need to have different levels here
+  -----------------------------
+
   ------------------------
   -- We should single heal any target under a specific health.
   ------------------------
   if healingtargethp < getValue("Critical Health Level") and not (averageHealth < getValue("Critical Health Level"))  then
 	-- Add Holy Prism
+  -- Add Eternal flame
     if UnitBuffID("player",_InfusionOfLight) then
       if castHolyLight(healingtarget) then
         return true
@@ -60,9 +132,20 @@ function HolyPaladinRaidHealing()
   ------------------------------
   -- First we should see if there is any AoE healing, assuming we have beacon it should be decent tank healing
   ------------------------------
-  --if castHolyPrism(healingtarget) then
-  --  return true
-  --end
+   ------------------------------
+  -- Holy Prism
+  --    Two modes, either on enemies to AoE heal only or Wise where we check on CD if there are multiple heals on enemies or if lowest unit is beneath value
+  --    If AoE check number of targets around enemies and cast on best match
+  ------------------------------
+  if isChecked("Holy Prism Mode") and canCast(_HolyPrism) then
+    -- Cast on enemies first
+    if getValue("Holy Prism Mode") == 1 or getValue("Holy Prism Mode") == 3 then -- AoE heal around best enemy
+      if castWiseAoEHeal(enemiesTable,_HolyPrism,15,95,2,5,false) then
+        print("Prism on Enemy")
+        return true
+      end
+    end
+  end
 
 	if UnitBuffID("player",_Daybreak) and canCast(_HolyShock) then --Daybreak procc turns holy shock into AoE
 		if aoeCandidateTenYards and numberOfUnitsInRangeTenYards > 1 and _HolyPower < 5 then
@@ -71,7 +154,7 @@ function HolyPaladinRaidHealing()
 			end
 		end
 	end
-	if getOptionCheck("HR Missing Health") then
+	if getValue("Healing Mode") == 3 then -- Burst Healing so use Radiance
   	if aoeCandidateTenYards and numberOfUnitsInRangeTenYards > 5 and _HolyPower < 5 then
       if castHolyRadiance(aoeCandidateTenYards) then
   	    return true
@@ -79,25 +162,10 @@ function HolyPaladinRaidHealing()
     end
   end
 
-	if lightOfDawnTargets > 5 and _HolyPower > 2 then
+	if (lightOfDawnTargets > 5 and _HolyPower > 2) then
     if castLightOfDawn() then
 		  return true
     end
-  end
-  ------------------------------
-  -- Holy Prism
-  --		How should we do this? Manual for now
-  --		If no aoe heals then on Tanks
-  --		If AoE check number of targets around enemies and cast on best match
-  ------------------------------
-  if getOptionCheck("Holy Prism Mode") and canCast(_HolyPrism) then
-    -- Cast on enemies first
-    if getValue("Holy Prism Mode") == 2 or 3 then
-      if castWiseAoEHeal(enemiesTable,_HolyPrism,15,95,1,5,false) then
-        return true
-      end
-    end
-    return false
   end
   ---------------------------------
   --  Eternal Flame on Tanks of no HoT present and we dont overheal 
@@ -117,7 +185,7 @@ function HolyPaladinRaidHealing()
         end
   	end
 
-    if _HolyPower == 5 then
+    if _HolyPower == 5 or UnitBuffID("player", _DivinePurposeBuff) then
       if playerHP < getValue("Eternal Flame") and not UnitBuffID("player", _EternalFlame) then
         if castEternalFlame("player") then
           return true
@@ -130,6 +198,19 @@ function HolyPaladinRaidHealing()
       end
     end
   end
+
+  ---------------------
+  -- Holy Prism Single target
+  ---------------------
+  if getValue("Holy Prism Mode") == 2 or getValue("Holy Prism Mode") == 3 then -- Single target heal or wise target and no AoE candidates
+    if healingtargethp < 90 then
+      if castHolyPrism(healingtarget)  then
+        print("Prism on Friend")
+        return true
+      end
+    end
+  end
+  
   -------------------
   -- Cast Holyshock on if we have less then 5 HoPo
   -------------------

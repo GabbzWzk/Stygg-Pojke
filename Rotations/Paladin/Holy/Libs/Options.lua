@@ -29,44 +29,53 @@ if select(3,UnitClass("player")) == 2 then
     myWrapper("Cooldowns")
 
     -- Avenging Wrath
-    CreateNewCheck(thisConfig,"Avenging Wrath")
-    CreateNewDrop(thisConfig,"Avenging Wrath", 1,"CD")
-    CreateNewText(thisConfig,myColor.."Avenging Wrath")
+    --CreateNewCheck(thisConfig,"Avenging Wrath")
+    --CreateNewDrop(thisConfig,"Avenging Wrath", 1,"CD")
+    --CreateNewText(thisConfig,myColor.."Avenging Wrath")
 
-    if isKnown(_HolyAvenger) then
+    --if isKnown(_HolyAvenger) then
       -- Holy Avenger
-      CreateNewCheck(thisConfig,"Holy Avenger")
-      CreateNewDrop(thisConfig,"Holy Avenger",1,"CD")
-      CreateNewText(thisConfig, myColor.."Holy Avenger")
-    elseif isKnown(_SanctifiedWrath) then
+     -- CreateNewCheck(thisConfig,"Holy Avenger")
+     -- CreateNewDrop(thisConfig,"Holy Avenger",1,"CD")
+     -- CreateNewText(thisConfig, myColor.."Holy Avenger")
+    --elseif isKnown(_SanctifiedWrath) then
       -- Sanctified Wrath
-      CreateNewCheck(thisConfig,"Sanctified Wrath")
-      CreateNewDrop(thisConfig,"Sanctified Wrath",1,"CD")
-      CreateNewText(thisConfig,myColor.."Sanctified Wrath")
-    end
+     -- CreateNewCheck(thisConfig,"Sanctified Wrath")
+     -- CreateNewDrop(thisConfig,"Sanctified Wrath",1,"CD")
+     -- CreateNewText(thisConfig,myColor.."Sanctified Wrath")
+    --end
 
-    if isKnown(_LightsHammer) then
+    --if isKnown(_LightsHammer) then
       -- Light's Hammer
-      CreateNewCheck(thisConfig,"Light's Hammer")
-      CreateNewDrop(thisConfig,"Light's Hammer",1,"CD")
-      CreateNewText(thisConfig,myColor.."Light's Hammer")
-    end
+      --CreateNewCheck(thisConfig,"Light's Hammer")
+      --CreateNewDrop(thisConfig,"Light's Hammer",1,"CD")
+      --CreateNewText(thisConfig,myColor.."Light's Hammer")
+    --end
 
     -- Defensive
     myWrapper("Defensive")
 
     -- Divine Protection
-    CreateNewCheck(thisConfig,"Divine Protection Holy","Normal",1)
-    CreateNewBox(thisConfig,"Divine Protection Holy",0,100,1,75,"|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFDivine Protection")
-    CreateNewText(thisConfig,myColor.."Divine Protection Holy")
+    --CreateNewCheck(thisConfig,"Divine Protection Holy","Normal",1)
+    --CreateNewBox(thisConfig,"Divine Protection Holy",0,100,1,75,"|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFDivine Protection")
+    --CreateNewText(thisConfig,myColor.."Divine Protection Holy")
 
     -- Healing
     myWrapper("Healing")
 
     CreateNewCheck(thisConfig,"Critical Health Level","Normal",1)
-    CreateNewBox(thisConfig,"Critical Health Level",0,100,1,90,"|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFfast heals")
+    CreateNewBox(thisConfig,"Critical Health Level",0,100,1,50,"|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFfast heals")
     CreateNewText(thisConfig,myColor.."Critical Health Level")
 
+    -- Setting the mode, sustained, beacon intensive and burst
+    CreateNewCheck(thisConfig,"Healing Mode","Normal",1)
+    CreateNewDrop(thisConfig, "Healing Mode", 2, "Choose mode:\nNormal, sustained healing\nFoL/Radiance on Beacon Targets.\nBurst Healing", "Sustained","Beacon","Burst")
+    CreateNewText(thisConfig,myColor.."Healing Mode")
+
+    -- Config for setting using mana intensive heals on beacons
+    --CreateNewCheck(thisConfig,"FoL/HR Beacons","Normal",1)
+    --CreateNewBox(thisConfig,"FoL/HR Beacons",0,100,1,50,"|cffFFBB00Check if we should cast FoL and Holy Radiance on beacons, value set to how mana is minimum")
+    --CreateNewText(thisConfig,myColor.."FoL/HR Beacons")
 
     CreateNewCheck(thisConfig, "Beacon Of Light","Normal",1)
     CreateNewDrop(thisConfig, "Beacon Of Light", 2, "Choose mode:\nTank - Always on tank\nFocus - Always on focus.\nWise - Dynamic", "TANK","FOCUS","WISE")
@@ -79,21 +88,11 @@ if select(3,UnitClass("player")) == 2 then
       CreateNewText(thisConfig, myColor.."Beacon Of Faith")
     end
 
-    -- Holy Light
-    CreateNewCheck(thisConfig,"Holy Light","Normal",1)
-    CreateNewBox(thisConfig,"Holy Light",0,100,1,90,"|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFHoly Light")
-    CreateNewText(thisConfig,myColor.."Holy Light")
-
-    -- Flash Of Light
-    CreateNewCheck(thisConfig,"Flash Of Light","Normal",1)
-    CreateNewBox(thisConfig,"Flash Of Light",0,100,1,40,"|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFFlash Of Light")
-    CreateNewText(thisConfig,myColor.."Flash Of Light")
-
     -- Tier 6 talents
     if isKnown(_HolyPrism) then
       -- Mode, cast always as heal or always as damage or dynamic
       CreateNewCheck(thisConfig, "Holy Prism Mode","Normal",1)
-      CreateNewDrop(thisConfig, "Holy Prism Mode", 2, "Choose mode:\nFriend - Heal with damage\nEnemy - Damage with heal.\nWise - Dynamic", "Friend", "Enemy","WISE")
+      CreateNewDrop(thisConfig, "Holy Prism Mode", 2, "Choose mode:\nCast on Enemy to heal Friends\nCast on Friend \nWise - Cast on Friend if no AoE", "Enemy", "Friend","WISE")
       CreateNewText(thisConfig, myColor.."Holy Prism Mode")
     elseif isKnown(_LightsHammer) then
       CreateNewCheck(thisConfig, "Lights Hammer","Normal",1)
@@ -104,6 +103,22 @@ if select(3,UnitClass("player")) == 2 then
       CreateNewBox(thisConfig, "Execution Sentence", 0, 100  , 1, 70, "|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFExecution Sentence")
       CreateNewText(thisConfig, myColor.."Execution Sentence")
     end
+
+    -- Tier 6 talents
+    if isKnown(_EternalFlame) then
+      -- Mode, cast always as heal or always as damage or dynamic
+      CreateNewCheck(thisConfig, "Eternal Flame","Normal",1)
+      CreateNewBox(thisConfig, "Eternal Flame", 0, 90  , 1, 35, "|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFEternal Flame")
+      CreateNewText(thisConfig, myColor.."Eternal Flame")
+    elseif isKnown(_SacredShield) then
+      CreateNewCheck(thisConfig, "Sacred Shield","Normal",1)
+      CreateNewDrop(thisConfig, "Sacred Shield", 2, "Choose mode:\nTank - Always on tank\nFocus - Always on focus.\nWise - Dynamic", "TANK","FOCUS","WISE")
+      CreateNewText(thisConfig, myColor.."Sacred Shield")
+    end
+
+    CreateNewCheck(thisConfig,"Flash Of Light","Normal",1)
+    CreateNewBox(thisConfig,"Flash Of Light",0,100,1,70,"|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFFlash Of Light")
+    CreateNewText(thisConfig,myColor.."Flash Of Light")
 
     CreateNewCheck(thisConfig,"Lay On Hands","Normal",1)
     CreateNewBox(thisConfig,"Lay On Hands",0,100,1,12,"|cffFFBB00Under what |cffFF0000%HP|cffFFBB00 to use \n|cffFFFFFFLay On Hands")

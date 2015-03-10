@@ -37,6 +37,8 @@ if select(3, UnitClass("player")) == 2 then
     end
 
     if IsLeftShiftKeyDown() then -- Pause the script, keybind in wow shift+1 etc for manual cast
+      --print("Prism " ..getValue("Holy Prism Mode"))
+
       return true
     end
 
@@ -69,7 +71,7 @@ if select(3, UnitClass("player")) == 2 then
     --end
 
     --[[Off GCD in combat]]
-    if UnitAffectingCombat("player") or IsLeftControlKeyDown() then -- Only heal if we are in combat or if left control is down for out of combat rotation
+    if UnitAffectingCombat("player") or UnitAffectingCombat("target") or IsLeftControlKeyDown() then -- Only heal if we are in combat or if left control is down for out of combat rotation
       --------------------------
       -- Beacons handling, set per configured logic, Beacon on tank, focus or wise where wise is we switches beacon for mana reasons
       --------------------------
@@ -101,9 +103,9 @@ if select(3, UnitClass("player")) == 2 then
       end
 
       --[[Auto Attack if in melee]]
-      if isInMelee() and getFacing("player","target") == true then
-        RunMacroText("/startattack")
-      end
+      --if isInMelee() and getFacing("player","target") == true then
+      --  RunMacroText("/startattack")
+      --end
 
       ------------------------------
       -- Healing Mode checks    -- We should have 3 different healing modes, tank healing, raid healing and Free For All. We should be able to toggle groups of people to heal, Group1-8

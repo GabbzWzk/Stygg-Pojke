@@ -141,10 +141,27 @@ function bb.read.commonReaders()
 	local Frame = CreateFrame('Frame')
 	Frame:RegisterEvent("UI_ERROR_MESSAGE")
 	local function UiErrorMessages(self,event,...)
-		lastError = ...; lastErrorTime = GetTime()
+		lastError = ...; 
+		lastErrorTime = GetTime()
 	  	local param = (...)
+	  	print("UI Error : " ..lastError)
+	  	--print("UI Error Test : " ..test)
+	  	print("UI Error Param: " ..param)
 	end
 	Frame:SetScript("OnEvent", UiErrorMessages)
+
+	--[[ UI Info Messages --]]
+	local Frame = CreateFrame('Frame')
+	Frame:RegisterEvent("UI_INFO_MESSAGE")
+	local function UiInfoMessages(self,event,...)
+		lastError, test = ...; 
+		lastErrorTime = GetTime()
+	  	local param = (...)
+	  	print("UI Error : " ..lastError)
+	  	--print("UI Error Test : " ..test)
+	  	print("UI Error Param: " ..param)
+	end
+	Frame:SetScript("OnEvent", UiInfoMessages)
 
 	------------------------
 	--[[ Spells Changed --]]
